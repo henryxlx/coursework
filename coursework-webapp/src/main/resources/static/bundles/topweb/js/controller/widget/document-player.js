@@ -21,7 +21,7 @@ define(function(require, exports, module) {
         attrs: {
             swfFileUrl:'',
             pdfFileUrl:'',
-            swfPlayerUrl:'../../bundles/topxiaweb/js/controller/swf/edusohoViewer.swf',
+            swfPlayerUrl:'../../bundles/topweb/js/controller/swf/edusohoViewer.swf',
             swfPlayerWidth:'100%',
             swfPlayerheight:'100%'
         },

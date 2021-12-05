@@ -5,7 +5,7 @@ define(function(require, exports, module) {
 
 	exports.load = function(name) {
 		if (window.app.jsPaths[name.split('/', 1)[0]] == undefined) {
-			name = window.app.basePath + '/bundles/topxiaweb/js/controller/' + name;
+			name = window.app.basePath + '/bundles/topweb/js/controller/' + name;
 		}
 
 		seajs.use(name, function(module) {

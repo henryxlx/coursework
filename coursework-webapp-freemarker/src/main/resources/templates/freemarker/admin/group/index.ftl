@@ -75,7 +75,7 @@
                         <label class="col-xs-2 control-label" for="user_nickname">转移给</label>
                         <div class="col-xs-7 controls">
                             <input type="text"  id="username" name="user[nickname]" class="form-control"
-                                   data-url="{{path('group_thread_check_user')}}" data-display="用户昵称"  placeholder="请输入用户昵称">
+                                   data-url="{ctx}/group/thread/checkUser" data-display="用户昵称"  placeholder="请输入用户昵称">
                             <div class="help-block" style="display:none;"></div>
                         </div>
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('site') }}">

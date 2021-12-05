@@ -8,6 +8,7 @@ import org.edunext.coursework.kernel.dao.DataSourceConfig;
 import org.edunext.coursework.kernel.exception.ActionGraspException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -130,6 +128,8 @@ public class InstallController {
                     DataSourceConfig.getMysqlJdbcUrl(setting.getHost(), setting.getPort(), setting.getDbname());
             runSqlFile("sql/mysql/coursework.sql", toNewDatabaseJdbcUrl,
                     setting.getUser(), setting.getPassword());
+            buildDataSourceConfigToAppStorage("ds4install/druid/mysql/datasource.yml",
+                    appStoragePath + "/datasource.yml", setting);
             session.setAttribute("step", 3);
             return "redirect:/install/step3";
         } catch (Exception e) {
@@ -191,6 +191,37 @@ public class InstallController {
         runner.runScript(new BufferedReader(new InputStreamReader(
                 new ClassPathResource(sqlFilePath).getInputStream())));
         conn.close();
+    }
+
+    private void buildDataSourceConfigToAppStorage(String fromFileClasspath, String toFilePath,
+                                                   DbConnectionSetting setting)
+            throws IOException {
+
+        Resource resource = new ClassPathResource(fromFileClasspath);
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(toFilePath));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("druid:")) {
+                writer.write(line);
+                writer.newLine();
+                writer.write("  username: " + setting.getUser());
+                writer.newLine();
+                writer.write("  password: " + setting.getPassword());
+                writer.newLine();
+                writer.write("  url: " + DataSourceConfig.getMysqlJdbcUrl(setting.getHost(),
+                        setting.getPort(), setting.getDbname()));
+                writer.newLine();
+            } else {
+                writer.write(line);
+                writer.newLine();
+            }
+        }
+        writer.flush();
+        writer.close();
+        reader.close();
+        inputStream.close();
     }
 
     @GetMapping("/install/step3")

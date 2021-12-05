@@ -142,55 +142,40 @@ public class InstallController {
     private void testDbConnectionOrCreateNew(String jdbcUrl, String jdbcUsername, String jdbcPassword, String dbname)
             throws ActionGraspException {
 
-        Connection conn = null;
-        Statement stmt = null;
-        try {
-            conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword);
-            stmt = conn.createStatement();
-            String sql = "CREATE DATABASE IF NOT EXISTS " + dbname + " DEFAULT CHARACTER SET UTF8MB4";
-            stmt.executeUpdate(sql);
-        } catch (SQLException e) {
-            throw new ActionGraspException("无法连接数据库！ " + e.getMessage());
-        } finally {
-            try {
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException se) {
-                // nothing we can do
-            }
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword)) {
+            try (Statement stmt = conn.createStatement()) {
+                String sql = "CREATE DATABASE IF NOT EXISTS " + dbname + " DEFAULT CHARACTER SET UTF8MB4";
+                stmt.executeUpdate(sql);
             } catch (SQLException se2) {
-                se2.printStackTrace();
+                throw new ActionGraspException("无法创建数据库！ " + se2.getMessage());
             }
+        } catch (SQLException se) {
+            throw new ActionGraspException("无法连接数据库！ " + se.getMessage());
         }
     }
 
     private void runSqlFile(String sqlFilePath, String jdbcUrl, String jdbcUsername, String jdbcPassword)
             throws SQLException, IOException {
 
-        Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword);
-        ScriptRunner runner = new ScriptRunner(conn);
-        // 设置不自动提交
-        runner.setAutoCommit(false);
-        /*
-         * setStopOnError参数作用：遇见错误是否停止；
-         * （1）false，遇见错误不会停止，会继续执行，会打印异常信息，并不会抛出异常，当前方法无法捕捉异常无法进行回滚操作，
-         * 无法保证在一个事务内执行； （2）true，遇见错误会停止执行，打印并抛出异常，捕捉异常，并进行回滚，保证在一个事务内执行；
-         */
-        runner.setStopOnError(true);
-        // 按照那种方式执行 方式一：true则获取整个脚本并执行； 方式二：false则按照自定义的分隔符每行执行；
-        runner.setSendFullScript(false);
-        runner.setDelimiter(";");
-        runner.setFullLineDelimiter(false);
-        // 设置是否输出日志，null不输出日志，不设置自动将日志输出到控制台
-        runner.setLogWriter(null);
-        runner.runScript(new BufferedReader(new InputStreamReader(
-                new ClassPathResource(sqlFilePath).getInputStream())));
-        conn.close();
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, jdbcUsername, jdbcPassword)) {
+            ScriptRunner runner = new ScriptRunner(conn);
+            // 设置不自动提交
+            runner.setAutoCommit(false);
+            /*
+             * setStopOnError参数作用：遇见错误是否停止；
+             * （1）false，遇见错误不会停止，会继续执行，会打印异常信息，并不会抛出异常，当前方法无法捕捉异常无法进行回滚操作，
+             * 无法保证在一个事务内执行； （2）true，遇见错误会停止执行，打印并抛出异常，捕捉异常，并进行回滚，保证在一个事务内执行；
+             */
+            runner.setStopOnError(true);
+            // 按照那种方式执行 方式一：true则获取整个脚本并执行； 方式二：false则按照自定义的分隔符每行执行；
+            runner.setSendFullScript(false);
+            runner.setDelimiter(";");
+            runner.setFullLineDelimiter(false);
+            // 设置是否输出日志，null不输出日志，不设置自动将日志输出到控制台
+            runner.setLogWriter(null);
+            runner.runScript(new BufferedReader(new InputStreamReader(
+                    new ClassPathResource(sqlFilePath).getInputStream())));
+        }
     }
 
     private void buildDataSourceConfigToAppStorage(String fromFileClasspath, String toFilePath,
@@ -198,30 +183,29 @@ public class InstallController {
             throws IOException {
 
         Resource resource = new ClassPathResource(fromFileClasspath);
-        InputStream inputStream = resource.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(toFilePath));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            if (line.startsWith("druid:")) {
-                writer.write(line);
-                writer.newLine();
-                writer.write("  username: " + setting.getUser());
-                writer.newLine();
-                writer.write("  password: " + setting.getPassword());
-                writer.newLine();
-                writer.write("  url: " + DataSourceConfig.getMysqlJdbcUrl(setting.getHost(),
-                        setting.getPort(), setting.getDbname()));
-                writer.newLine();
-            } else {
-                writer.write(line);
-                writer.newLine();
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(resource.getInputStream(), "UTF-8"))) {
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(toFilePath))) {
+                String strLineData;
+                while ((strLineData = reader.readLine()) != null) {
+                    if (strLineData.startsWith("druid:")) {
+                        writer.write(strLineData);
+                        writer.newLine();
+                        writer.write("  username: " + setting.getUser());
+                        writer.newLine();
+                        writer.write("  password: " + setting.getPassword());
+                        writer.newLine();
+                        writer.write("  url: " + DataSourceConfig.getMysqlJdbcUrl(setting.getHost(),
+                                setting.getPort(), setting.getDbname()));
+                        writer.newLine();
+                    } else {
+                        writer.write(strLineData);
+                        writer.newLine();
+                    }
+                }
+                writer.flush();
             }
         }
-        writer.flush();
-        writer.close();
-        reader.close();
-        inputStream.close();
     }
 
     @GetMapping("/install/step3")

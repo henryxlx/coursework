@@ -1,0 +1,20 @@
+dependencies {
+    implementation project(':coursework-kernel')
+    implementation project(':coursework-kernel-dao-impl')
+    implementation project(':coursework-kernel-service-impl')
+    implementation project(':coursework-support-shiro')
+    implementation project(':coursework-webapp')
+    implementation project(':coursework-webapp-freemarker')
+    implementation project(':webfast-common')
+    implementation("net.java.dev.jna:jna:${jarVersion['jna']}")
+    implementation("net.java.dev.jna:jna-platform:${jarVersion['jna']}")
+    implementation('org.springframework.boot:spring-boot-starter')
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation('org.springframework.boot:spring-boot-starter-aop')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+}
+
+jar {
+    enabled = false
+    bootJar.enabled = true
+}

@@ -1,0 +1,11 @@
+rootProject.name = 'coursework'
+include 'coursework-kernel',
+        'coursework-kernel-dao-impl',
+        'coursework-kernel-service-impl',
+        'coursework-starter',
+        'coursework-support-shiro',
+        'coursework-webapp',
+        'coursework-webapp-freemarker'
+include 'webfast-common'
+project(':webfast-common').projectDir = file('../webfast/webfast-common')
+

@@ -11,6 +11,29 @@
     </#list>
 </#macro>
 
+<#macro radios name choices checked = 'null'>
+    <#list choices! as value, label>
+        <#if checked == value>
+            <label><input type="radio" name="${name}" value="${value!}" checked="checked">${label!}</label>
+        <#else>
+            <label><input type="radio" name="${name}" value="${value!}">${label!}</label>
+        </#if>
+    </#list>
+</#macro>
+
+<#macro checkboxs name choices checkeds = []>
+    <#if checkeds?is_sequence == false>
+        <#local checkeds = [checkeds] />
+    </#if>
+    <#list choices! as value, label>
+        <#if checkeds?seq_contains(value)>
+            <label><input type="checkbox" name="${name}[]" value="${value!}" checked="checked"> ${label!}</label>
+        <#else>
+            <label><input type="checkbox" name="${name}[]" value="${value!}"> ${label!}</label>
+        </#if>
+    </#list>
+</#macro>
+
 <#function default_path category uri='' size = '' absolute=false>
     <#return webExtPack.getDefaultPath(category, uri, size, absolute)/>
 </#function>

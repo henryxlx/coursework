@@ -15,6 +15,21 @@ public class SystemDefaultSettingController {
         return "/admin/system/site";
     }
 
+    @RequestMapping("/admin/setting/default")
+    public String defaultPage() {
+        return "/admin/system/default";
+    }
+
+    @RequestMapping("/admin/setting/mailer")
+    public String mailerPage() {
+        return "/admin/system/mailer";
+    }
+
+    @RequestMapping("/admin/setting/theme")
+    public String themePage() {
+        return "/admin/system/theme";
+    }
+
     @RequestMapping("/admin/setting/auth")
     public String authPage() {
         return "/admin/system/auth";

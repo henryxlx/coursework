@@ -5,8 +5,8 @@ import freemarker.core._DelayedFTLTypeDescription;
 import freemarker.core._MiscTemplateException;
 import freemarker.template.*;
 import freemarker.template.utility.DeepUnwrap;
-import org.edunext.coursework.SimpleAppWorker;
 import org.edunext.coursework.kernel.exception.RuntimeGoingException;
+import org.edunext.coursework.web.WebExtensionPack;
 import org.edunext.coursework.web.block.BlockRenderControllerExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,20 +48,14 @@ public class RenderControllerTag implements TemplateDirectiveModel {
             if (strPath == null) {
                 throw new _MiscTemplateException(env, "String value of \"path\" parameter is null");
             } else {
-                final HttpServletRequest wrappedRequest;
-                TemplateModel appModel = env.getDataModel().get("appWorker");
-                Object objAppModel = DeepUnwrap.unwrap(appModel);
-                if (!(objAppModel instanceof SimpleAppWorker)) {
-                    throw new RuntimeGoingException("Can not obtain SimpleAppWorker");
-                }
-                HttpServletRequest request = ((SimpleAppWorker) objAppModel).getRequest();
+                HttpServletRequest request = getRequestFromDataModel(env.getDataModel());
                 if (request == null) {
-                    throw new RuntimeGoingException("HttpServletRequest in SimpleAppWorker is not available.");
+                    throw new RuntimeGoingException("HttpServletRequest in FreeMarker Data Model is not available.");
                 }
 
                 // Get explicit params, if any
                 final Map paramsMap = getExtraParameterAsMap(env, params);
-                wrappedRequest = new CustomParamsRequest(strPath, request, paramsMap, true);
+                final HttpServletRequest wrappedRequest = new CustomParamsRequest(strPath, request, paramsMap, true);
 
                 try {
                     ModelAndView mav = controllerExecutor.handleRequest(wrappedRequest);
@@ -82,6 +76,16 @@ public class RenderControllerTag implements TemplateDirectiveModel {
                 }
             }
         }
+    }
+
+    private HttpServletRequest getRequestFromDataModel(TemplateHashModel dataModel) throws TemplateModelException {
+        TemplateModel requestBoxModel = dataModel.get(WebExtensionPack.MODEL_VAR_NAME);
+        Object objRequestBox = DeepUnwrap.unwrap(requestBoxModel);
+        if (!(objRequestBox instanceof WebExtensionPack)) {
+            throw new RuntimeGoingException("Can not obtain WebExtensionPack in FreeMarker Data Model.");
+        }
+        HttpServletRequest request = ((WebExtensionPack) objRequestBox).getRequest();
+        return request;
     }
 
     private Map getExtraParameterAsMap(Environment env, Map params) throws TemplateModelException, _MiscTemplateException {

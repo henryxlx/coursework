@@ -1,7 +1,6 @@
 package org.edunext.coursework.freemarker;
 
 import org.edunext.coursework.DataDictHolder;
-import org.edunext.coursework.freemarker.tag.RenderControllerTag;
 import org.edunext.coursework.kernel.BaseAppUser;
 import org.edunext.coursework.kernel.dao.DataSourceConfig;
 import org.edunext.coursework.kernel.service.UserAccessControlService;
@@ -23,20 +22,17 @@ public class FreeMarkerViewReferenceInterceptor implements HandlerInterceptor {
 
     private static final String INSTALL_PATH = "/install";
 
-    private DataSourceConfig dataSourceConfig;
-    private RenderControllerTag renderControllerTag;
-    private DataDictHolder dataDictHolder;
-    private UserAccessControlService userAccessControlService;
-    private ApplicationContext applicationContext;
+    private final DataSourceConfig dataSourceConfig;
+    private final DataDictHolder dataDictHolder;
+    private final UserAccessControlService userAccessControlService;
+    private final ApplicationContext applicationContext;
 
     public FreeMarkerViewReferenceInterceptor(DataSourceConfig dataSourceConfig,
-                                              RenderControllerTag renderControllerTag,
                                               DataDictHolder dataDictHolder,
                                               UserAccessControlService userAccessControlService,
                                               ApplicationContext applicationContext) {
 
         this.dataSourceConfig = dataSourceConfig;
-        this.renderControllerTag = renderControllerTag;
         this.dataDictHolder = dataDictHolder;
         this.userAccessControlService = userAccessControlService;
         this.applicationContext = applicationContext;
@@ -48,7 +44,7 @@ public class FreeMarkerViewReferenceInterceptor implements HandlerInterceptor {
 
         if (handler instanceof HandlerMethod) {
             if (this.dataSourceConfig.isDataSourceNotConfiguredProperly()) {
-                response.sendRedirect(request.getContextPath() + "/install");
+                response.sendRedirect(request.getContextPath() + INSTALL_PATH);
                 return false;
             }
             if (userAccessControlService.isLoggedIn()) {

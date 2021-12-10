@@ -12,15 +12,12 @@ import java.util.Map;
 /**
  * @author xulixin
  */
-public class WebExtensionPack {
+public class WebExtensionPack extends BaseWebExtensionPack {
 
-    private HttpServletRequest request;
-
-    private ApplicationContext appContext;
+    public static final String MODEL_VAR_NAME = "webExtPack";
 
     public WebExtensionPack(HttpServletRequest request, ApplicationContext appContext) {
-        this.request = request;
-        this.appContext = appContext;
+        super(request, appContext);
     }
 
     public String getDefaultPath(String category, String uri, String size, boolean absolute) {
@@ -92,13 +89,6 @@ public class WebExtensionPack {
             return String.valueOf(cs);
         }
         return s;
-    }
-
-    public String getSetting(String name) {
-        return getSetting(name, null);
-    }
-    public String getSetting(String name, Object defaultValue) {
-        return defaultValue == null ? null : String.valueOf(defaultValue);
     }
 
 }

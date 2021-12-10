@@ -1,7 +1,6 @@
 package org.edunext.coursework.freemarker;
 
 import org.edunext.coursework.DataDictHolder;
-import org.edunext.coursework.SimpleAppWorker;
 import org.edunext.coursework.freemarker.tag.RenderControllerTag;
 import org.edunext.coursework.kernel.BaseAppUser;
 import org.edunext.coursework.kernel.dao.DataSourceConfig;
@@ -69,10 +68,9 @@ public class FreeMarkerViewReferenceInterceptor implements HandlerInterceptor {
             return;
         }
 
-        mav.addObject(SimpleAppWorker.MODEL_VAR_NAME, new SimpleAppWorker(request, applicationContext));
         mav.addObject("ctx", request.getContextPath());
         mav.addObject("dict", dataDictHolder.getDict());
         mav.addObject("userAcl", userAccessControlService);
-        mav.addObject("webExtPack", new WebExtensionPack(request, applicationContext));
+        mav.addObject(WebExtensionPack.MODEL_VAR_NAME, new WebExtensionPack(request, applicationContext));
     }
 }

@@ -1,9 +1,9 @@
 <script>
     var app = {};
-    app.debug = ${appWorker.debug?then('true', 'false')};
+    app.debug = <#if appDebug?? && appDebug>true<#else>false</#if>;
     app.version = '5.3.2';
-    app.httpHost = '${appWorker.getSchemeAndHttpHost()}';
-    app.basePath = '${appWorker.getBasePath()}';
+    app.httpHost = '${webExtPack.getSchemeAndHttpHost()}';
+    app.basePath = '${webExtPack.getBasePath()}';
     app.theme = '${setting("theme.uri", "default")}';
     app.themeGlobalScript = '';
     app.jsPaths = {"common":"common","theme":"${ctx}/themes/default/js",

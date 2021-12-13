@@ -1,5 +1,4 @@
 dependencies {
-    implementation project(':webfast-common')
     implementation('com.fasterxml.jackson.core:jackson-databind')
     implementation("cn.hutool:hutool-all:${jarVersion['hutool']}")
 }

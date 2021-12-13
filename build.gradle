@@ -25,6 +25,7 @@ subprojects {
     sourceCompatibility = 1.8
     ext {
         jarVersion = rootProject.ext.version
+        webfastVersion = '0.0.2'
     }
 
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
@@ -42,9 +43,10 @@ subprojects {
     }
 
     dependencies {
-        compileOnly('com.google.code.findbugs:annotations:3.0.1')
-        implementation('org.springframework.boot:spring-boot-starter')
-        testImplementation('org.springframework.boot:spring-boot-starter-test')
+        compileOnly 'com.google.code.findbugs:annotations:3.0.1'
+        compileOnly files("../lib/webfast-common-${webfastVersion}.jar")
+        implementation 'org.springframework.boot:spring-boot-starter'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }
 
     jar {

@@ -6,6 +6,3 @@ include 'coursework-kernel',
         'coursework-support-shiro',
         'coursework-webapp',
         'coursework-webapp-freemarker'
-include 'webfast-common'
-project(':webfast-common').projectDir = file('../webfast/webfast-common')
-

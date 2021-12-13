@@ -5,7 +5,7 @@ dependencies {
     implementation project(':coursework-support-shiro')
     implementation project(':coursework-webapp')
     implementation project(':coursework-webapp-freemarker')
-    implementation project(':webfast-common')
+    implementation files("../lib/webfast-common-${webfastVersion}.jar")
     implementation("net.java.dev.jna:jna:${jarVersion['jna']}")
     implementation("net.java.dev.jna:jna-platform:${jarVersion['jna']}")
     implementation('org.springframework.boot:spring-boot-starter')

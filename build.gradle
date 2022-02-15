@@ -43,7 +43,6 @@ subprojects {
 
     dependencies {
         compileOnly 'com.google.code.findbugs:annotations:3.0.1'
-        compileOnly files("../lib/webfast-common-${webfastVersion}.jar")
         implementation 'org.springframework.boot:spring-boot-starter'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
     }

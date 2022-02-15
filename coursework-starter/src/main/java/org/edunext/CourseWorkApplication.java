@@ -11,11 +11,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * @author xulixin
  */
 @EnableCaching
+@ComponentScan(basePackages = "com.jetwinner.webfast")
+@ComponentScan(basePackages = "org.edunext.coursework")
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class CourseWorkApplication extends SpringBootServletInitializer {
 

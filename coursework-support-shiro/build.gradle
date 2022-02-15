@@ -1,5 +1,0 @@
-dependencies {
-    implementation project(':coursework-kernel')
-    implementation('org.springframework.boot:spring-boot-starter-web')
-    implementation("org.apache.shiro:shiro-spring-boot-web-starter:${jarVersion['shiro']}")
-}

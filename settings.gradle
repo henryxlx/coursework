@@ -3,6 +3,19 @@ include 'coursework-kernel',
         'coursework-kernel-dao-impl',
         'coursework-kernel-service-impl',
         'coursework-starter',
-        'coursework-support-shiro',
         'coursework-webapp',
         'coursework-webapp-freemarker'
+include 'webfast-common'
+project(':webfast-common').projectDir = file('../webfast/webfast-common')
+include 'webfast-kernel'
+project(':webfast-kernel').projectDir = file('../webfast/webfast-kernel')
+include 'webfast-kernel-dao-impl-jdbc'
+project(':webfast-kernel-dao-impl-jdbc').projectDir = file('../webfast/webfast-kernel-dao-impl-jdbc')
+include 'webfast-kernel-service-impl'
+project(':webfast-kernel-service-impl').projectDir = file('../webfast/webfast-kernel-service-impl')
+include 'webfast-support-shiro'
+project(':webfast-support-shiro').projectDir = file('../webfast/webfast-support-shiro')
+include 'webfast-webapp'
+project(':webfast-webapp').projectDir = file('../webfast/webfast-webapp')
+include 'webfast-webapp-freemarker'
+project(':webfast-webapp-freemarker').projectDir = file('../webfast/webfast-webapp-freemarker')

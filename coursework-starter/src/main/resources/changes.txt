@@ -1,12 +1,9 @@
-TODO list
-# setting 获取配置参数的实现
-# JDBC连接参数加密处理
-# 连接池使用Hikari配置DataSource
-# 安装过程中第3步网站设置未完成
-# 后台管理用户的创建与使用
-# 权限管理机制建RBAC??? role
-# 数据库设置完成后，在外部存储中保存数据源配置时数据源配置信息需要加密
--------------------------------------------------------------------------------
+0.2.0: @2022-02-15
+* 项目结构重构依赖WebFast核心项目重新建立，重新定义项目配置文件setting.gradle，重新定义启动模块coursework-starter构建文件build.gradle的依赖关系，
+* 删除与WebFast冲突的源代码与资源文件
+* 重新建立应用程序配置文件application.properties和shiro权限控制shiro-filter-chian-mapping.properties
+* CourseWorkApplication主程序扫描包控制手动添加com.jetwinner.webfast和org.edunext.coursework
+
 0.1.6: @2021-12-10
 * 部分代码功能优化，删除冗余的SimpleAppWorker类，其中的方法使用移到WebExtensionPack类中完成，
 * 后台管理“系统设置”下：用户相关设置（注册设置）、移动客户端设置、IP黑名单、优化和备份、系统日志的FreeMarker页面原型

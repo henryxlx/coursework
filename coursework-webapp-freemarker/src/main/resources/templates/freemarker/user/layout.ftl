@@ -11,7 +11,7 @@
 
 <div class="es-row-wrap container-gap userpage-body">
     <ul class="nav nav-pills userpage-nav clearfix">
-        <#if (user.roles)?? && user.roles?seq_contains('ROLE_TEACHER')>
+        <#if (user.roles)?? && user.roles?contains('ROLE_TEACHER')>
         <li <#if pageNav! == 'teach'>class="active"</#if>><a href="${ctx}/user/teach?id=${(user.id)!}">在教课程</a></li>
         </#if>
         <li <#if pageNav! == 'learn'>class="active"</#if>><a href="${ctx}/user/learn?id=${(user.id)!}">在学课程</a></li>
@@ -20,7 +20,7 @@
         <li <#if pageNav! == 'friend'>class="active"</#if>><a href="${ctx}/user/following?id=${(user.id)!}">关注/粉丝</a></li>
 
         <#if setting('classroom.enabled')??>
-        <#if (user.roles)?? && user.roles?seq_contains('ROLE_TEACHER')>
+        <#if (user.roles)?? && user.roles?contains('ROLE_TEACHER')>
         <li <#if pageNav! == 'teaching'>class="active"</#if>><a href="${ctx}/user/teaching/classrooms?id=${(user.id)!}">在教${setting('classroom.name', '班级')}</a></li>
         </#if>
 

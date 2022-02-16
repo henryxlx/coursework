@@ -58,6 +58,12 @@ subprojects {
     test {
         systemProperty "spring.profiles.active", System.getProperty("spring.profiles.active")
     }
+
+    processResources {
+        filesMatching('application.properties') {
+            expand(project.properties)
+        }
+    }
 }
 
 Task taskForSourceZip = project.task("makeSourceZip", type:Zip){

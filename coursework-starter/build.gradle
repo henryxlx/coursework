@@ -24,3 +24,8 @@ jar {
     enabled = false
     bootJar.enabled = true
 }
+
+Task copyBootJar = project.task("copyBootJarToDZRun", type: Copy, dependsOn: project.bootJar) {
+    from project.file('/build/libs')
+    into 'd:/zrun'
+}

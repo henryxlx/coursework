@@ -1,7 +1,6 @@
 rootProject.name = 'coursework'
 include 'coursework-kernel',
         'coursework-kernel-dao-impl',
-        'coursework-kernel-service-impl',
         'coursework-starter',
         'coursework-webapp',
         'coursework-webapp-freemarker'

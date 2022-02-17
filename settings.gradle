@@ -11,8 +11,6 @@ include 'webfast-kernel'
 project(':webfast-kernel').projectDir = file('../webfast/webfast-kernel')
 include 'webfast-kernel-dao-impl-jdbc'
 project(':webfast-kernel-dao-impl-jdbc').projectDir = file('../webfast/webfast-kernel-dao-impl-jdbc')
-include 'webfast-kernel-service-impl'
-project(':webfast-kernel-service-impl').projectDir = file('../webfast/webfast-kernel-service-impl')
 include 'webfast-support-shiro'
 project(':webfast-support-shiro').projectDir = file('../webfast/webfast-support-shiro')
 include 'webfast-webapp'

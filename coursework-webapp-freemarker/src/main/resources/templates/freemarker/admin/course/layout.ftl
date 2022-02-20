@@ -20,7 +20,7 @@
 
         <a href="${ctx}/admin/note" class="list-group-item <#if menu! == 'note'>active</#if>" >笔记管理</a>
 
-        <a href="${ctx}/admin/course/category" class="list-group-item <#if menu! == 'category'>active</#if>">分类管理</a>
+        <a href="${ctx}/admin/category?group=course" class="list-group-item <#if menu! == 'category'>active</#if>">分类管理</a>
 
         <a href="${ctx}/admin/tag" class="list-group-item <#if menu! == 'tag'>active</#if>">标签管理</a>
 

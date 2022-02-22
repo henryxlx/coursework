@@ -7,9 +7,7 @@
     <#if blockSidebar??><@blockSidebar/><#else>
     <div class="list-group">
         <a href="${ctx}/admin/course" class="list-group-item <#if menu! == 'course'>active</#if>">课程管理</a>
-        <#if setting('course.live_course_enabled')??>
-        <a href="${ctx}/admin/live/course?status=underway" class="list-group-item <#if menu! == 'live-course'>active</#if>">直播管理</a>
-        </#if>
+
         <a href="${ctx}/admin/course/recommend/list" class="list-group-item <#if menu! == 'course-recommend-list'>active</#if>">推荐课程列表</a>
 
         <a href="${ctx}/admin/review" class="list-group-item <#if menu! == 'review'>active</#if>">评价管理</a>

@@ -7,7 +7,7 @@
 <#macro blockMain>
 
 <div class="page-header">
-    <#if liveSetEnabled!0 == 1>
+    <#if liveSetEnabled == '1'>
     <a href="${ctx}/course/create?flag=isLive" class="btn btn-info btn-sm pull-right mls" target="_blank">创建直播课程</a>
     </#if>
     <a href="${ctx}/course/create" class="btn btn-success btn-sm pull-right" target="_blank">创建课程</a>
@@ -17,7 +17,7 @@
 <form id="message-search-form" class="form-inline well well-sm" action="" method="get" novalidate>
     <div class="form-group">
         <select style="max-width:150px;" class="form-control" name="categoryId">
-            <@select_options (category_choices['course'])!{} RequestParameters['categoryId']! '课程分类'/>
+            <@select_options categoryForCourse!{} RequestParameters['categoryId']! '课程分类'/>
         </select>
     </div>
     <div class="form-group">
@@ -48,14 +48,13 @@
     </tr>
     </thead>
     <tbody>
-    <#if courses??>
-    {% for course in courses %}
-    {% set user = users[course.userId]|default(null) %}
-    {% set category = categories[course.categoryId]|default(null) %}
-    {% include 'TopxiaAdminBundle:Course:tr.html.twig' %}
+    <#list courses! as course>
+        <#assign user = users[''+course.userId]! />
+        <#assign category = categories[''+course.categoryId]! />
+        <#include '/admin/course/tr.ftl'/>
     <#else>
     <tr><td colspan="20"><div class="empty">暂无课程记录</div></td></tr>
-    </#if>
+    </#list>
     </tbody>
 </table>
 

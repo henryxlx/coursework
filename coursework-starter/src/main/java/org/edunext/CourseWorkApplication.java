@@ -1,6 +1,7 @@
 package org.edunext;
 
 import com.jetwinner.spring.SpringBootAppContextHandler;
+import com.jetwinner.webfast.kernel.datatag.annotations.FastDataTagScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -19,6 +20,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableCaching
 @ComponentScan(basePackages = "com.jetwinner.webfast")
 @ComponentScan(basePackages = "org.edunext.coursework")
+@FastDataTagScan(basePackages = {"org.edunext.coursework"})
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class CourseWorkApplication extends SpringBootServletInitializer {
 

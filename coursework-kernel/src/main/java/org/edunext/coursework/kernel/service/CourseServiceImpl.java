@@ -1,9 +1,9 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
 import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.dao.support.OrderByBuilder;
@@ -15,7 +15,10 @@ import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import org.edunext.coursework.kernel.dao.CourseDao;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -24,16 +27,19 @@ import java.util.*;
 public class CourseServiceImpl implements CourseService {
 
     private final AppUserService userService;
+    private final UserAccessControlService userAccessControlService;
     private final AppCategoryService categoryService;
     private final CourseDao courseDao;
     private final AppLogService logService;
 
     public CourseServiceImpl(AppUserService userService,
+                             UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao,
                              AppLogService logService) {
 
         this.userService = userService;
+        this.userAccessControlService = userAccessControlService;
         this.categoryService = categoryService;
         this.courseDao = courseDao;
         this.logService = logService;
@@ -169,8 +175,59 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<String, Object> tryManageCourse(Integer id) {
-        return Collections.emptyMap();
+    public Map<String, Object> tryManageCourse(AppUser currentUser, Integer courseId) {
+        if (!userAccessControlService.isLoggedIn()) {
+            throw new RuntimeGoingException("未登录用户，无权操作！");
+        }
+
+        Map<String, Object> course = courseDao.getCourse(courseId);
+        if (course == null || course.isEmpty()) {
+            throw new RuntimeGoingException("课程不存在！");
+        }
+
+        if (!hasCourseManagerRole(courseId, currentUser.getId())) {
+            throw new RuntimeGoingException("您不是课程的教师或管理员，无权操作！");
+        }
+
+        unserialize(course);
+        return course;
+    }
+
+    private void courseValueToArray(Map<String, Object> map, String key) {
+        Object obj = map.get(key);
+        String[] arr;
+        if (obj != null) {
+            String s = String.valueOf(obj);
+            s = s.length() > 0 ? s.substring(1) : s;
+            arr = s.split("\\|");
+        } else {
+            arr = new String[0];
+        }
+        map.put(key, arr);
+    }
+
+    public void unserialize(Map<String, Object> course) {
+        if (course == null || course.isEmpty()) {
+            return;
+        }
+
+        courseValueToArray(course, "tags");
+        courseValueToArray(course, "goals");
+        courseValueToArray(course, "audiences");
+        courseValueToArray(course, "teacherIds");
+    }
+
+    private boolean hasCourseManagerRole(Integer courseId, Integer userId) {
+        if (userAccessControlService.hasRole("ROLE_ADMIN")) {
+            return true;
+        }
+
+//        Map<String, Object> member = memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+//        if (member != null && "teacher".equals(member.get("role"))) {
+//            return true;
+//        }
+
+        return false;
     }
 
     @Override

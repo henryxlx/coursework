@@ -17,7 +17,7 @@ public interface CourseService {
 
     Map<String, Object> createCourse(AppUser currentUser, Map<String, Object> fields);
 
-    Map<String, Object> tryManageCourse(Integer id);
+    Map<String, Object> tryManageCourse(AppUser currentUser, Integer id);
 
     void updateCourse(Integer id, Map<String, Object> fields);
 }

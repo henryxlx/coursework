@@ -4,21 +4,16 @@ include 'coursework-kernel',
         'coursework-starter',
         'coursework-webapp',
         'coursework-webapp-freemarker'
-include 'webfast-common'
-project(':webfast-common').projectDir = file('../webfast/webfast-common')
-include 'webfast-kernel'
-project(':webfast-kernel').projectDir = file('../webfast/webfast-kernel')
-include 'webfast-kernel-dao-jdbc'
-project(':webfast-kernel-dao-jdbc').projectDir = file('../webfast/webfast-kernel-dao-jdbc')
-include 'webfast-kernel-webmvc'
-project(':webfast-kernel-webmvc').projectDir = file('../webfast/webfast-kernel-webmvc')
-include 'webfast-kernel-webui-freemarker'
-project(':webfast-kernel-webui-freemarker').projectDir = file('../webfast/webfast-kernel-webui-freemarker')
-include 'webfast-module-bigapp'
-project(':webfast-module-bigapp').projectDir = file('../webfast/webfast-module-bigapp')
-include 'webfast-module-bigapp-dao-jdbc'
-project(':webfast-module-bigapp-dao-jdbc').projectDir = file('../webfast/webfast-module-bigapp-dao-jdbc')
-include 'webfast-module-bigapp-freemarker'
-project(':webfast-module-bigapp-freemarker').projectDir = file('../webfast/webfast-module-bigapp-freemarker')
-include 'webfast-support-shiro'
-project(':webfast-support-shiro').projectDir = file('../webfast/webfast-support-shiro')
+
+files('../webfast/webfast-common',
+        '../webfast/webfast-kernel',
+        '../webfast/webfast-kernel-dao-jdbc',
+        '../webfast/webfast-kernel-webmvc',
+        '../webfast/webfast-kernel-webui-freemarker',
+        '../webfast/webfast-module-bigapp',
+        '../webfast/webfast-module-bigapp-dao-jdbc',
+        '../webfast/webfast-module-bigapp-freemarker',
+        '../webfast/webfast-support-shiro').each { dir ->
+    include dir.name
+    project(":${dir.name}").projectDir = dir
+}

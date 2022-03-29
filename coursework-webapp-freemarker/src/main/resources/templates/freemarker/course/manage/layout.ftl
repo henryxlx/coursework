@@ -41,7 +41,7 @@
 
                         <!-- <a class="list-group-item <#if side_nav == 'question_category' >active</#if>" href="${ctx}course_manage_question_category', {courseId:course.id}) }}">题目类别管理</a> -->
                         <a class="list-group-item <#if side_nav == 'testpaper'>active</#if>" href="${ctx}/course/${course.id}/manage/testpaper">试卷管理</a>
-                        <a class="list-group-item <#if side_nav == 'testCheck'>active</#if>" href="${ctx}course_manage_test_check', {id:course.id, status:'reviewing'}) }}">试卷批阅</a>
+                        <a class="list-group-item <#if side_nav == 'testCheck'>active</#if>" href="${ctx}/course/${course.id}/manage/myquiz/list_course_test_paper">试卷批阅</a>
                         <a class="list-group-item <#if side_nav == 'homeworkCheck'>active</#if>" href="${ctx}course_homework_check_list', {courseId:course.id,status:'reviewing'}) }}">作业批阅</a>
                     </div>
                 </div>

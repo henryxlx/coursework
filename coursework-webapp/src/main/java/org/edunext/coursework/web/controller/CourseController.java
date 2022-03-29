@@ -5,9 +5,12 @@ import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
+import com.jetwinner.webfast.mvc.block.BlockRenderController;
+import com.jetwinner.webfast.mvc.block.BlockRenderMethod;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +20,7 @@ import java.util.Map;
  * @author xulixin
  */
 @Controller("frontCourseController")
-public class CourseController {
+public class CourseController implements BlockRenderController {
 
     private final AppUserService userService;
     private final UserAccessControlService userAccessControlService;
@@ -57,5 +60,19 @@ public class CourseController {
 
         model.addAttribute("type", type);
         return "/course/create";
+    }
+
+    @RequestMapping("/course/check/{id}/reviewing/list")
+    public String myquizAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/myquiz/list_course_test_paper.ftl";
+    }
+
+    @RequestMapping("/course/header")
+    @BlockRenderMethod
+    public String headerBlockAction() {
+        return "/course/header";
     }
 }

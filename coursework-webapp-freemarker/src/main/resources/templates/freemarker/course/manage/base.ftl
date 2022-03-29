@@ -1,8 +1,9 @@
-<#macro blockTitle>基本信息 - 课程管理 - ${blockTitleParent}</#macro>
 <#assign side_nav = 'base'/>
 <#assign script_controller = 'course-manage/base'/>
 <#assign script_arguments = "{'categoryUrl': '/category/all','tagMatchUrl': '/tag/match_jsonp', 'locationUrl': '/location/all'}"/>
 <#include '/course/manage/layout.ftl'/>
+
+<#macro blockTitle>基本信息 - 课程管理 - ${blockTitleParent}</#macro>
 
 <#macro  blockMain>
 

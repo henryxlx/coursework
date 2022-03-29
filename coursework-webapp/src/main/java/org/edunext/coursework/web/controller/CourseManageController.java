@@ -3,6 +3,7 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
+import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
@@ -24,12 +25,14 @@ public class CourseManageController {
     private final AppCategoryService categoryService;
     private final AppSettingService settingService;
     private final AppTagService tagService;
+    private final AppUserService userService;
 
-    public CourseManageController(CourseService courseService,
+    public CourseManageController(CourseService courseService, AppUserService userService,
                                   AppCategoryService categoryService,
                                   AppSettingService settingService,
                                   AppTagService tagService) {
 
+        this.userService = userService;
         this.courseService = courseService;
         this.categoryService = categoryService;
         this.settingService = settingService;
@@ -45,7 +48,7 @@ public class CourseManageController {
     public String baseAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
         Map<String, Object> courseSetting = settingService.get("course");
-        if("POST".equals(request.getMethod())){
+        if ("POST".equals(request.getMethod())) {
             Map<String, Object> data = ParamMap.toFormDataMap(request);
             courseService.updateCourse(id, data);
             FlashMessageUtil.setFlashMessage("success", "课程基本信息已保存！", request.getSession());
@@ -60,4 +63,98 @@ public class CourseManageController {
 
         return "/course/manage/base";
     }
+
+    @RequestMapping("/course/{id}/manage/detail")
+    public String detailAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> detail = ParamMap.toFormDataMap(request);
+            //$detail['goals'] = (empty($detail['goals']) or !is_array($detail['goals'])) ? array() : $detail['goals'];
+            //$detail['audiences'] = (empty($detail['audiences']) or !is_array($detail['audiences'])) ? array() : $detail['audiences'];
+
+            courseService.updateCourse(id, detail);
+            FlashMessageUtil.setFlashMessage("success", "课程详细信息已保存！", request.getSession());
+
+            return String.format("redirect:/course/%d/manage/detail", id);
+        }
+
+        model.addAttribute("course", course);
+        return "/course/manage/detail";
+    }
+
+    @RequestMapping("/course/{id}/manage/picture")
+    public String pictureAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        model.addAttribute("course", course);
+        return "/course/manage/picture";
+    }
+
+    @RequestMapping("/course/{id}/manage/lesson")
+    public String lessonAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/lesson/index";
+    }
+
+    @RequestMapping("/course/{id}/manage/files")
+    public String fileAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/files/index";
+    }
+
+    @RequestMapping("/course/{id}/manage/teachers")
+    public String teachersAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/teachers";
+    }
+
+    @RequestMapping("/course/{id}/manage/students")
+    public String studentsAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/students/index";
+    }
+
+    @RequestMapping("/course/{id}/manage/question")
+    public String questionAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/question/index";
+    }
+
+    @RequestMapping("/course/{id}/manage/testpaper")
+    public String testpaperAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/testpaper/index";
+    }
+
+    @RequestMapping("/course/{id}/manage/data")
+    public String dataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/data";
+    }
+
+    @RequestMapping("/course/{id}/manage/myquiz/list_course_test_paper")
+    public String checkAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course",course);
+        return "/course/manage/myquiz/list_course_test_paper";
+    }
+
 }
+
+

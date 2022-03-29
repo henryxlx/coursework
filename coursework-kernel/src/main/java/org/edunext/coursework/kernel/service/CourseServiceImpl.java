@@ -13,6 +13,7 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import org.edunext.coursework.kernel.dao.CourseDao;
+import org.edunext.coursework.kernel.dao.MemberDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -165,7 +166,7 @@ public class CourseServiceImpl implements CourseService {
                 .add("userId", course.get("userId"))
                 .add("role", "teacher")
                 .add("createdTime", System.currentTimeMillis()).toMap();
-        //memberDao.addMember(member);
+        //MemberDao.addMember(member);
 
         course = getCourse(course.get("id"));
         logService.info(currentUser, "course", "create",

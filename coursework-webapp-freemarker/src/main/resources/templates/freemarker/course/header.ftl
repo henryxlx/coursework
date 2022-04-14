@@ -90,7 +90,8 @@
         </div>
       </div>
     </div>
-   <#-- {% if vipChecked|default('ok') != 'ok' %}-->
+
+    <#if vipChecked?? && default('ok') != 'ok'>
       <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <#if vipChecked?? && vipChecked == 'not_member'>
@@ -110,9 +111,9 @@
 
       </div>
 
+    </#if>
 
-
-   <#-- {% if not isNonExpired %}-->
+    <#if isNonExpired??>
        <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
           您购买的课程已到期，无法学习课时、提问等。如有疑问，请联系老师，或点击
@@ -125,6 +126,6 @@
           </a>
       </div>
 
-
+    </#if>
   </div>
 </div>

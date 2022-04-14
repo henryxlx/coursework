@@ -15,13 +15,13 @@
                         <#if appUser.largeAvatar??>
                         <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> 已完成</span> </li>
                     <#else>
-                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings_avatar?fromCourse=true" class="alert-link">去设置</a>
+                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings/avatar?fromCourse=true" class="alert-link">去设置</a>
                     </#if>
                     <li>设置头衔 、自我介绍。
                         <#if appUser.title?? && userProfile.aboutme??>
                         <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> 已完成</span> </li>
                     <#else>
-                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings_avatar?fromCourse=true" class="alert-link">去设置</a>
+                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings?fromCourse=true" class="alert-link">去设置</a>
                     </#if>
                     </li>
                 </ol>

@@ -1,6 +1,6 @@
 <#assign script_controller = 'course/create' />
 <#include '/layout.ftl'/>
-<#macro blockTitle>创建<#if type == 'normal'>课程<#else>直播课程</#if> - ${blockTitleParent!}}</#macro>
+<#macro blockTitle>创建<#if type == 'normal'>课程<#else>直播课程</#if> - ${blockTitleParent!}</#macro>
 <#macro blockContent>
 <div class="row">
     <div class="col-md-offset-2 col-md-8">
@@ -12,16 +12,16 @@
                 <h5><strong>请先完成以下设置，才能创建课程：</strong></h5>
                 <ol>
                     <li>设置头像。
-                        <#if appUser.largeAvatar??>
+                    <#if appUser.largeAvatar??>
                         <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> 已完成</span> </li>
                     <#else>
-                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings/avatar?fromCourse=true" class="alert-link">去设置</a>
+                        <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings/avatar?fromCourse=true" class="alert-link">去设置</a>
                     </#if>
                     <li>设置头衔 、自我介绍。
-                        <#if appUser.title?? && userProfile.aboutme??>
+                    <#if appUser.title?? && userProfile.aboutme??>
                         <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> 已完成</span> </li>
                     <#else>
-                    <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings?fromCourse=true" class="alert-link">去设置</a>
+                        <span class="text-danger"><span class="glyphicon glyphicon-remove-circle"></span> 未完成</span>，<a href="${ctx}/settings?fromCourse=true" class="alert-link">去设置</a>
                     </#if>
                     </li>
                 </ol>

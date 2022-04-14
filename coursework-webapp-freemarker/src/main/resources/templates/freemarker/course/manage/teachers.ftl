@@ -46,7 +46,7 @@
                 <div class="col-md-8 controls">
                     <ul class="list-group teacher-list-group sortable-list" id="teacher-list-group" data-role="list" style="display:none;"></ul>
                     <div class="input-group">
-                        {% set url = path('course_manage_teachers_match', {id:course.id}) ~ '?q={{query}}' %}
+                        <#assign url = "${ctx}/course/${course.id}/manage/teachersMatch?q=${query!}"/>
                         <input class="form-control" id="teacher-input" type="text" data-role="item-input" data-url="{{ url }}">
                         <span class="input-group-btn">
               <button class="btn btn-default" type="button" data-role="item-add" >添加</button>

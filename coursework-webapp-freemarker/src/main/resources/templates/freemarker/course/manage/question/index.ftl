@@ -94,7 +94,7 @@
         <div>
             <label class="checkbox-inline"><input type="checkbox"  autocomplete="off" data-role="batch-select"> 全选</label>
             <button class="btn btn-default btn-sm mlm" data-role="batch-delete"  data-name="题目" data-url="${ctx}/course/${course.id}/manage/question/deletes">删除</button>
-            <span class="pull-right text-muted">共{{ paginator.getItemCount() }}题</span>
+            <span class="pull-right text-muted">共${(paginator.getItemCount())!}题</span>
         </div>
         <@web_macro.paginator paginator!/>
     </div>

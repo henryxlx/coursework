@@ -7,7 +7,7 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
-import com.jetwinner.webfast.session.FlashMessageUtil;
+import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,7 +51,7 @@ public class CourseManageController {
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> data = ParamMap.toFormDataMap(request);
             courseService.updateCourse(id, data);
-            FlashMessageUtil.setFlashMessage("success", "课程基本信息已保存！", request.getSession());
+            BaseControllerHelper.setFlashMessage("success", "课程基本信息已保存！", request.getSession());
             return String.format("redirect:/course/%d/manage/base", id);
         }
 
@@ -74,7 +74,7 @@ public class CourseManageController {
             //$detail['audiences'] = (empty($detail['audiences']) or !is_array($detail['audiences'])) ? array() : $detail['audiences'];
 
             courseService.updateCourse(id, detail);
-            FlashMessageUtil.setFlashMessage("success", "课程详细信息已保存！", request.getSession());
+            BaseControllerHelper.setFlashMessage("success", "课程详细信息已保存！", request.getSession());
 
             return String.format("redirect:/course/%d/manage/detail", id);
         }

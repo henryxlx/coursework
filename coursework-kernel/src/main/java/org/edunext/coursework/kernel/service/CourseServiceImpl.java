@@ -15,10 +15,7 @@ import org.edunext.coursework.kernel.dao.CourseDao;
 import org.edunext.coursework.kernel.dao.MemberDao;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -237,7 +234,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Map<String, Object>> findCoursesByLikeTitle(Object title) {
-        return null;
+        return new ArrayList<>(0);
     }
 
     @Override

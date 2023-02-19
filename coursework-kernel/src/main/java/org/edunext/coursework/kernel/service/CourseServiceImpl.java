@@ -235,6 +235,36 @@ public class CourseServiceImpl implements CourseService {
 
     }
 
+    @Override
+    public List<Map<String, Object>> findCoursesByLikeTitle(Object title) {
+        return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> findCoursesByIds(Set<Object> ids) {
+        return null;
+    }
+
+    @Override
+    public List<Map<String, Object>> findLessonsByIds(Set<Object> ids) {
+        return null;
+    }
+
+    @Override
+    public Integer searchMemberCount(Map<String, Object> conditions) {
+        return null;
+    }
+
+    @Override
+    public Integer searchLearnTime(Map<String, Object> conditions) {
+        return null;
+    }
+
+    @Override
+    public Integer searchLessonCount(Map<String, Object> conditions) {
+        return null;
+    }
+
     public Map<String, Object> getCourse(Object id) {
         return courseDao.getCourse(id);
     }

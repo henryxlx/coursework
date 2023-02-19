@@ -83,4 +83,35 @@ public class CourseController {
 
         return "/admin/course/course-recommend-list";
     }
+
+    @RequestMapping("/admin/course/data")
+    public String dataAction(HttpServletRequest request, Model model) {
+        Map<String, Object> conditions = ParamMap.toConditionMap(request);
+        conditions.put("type", "normal");
+        int count = courseService.searchCourseCount(conditions);
+
+        Paginator paginator = new Paginator(request, count, 20);
+
+        List<Map<String, Object>> courses = courseService.searchCourses(conditions, null,
+                paginator.getOffsetCount(),  paginator.getPerPageCount());
+
+        for (Map<String, Object> course : courses) {
+            Integer isLearnedNum= courseService.searchMemberCount(new ParamMap()
+                    .add("isLearned", 1).add("courseId", course.get("id")).toMap());
+
+            Integer learnTime = courseService.searchLearnTime(new ParamMap()
+                    .add("courseId", course.get("id")).toMap());
+
+            Integer lessonCount = courseService.searchLessonCount(new ParamMap()
+                    .add("courseId", course.get("id")).toMap());
+
+            course.put("isLearnedNum", isLearnedNum);
+            course.put("learnTime", learnTime);
+            course.put("lessonCount", lessonCount);
+        }
+
+        model.addAttribute("courses", courses);
+        model.addAttribute("paginator", paginator);
+        return "/admin/course/data";
+    }
 }

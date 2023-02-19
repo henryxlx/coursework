@@ -4,6 +4,7 @@ import com.jetwinner.webfast.kernel.AppUser;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -20,4 +21,16 @@ public interface CourseService {
     Map<String, Object> tryManageCourse(AppUser currentUser, Integer id);
 
     void updateCourse(Integer id, Map<String, Object> fields);
+
+    List<Map<String, Object>> findCoursesByLikeTitle(Object title);
+
+    List<Map<String, Object>> findCoursesByIds(Set<Object> ids);
+
+    List<Map<String, Object>> findLessonsByIds(Set<Object> ids);
+
+    Integer searchMemberCount(Map<String, Object> conditions);
+
+    Integer searchLearnTime(Map<String, Object> conditions);
+
+    Integer searchLessonCount(Map<String, Object> conditions);
 }

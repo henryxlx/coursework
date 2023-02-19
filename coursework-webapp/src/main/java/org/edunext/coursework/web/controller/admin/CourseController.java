@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * @author xulixin
+ */
 @Controller("adminCourseController")
 public class CourseController {
 
@@ -62,5 +65,22 @@ public class CourseController {
         model.addAttribute("categoryForCourse", categoryService.buildCategoryChoices("course"));
 
         return "/admin/course/index";
+    }
+
+    @RequestMapping("/admin/course/recommend/list")
+    public String recommendListAction(HttpServletRequest request, Model model) {
+        Map<String, Object> conditions = new ParamMap()
+                .add("status", "published").add("recommended", 1).toMap();
+
+        Paginator paginator = new Paginator(request, courseService.searchCourseCount(conditions), 20);
+
+        List<Map<String, Object>> courses = courseService.searchCourses(conditions, "recommendedSeq",
+                paginator.getOffsetCount(), paginator.getPerPageCount());
+
+        model.addAttribute("courses", courses);
+        model.addAttribute("users", userService.findUsersByIds(ArrayToolkit.column(courses, "userId")));
+        model.addAttribute("paginator", paginator);
+
+        return "/admin/course/course-recommend-list";
     }
 }

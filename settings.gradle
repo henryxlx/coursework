@@ -13,6 +13,7 @@ files('../webfast/webfast-common',
         '../webfast/webfast-module-bigapp',
         '../webfast/webfast-module-bigapp-dao-jdbc',
         '../webfast/webfast-module-bigapp-freemarker',
+        '../webfast/webfast-support-captcha',
         '../webfast/webfast-support-shiro').each { dir ->
     include dir.name
     project(":${dir.name}").projectDir = dir

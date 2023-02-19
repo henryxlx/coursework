@@ -1,16 +1,12 @@
-apply from: 'config.gradle'
-
 buildscript {
-    ext {
-        springBootVersion = '2.2.13.RELEASE'
-        FAST_MIRROR_REPO_URL = 'https://maven.aliyun.com/nexus/content/groups/public/'
-    }
+    apply from: 'config.gradle'
+    ext.FAST_MIRROR_REPO_URL = 'https://maven.aliyun.com/nexus/content/groups/public/'
     repositories {
         maven { url FAST_MIRROR_REPO_URL }
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${jarVersion.springboot}")
     }
 }
 
@@ -23,9 +19,6 @@ subprojects {
     group = 'org.edunext'
     version = '0.2.2'
     sourceCompatibility = 1.8
-    ext {
-        jarVersion = rootProject.ext.version
-    }
 
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 

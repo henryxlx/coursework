@@ -7,7 +7,9 @@
  */
 
 ext {
-    version = [
+    jarVersion = [
+            // For SpringBoot
+            springboot   : '2.2.13.RELEASE',
             // For Developing
             junit        : '4.12',
             selenide     : '5.14.2',

@@ -21,7 +21,7 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
     public int searchCourseCount(Map<String, Object> conditions) {
         DynamicQueryBuilder builder = createSearchQueryBuilder(conditions)
             .select("COUNT(id)");
-        return getJdbcTemplate().queryForObject(builder.getSQL(), Integer.class);
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
     }
 
     @Override
@@ -33,10 +33,11 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
             .orderBy(orderBy)
             .setFirstResult(start)
             .setMaxResults(limit);
-        /**if ($orderBy[0] == 'recommendedSeq') {
-            builder.addOrderBy('recommendedTime', 'DESC');
-        }*/
-        return getJdbcTemplate().queryForList(builder.getSQL());
+
+        if (orderBy.hasColumnName("recommendedSeq")) {
+            orderBy.addDesc("recommendedTime");
+        }
+        return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
     }
 
     @Override

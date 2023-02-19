@@ -12,11 +12,11 @@
 
         <a href="${ctx}/admin/review" class="list-group-item <#if menu! == 'review'>active</#if>">评价管理</a>
 
-        <a href="${ctx}/admin/thread" class="list-group-item <#if menu! == 'thread'>active</#if>">讨论区管理</a>
+        <a href="${ctx}/admin/course/thread" class="list-group-item <#if menu! == 'thread'>active</#if>">讨论区管理</a>
 
-        <a href="${ctx}/admin/question', {postStatus: 'unPosted'}) }}" class="list-group-item <#if menu! == 'question'>active</#if>">问答管理</a>
+        <a href="${ctx}/admin/course/question?postStatus=unPosted" class="list-group-item <#if menu! == 'question'>active</#if>">问答管理</a>
 
-        <a href="${ctx}/admin/note" class="list-group-item <#if menu! == 'note'>active</#if>" >笔记管理</a>
+        <a href="${ctx}/admin/course/note" class="list-group-item <#if menu! == 'note'>active</#if>" >笔记管理</a>
 
         <a href="${ctx}/admin/category?group=course" class="list-group-item <#if menu! == 'category'>active</#if>">分类管理</a>
 

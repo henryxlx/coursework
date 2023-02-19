@@ -9,7 +9,7 @@
     <h1 class="pull-left">问答管理</h1>
 </div>
 
-<#include '/admin/question/tab.ftl'/>
+<#include '/admin/course/question/tab.ftl'/>
 <br>
 
 <div class="well well-sm">

@@ -1,3 +1,14 @@
+0.2.3: @2023-02-19
+* 添加后台管理->课程->讨论区管理Controller与首页index列表显示页面功能
+* 添加后台管理->课程->问答管理新增请求控制Controller调用index列表显示页面
+* 删除用户注册页面，使用webfast已有的注册功能注册新用户
+* 添加后台管理->课程->推荐课程列表显示页面功能
+* 优化Gradle构建脚本版本管理机制，统一外部文件config.gradle中配置依赖版本
+* 修复与WebFast框架中变更的功能不一致的错误
+  调整删除的FlashMessageUtil工具功能到BaseControllerHelper
+  将删除的OrderByBuilder修改为新的排序类OrderBy
+  添加模块webfast-kernel-webmvc依赖缺少的验证码模块webfast-support-captcha
+
 0.2.2: @2022-02-24
 * 完成课程管理基本情况页面显示与控制器调用功能
 

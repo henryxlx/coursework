@@ -6,7 +6,6 @@ import com.jetwinner.toolbag.MapKitOnJava8;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
-import com.jetwinner.webfast.kernel.dao.support.OrderByBuilder;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppLogService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
@@ -122,26 +121,26 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Map<String, Object>> searchCourses(Map<String, Object> conditions, String sort, Integer start, Integer limit) {
         prepareCourseConditions(conditions);
-        OrderByBuilder orderByBuilder;
+        OrderBy orderBy = OrderBy.build(0);
         if ("popular".equals(sort)) {
-            orderByBuilder = OrderBy.builder().addDesc("hitNum");
+            orderBy.addDesc("hitNum");
         } else if ("recommended".equals(sort)) {
-            orderByBuilder = OrderBy.builder().addDesc("recommendedTime");
+            orderBy.addDesc("recommendedTime");
         } else if ("Rating".equals(sort)) {
-            orderByBuilder = OrderBy.builder().addDesc("Rating");
+            orderBy.addDesc("Rating");
         } else if ("hitNum".equals(sort)) {
-            orderByBuilder = OrderBy.builder().addDesc("hitNum");
+            orderBy.addDesc("hitNum");
         } else if ("studentNum".equals(sort)) {
-            orderByBuilder = OrderBy.builder().addDesc("studentNum");
+            orderBy.addDesc("studentNum");
         } else if ("recommendedSeq".equals(sort)) {
-            orderByBuilder = OrderBy.builder().add("recommendedSeq");
+            orderBy.add("recommendedSeq");
         } else if ("createdTimeByAsc".equals(sort)) {
-            orderByBuilder = OrderBy.builder().add("createdTime");
+            orderBy.add("createdTime");
         } else {
-            orderByBuilder = OrderBy.builder().addDesc("createdTime");
+            orderBy.addDesc("createdTime");
         }
 
-        return courseDao.searchCourses(conditions, orderByBuilder, start, limit);
+        return courseDao.searchCourses(conditions, orderBy, start, limit);
     }
 
     @Override

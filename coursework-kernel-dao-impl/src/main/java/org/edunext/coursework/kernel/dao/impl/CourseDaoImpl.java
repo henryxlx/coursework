@@ -4,7 +4,7 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
-import com.jetwinner.webfast.kernel.dao.support.OrderByBuilder;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.CourseDao;
 import org.springframework.stereotype.Repository;
 
@@ -26,11 +26,11 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
 
     @Override
     public List<Map<String, Object>> searchCourses(Map<String, Object> conditions,
-                                                   OrderByBuilder orderByBuilder, Integer start, Integer limit) {
+                                                   OrderBy orderBy, Integer start, Integer limit) {
 
         DynamicQueryBuilder builder = createSearchQueryBuilder(conditions)
             .select("*")
-            .orderBy(orderByBuilder)
+            .orderBy(orderBy)
             .setFirstResult(start)
             .setMaxResults(limit);
         /**if ($orderBy[0] == 'recommendedSeq') {

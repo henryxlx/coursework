@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author jingjianxin
  */
 @Controller
-public class NoteController {
+public class CourseNoteController {
 
-    @RequestMapping("/admin/note")
+    @RequestMapping("/admin/course/note")
     public String indexPage() {
-        return "/admin/note/index";
+        return "/admin/course/note/index";
     }
 }

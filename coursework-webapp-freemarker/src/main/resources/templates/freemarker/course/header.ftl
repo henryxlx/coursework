@@ -75,8 +75,8 @@
             <div class="btn-group">
               <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">预览 <span class="caret"></span></button>
               <ul class="dropdown-menu pull-right">
-                  <li><a href="${ctx}/course/{id}?previewAs=member" target="_blank">作为 已购买用户</a></li>
-                  <li><a href="${ctx}/course/{id}?previewAs=guest" target="_blank">作为 未购买用户</a></li>
+                  <li><a href="${ctx}/course/${course.id}?previewAs=member" target="_blank">作为 已购买用户</a></li>
+                  <li><a href="${ctx}/course/${course.id}?previewAs=guest" target="_blank">作为 未购买用户</a></li>
               </ul>
             </div>
 

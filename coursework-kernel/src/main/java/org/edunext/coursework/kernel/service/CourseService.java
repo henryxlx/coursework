@@ -49,7 +49,7 @@ public interface CourseService {
 
     Object hasFavoritedCourse(Object id);
 
-    void recommendCourse(AppUser currentUser, Integer courseId, String number);
+    Map<String, Object> recommendCourse(AppUser currentUser, Integer courseId, String number);
 
     void cancelRecommendCourse(AppUser currentUser, Integer courseId);
 

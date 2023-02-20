@@ -320,22 +320,25 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void recommendCourse(AppUser currentUser, Integer courseId, String number) {
+    public Map<String, Object> recommendCourse(AppUser currentUser, Integer courseId, String number) {
         Map<String, Object> course = this.tryAdminCourse(currentUser, courseId);
 
         if (!EasyStringUtil.isNumeric(number)) {
             throw new RuntimeGoingException("推荐课程序号只能为数字！");
         }
 
-        int nums = courseDao.updateCourse(courseId, new ParamMap()
+        Map<String, Object> updateMap = new ParamMap()
                 .add("recommended", 1)
                 .add("recommendedSeq", number)
-                .add("recommendedTime", System.currentTimeMillis()).toMap());
+                .add("recommendedTime", System.currentTimeMillis()).toMap();
+        int nums = courseDao.updateCourse(courseId, updateMap);
 
         if (nums > 0) {
+            course.putAll(updateMap);
             logService.info(currentUser, "course", "recommend",
                     String.format("推荐课程《%s》(#%d),序号为%s", course.get("title"), course.get("id"), number));
         }
+        return course;
     }
 
     @Override

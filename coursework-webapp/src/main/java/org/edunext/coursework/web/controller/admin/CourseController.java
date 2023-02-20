@@ -84,7 +84,7 @@ public class CourseController {
 
         if ("POST".equals(request.getMethod())) {
             String number = request.getParameter("number");
-            courseService.recommendCourse(AppUser.getCurrentUser(request), id, number);
+            course = courseService.recommendCourse(AppUser.getCurrentUser(request), id, number);
 
             AppUser user = userService.getUser(course.get("userId"));
 
@@ -92,6 +92,7 @@ public class CourseController {
                 return viewRenderService.renderView("/admin/course/course-recommend-tr.ftl",
                         new ParamMap().add("ctx", request.getContextPath()).add("course", course).add("user", user).toMap());
             }
+
             return this.renderCourseTr(request.getContextPath(), id);
         }
 

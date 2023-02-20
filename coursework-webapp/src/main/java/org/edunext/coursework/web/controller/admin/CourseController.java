@@ -40,7 +40,7 @@ public class CourseController {
 
     @RequestMapping("/admin/course")
     public String indexPage(HttpServletRequest request, Model model) {
-        Map<String, Object> conditions = ParamMap.toConditionMap(request);
+        Map<String, Object> conditions = ParamMap.toQueryAllMap(request);
         int count = courseService.searchCourseCount(conditions);
 
         Paginator paginator = new Paginator(request, count, 20);

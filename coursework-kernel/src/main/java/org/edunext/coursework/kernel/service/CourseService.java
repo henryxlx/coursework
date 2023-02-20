@@ -1,6 +1,7 @@
 package org.edunext.coursework.kernel.service;
 
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
 import java.util.Map;
@@ -33,4 +34,18 @@ public interface CourseService {
     Integer searchLearnTime(Map<String, Object> conditions);
 
     Integer searchLessonCount(Map<String, Object> conditions);
+
+    Map<String, Object> getCourse(Integer id);
+
+    List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, int start, int limit);
+
+    List<Map<String, Object>> getCourseItems(Object id);
+
+    Map<String, Object> getCourseMember(Object courseId, Integer userId);
+
+    void hitCourse(Integer id);
+
+    Map<String, Object> getUserLearnLessonStatuses(Integer userId, Object courseId);
+
+    Object hasFavoritedCourse(Object id);
 }

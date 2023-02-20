@@ -12,7 +12,6 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import org.edunext.coursework.kernel.dao.CourseDao;
-import org.edunext.coursework.kernel.dao.MemberDao;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -264,5 +263,58 @@ public class CourseServiceImpl implements CourseService {
 
     public Map<String, Object> getCourse(Object id) {
         return courseDao.getCourse(id);
+    }
+
+    @Override
+    public Map<String, Object> getCourse(Integer id) {
+        return courseDao.getCourse(id);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, int start, int limit) {
+        return new ArrayList<>();
+    }
+
+    @Override
+    public List<Map<String, Object>> getCourseItems(Object courseId) {
+//        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
+
+//        List<Map<String, Object>> chapters = chapterDao.findChaptersByCourseId(courseId);
+
+        Map<String, Object> items = new HashMap<>();
+//        for (Map<String, Object> lesson : lessons) {
+//            lesson.put("itemType", "lesson");
+//            items.put("lesson-" + lesson.get("id"), lesson);
+//        }
+
+//        for (Map<String, Object> chapter : chapters) {
+//            chapter.put("itemType", "chapter");
+//            items.put("chapter-" + chapter.get("id"), chapter);
+//        }
+
+//        uasort($items, function($item1, $item2){
+//            return $item1['seq'] > $item2['seq'];
+//        });
+        return new ArrayList<>();
+    }
+
+    @Override
+    public Map<String, Object> getCourseMember(Object courseId, Integer userId) {
+        return null;
+    }
+
+    @Override
+    public void hitCourse(Integer id) {
+
+    }
+
+    @Override
+    public Map<String, Object> getUserLearnLessonStatuses(Integer userId, Object courseId) {
+        return null;
+    }
+
+    @Override
+    public Object hasFavoritedCourse(Object id) {
+        return null;
     }
 }

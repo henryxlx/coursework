@@ -17,12 +17,12 @@
 <form id="message-search-form" class="form-inline well well-sm" action="" method="get" novalidate>
     <div class="form-group">
         <select style="max-width:150px;" class="form-control" name="categoryId">
-            <@select_options categoryForCourse!{} RequestParameters['categoryId']! '课程分类'/>
+            <@select_options categoryForCourse!{} RequestParameters['categoryId']!'' '课程分类'/>
         </select>
     </div>
     <div class="form-group">
         <select class="form-control" name="status">
-            <@select_options dict['courseStatus']!{} RequestParameters['status']! '课程状态'/>
+            <@select_options dict['courseStatus']!{} RequestParameters['status']!'' '课程状态'/>
         </select>
     </div>
     <div class="form-group">

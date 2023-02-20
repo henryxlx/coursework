@@ -3,7 +3,7 @@
     <td>
         <a href="${ctx}/course/${course.id}" target="_blank"><strong>${course.title}</strong></a>
         <br>
-        <span class="text-muted text-sm">分类：${category.name!'--'}</span>
+        <span class="text-muted text-sm">分类：${(category.name)!'--'}</span>
     </td>
     <td>
         <@admin_macro.user_link user! />

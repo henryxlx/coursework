@@ -5,7 +5,7 @@
            target="_blank"><strong>${course.title}</strong></a><#if course.type == 'live'><span
             class="label label-success live-label mls">直播</span></#if>
         <br>
-        <span class="text-muted text-sm">分类：${category.name!'--'}</span>
+        <span class="text-muted text-sm">分类：${(category.name)!'--'}</span>
         <#if course.recommended??>
             <span class="label label-default">荐:${course.recommendedTime?number_to_datetime?string('yyyy-MM-dd HH:mm:ss')} / 序号:${course.recommendedSeq}</span>
         </#if>
@@ -30,12 +30,16 @@
             </a>
             <ul class="dropdown-menu pull-right">
 
-                <#if !course.recommended??>
-                <li><a class="recommend-course" href="#modal" data-toggle="modal" data-url="${ctx}/admin/course/${course.id}/recommend?ref=courseList"><span class="glyphicon glyphicon-hand-up"></span> 推荐课程</a></li>
+                <#if course.recommended?? && course.recommended == 0>
+                    <li><a class="recommend-course" href="#modal" data-toggle="modal"
+                           data-url="${ctx}/admin/course/${course.id}/recommend?ref=courseList"><span
+                                    class="glyphicon glyphicon-hand-up"></span> 推荐课程</a></li>
                 </#if>
 
-                <#if course.recommended??>
-                <li><a class="cancel-recommend-course" href="javascript:" data-url="${ctx}/admin/course/${course.id}/recommend/cancel"><span class="glyphicon glyphicon-hand-right"></span> 取消推荐</a></li>
+                <#if course.recommended?? && course.recommended != 0>
+                    <li><a class="cancel-recommend-course" href="javascript:"
+                           data-url="${ctx}/admin/course/${course.id}/recommend/cancel"><span
+                                    class="glyphicon glyphicon-hand-right"></span> 取消推荐</a></li>
                 </#if>
 
                 <li ><a class="copy-course" id="copy-course" href="javascript:"

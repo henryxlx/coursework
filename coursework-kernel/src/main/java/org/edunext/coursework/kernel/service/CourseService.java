@@ -48,4 +48,8 @@ public interface CourseService {
     Map<String, Object> getUserLearnLessonStatuses(Integer userId, Object courseId);
 
     Object hasFavoritedCourse(Object id);
+
+    void recommendCourse(AppUser currentUser, Integer courseId, String number);
+
+    void cancelRecommendCourse(AppUser currentUser, Integer courseId);
 }

@@ -4,6 +4,7 @@ import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
 import com.jetwinner.util.EasyStringUtil;
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
@@ -316,5 +317,54 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Object hasFavoritedCourse(Object id) {
         return null;
+    }
+
+    @Override
+    public void recommendCourse(AppUser currentUser, Integer courseId, String number) {
+        Map<String, Object> course = this.tryAdminCourse(currentUser, courseId);
+
+        if (!EasyStringUtil.isNumeric(number)) {
+            throw new RuntimeGoingException("推荐课程序号只能为数字！");
+        }
+
+        int nums = courseDao.updateCourse(courseId, new ParamMap()
+                .add("recommended", 1)
+                .add("recommendedSeq", number)
+                .add("recommendedTime", System.currentTimeMillis()).toMap());
+
+        if (nums > 0) {
+            logService.info(currentUser, "course", "recommend",
+                    String.format("推荐课程《%s》(#%d),序号为%s", course.get("title"), course.get("id"), number));
+        }
+    }
+
+    @Override
+    public void cancelRecommendCourse(AppUser currentUser, Integer courseId) {
+        Map<String, Object> course = this.tryAdminCourse(currentUser, courseId);
+
+        int nums = courseDao.updateCourse(courseId, new ParamMap()
+                .add("recommended", 0).add("recommendedTime", 0).add("recommendedSeq", 0).toMap());
+
+        if (nums > 0) {
+            logService.info(currentUser, "course", "cancel_recommend",
+                    String.format("取消推荐课程《%s》(#%d)", course.get("title"), course.get("id")));
+        }
+    }
+
+    public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {
+        Map<String, Object> course = courseDao.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在！");
+        }
+
+        if (user == null || user.getId() == null) {
+            throw new RuntimeGoingException("未登录用户，无权操作！");
+        }
+
+        if (!user.hasAnyRole("ROLE_ADMIN", "ROLE_SUPER_ADMIN")) {
+            throw new RuntimeGoingException("您不是管理员，无权操作！");
+        }
+
+        return course;
     }
 }

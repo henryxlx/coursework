@@ -52,13 +52,19 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
                 .stream().findFirst().orElse(Collections.emptyMap());
     }
 
+    @Override
+    public int updateCourse(Integer id, Map<String, Object> fields) {
+        fields.put("id", id);
+        return updateMap(TABLE_NAME, fields, "id");
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
-        if (EasyStringUtil.isNotBlank(conditions.get("title"))) { 
+        if (EasyStringUtil.isNotBlank(conditions.get("title"))) {
             conditions.put("titleLike", "%" + conditions.get("title") + "%");
             conditions.remove("title");
         }
 
-        if (EasyStringUtil.isNotBlank(conditions.get("tagId"))) {  
+        if (EasyStringUtil.isNotBlank(conditions.get("tagId"))) {
             int tagId = ValueParser.parseInt(conditions.get("tagId"));
             if (tagId > 0) {
                 conditions.put("tagsLike", "%" + conditions.get("tagId") + "%");

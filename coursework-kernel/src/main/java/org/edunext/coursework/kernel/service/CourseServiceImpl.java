@@ -351,6 +351,22 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    public void publishCourse(AppUser currentUser, Integer courseId) {
+        Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
+        courseDao.updateCourse(courseId, new ParamMap().add("status", "published").toMap());
+        logService.info(currentUser, "course", "publish",
+                String.format("发布课程《%s》(#%d)", course.get("title"), course.get("id")));
+    }
+
+    @Override
+    public void closeCourse(AppUser currentUser, Integer courseId) {
+        Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
+        courseDao.updateCourse(courseId, new ParamMap().add("status", "closed").toMap());
+        logService.info(currentUser, "course", "close",
+                String.format("关闭课程《%s》(#%d)", course.get("title"), course.get("id")));
+    }
+
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {
         Map<String, Object> course = courseDao.getCourse(courseId);
         if (MapUtil.isEmpty(course)) {

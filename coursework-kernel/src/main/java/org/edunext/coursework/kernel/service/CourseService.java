@@ -52,4 +52,8 @@ public interface CourseService {
     void recommendCourse(AppUser currentUser, Integer courseId, String number);
 
     void cancelRecommendCourse(AppUser currentUser, Integer courseId);
+
+    void publishCourse(AppUser currentUser, Integer courseId);
+
+    void closeCourse(AppUser currentUser, Integer courseId);
 }

@@ -134,6 +134,20 @@ public class CourseController {
         return "/admin/course/course-recommend-list";
     }
 
+    @RequestMapping("/admin/course/{id}/publish")
+    @ResponseBody
+    public String publishAction(HttpServletRequest request, @PathVariable Integer id) {
+        courseService.publishCourse(AppUser.getCurrentUser(request), id);
+        return this.renderCourseTr(request.getContextPath(), id);
+    }
+
+    @RequestMapping("/admin/course/{id}/close")
+    @ResponseBody
+    public String closeAction(HttpServletRequest request, @PathVariable Integer id) {
+        courseService.closeCourse(AppUser.getCurrentUser(request), id);
+        return this.renderCourseTr(request.getContextPath(), id);
+    }
+
     @RequestMapping("/admin/course/data")
     public String dataAction(HttpServletRequest request, Model model) {
         Map<String, Object> conditions = ParamMap.toConditionMap(request);

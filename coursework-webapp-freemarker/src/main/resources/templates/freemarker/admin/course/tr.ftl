@@ -1,17 +1,21 @@
 <tr id="course-tr-${course.id}">
     <td>${course.id}</td>
     <td>
-        <a href="${ctx}/course/${course.id}" target="_blank"><strong>${course.title}</strong></a><#if course.type == 'live'><span class="label label-success live-label mls">直播</span></#if>
+        <a href="${ctx}/course/${course.id}"
+           target="_blank"><strong>${course.title}</strong></a><#if course.type == 'live'><span
+            class="label label-success live-label mls">直播</span></#if>
         <br>
         <span class="text-muted text-sm">分类：${category.name!'--'}</span>
         <#if course.recommended??>
-        <span class="label label-default">荐:${course.recommendedTime?number_to_datetime?string('yyyy-MM-dd HH:mm:ss')} / 序号:${course.recommendedSeq}</span>
+            <span class="label label-default">荐:${course.recommendedTime?number_to_datetime?string('yyyy-MM-dd HH:mm:ss')} / 序号:${course.recommendedSeq}</span>
         </#if>
     </td>
-    <td><#if course.serializeMode == 'none'><span class="text-info">非连载课程</span><#elseif course.serializeMode == 'serialize'><span class="text-success">连载中</span><#elseif course.serializeMode == 'finished'><span class="text-danger">已完结</span></#if></td>
+    <td><#if course.serializeMode == 'none'><span
+                class="text-info">非连载课程</span><#elseif course.serializeMode == 'serialize'><span class="text-success">连载中</span><#elseif course.serializeMode == 'finished'>
+            <span class="text-danger">已完结</span></#if></td>
     <td>${course.studentNum}</td>
     <td><span class="money-text">${course.income}</span></td>
-    <td>${dict_text('courseStatus:html', course.status)}</td>
+    <td>${dict_text('courseStatus4html', course.status)}</td>
     <td>
         <@admin_macro.user_link user />
         <br>

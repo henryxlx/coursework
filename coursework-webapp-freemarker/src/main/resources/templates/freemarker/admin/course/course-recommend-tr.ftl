@@ -11,7 +11,7 @@
         <span class="text-muted text-sm">${course.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm')}</span>
     </td>
     <td>
-        ${course.recommendedTime?number_to_datetime?string('yyyy-MM-dd')}}
+        ${course.recommendedTime?number_to_datetime?string('yyyy-MM-dd')}
     </td>
     <td>
         <div class="btn-group">

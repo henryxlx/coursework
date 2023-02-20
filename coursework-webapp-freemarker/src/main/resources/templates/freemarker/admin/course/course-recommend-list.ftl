@@ -21,11 +21,15 @@
         </thead>
         <tbody>
         <#list courses! as course>
-            {% set user = users[course.userId]|default(null) %}
-            {% set category = categories[course.categoryId]|default(null) %}
-            {% include 'TopxiaAdminBundle:Course:course-recommend-tr.html.twig' %}
+            <#assign user = users[''+course.userId]/>
+            <#assign category = (categories[''+course.categoryId])!/>
+            <#include '/admin/course/course-recommend-tr.ftl' />
         <#else>
-            <tr><td colspan="20"><div class="empty">暂无推荐课程</div></td></tr>
+            <tr>
+                <td colspan="20">
+                    <div class="empty">暂无推荐课程</div>
+                </td>
+            </tr>
         </#list>
         </tbody>
     </table>

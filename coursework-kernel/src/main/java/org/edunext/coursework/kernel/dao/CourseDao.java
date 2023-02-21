@@ -17,4 +17,6 @@ public interface CourseDao {
     Map<String, Object> getCourse(Object id);
 
     int updateCourse(Integer id, Map<String, Object> fields);
+
+    int deleteCourse(Integer courseId);
 }

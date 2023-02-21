@@ -56,4 +56,6 @@ public interface CourseService {
     void publishCourse(AppUser currentUser, Integer courseId);
 
     void closeCourse(AppUser currentUser, Integer courseId);
+
+    boolean deleteCourse(AppUser currentUser, Integer couserId);
 }

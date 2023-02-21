@@ -58,6 +58,11 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
         return updateMap(TABLE_NAME, fields, "id");
     }
 
+    @Override
+    public int deleteCourse(Integer courseId) {
+        return getJdbcTemplate().update("DELETE FROM " + TABLE_NAME + " WHERE id = ?", courseId);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("title"))) {
             conditions.put("titleLike", "%" + conditions.get("title") + "%");

@@ -370,6 +370,40 @@ public class CourseServiceImpl implements CourseService {
                 String.format("关闭课程《%s》(#%d)", course.get("title"), course.get("id")));
     }
 
+    @Override
+    public boolean deleteCourse(AppUser currentUser, Integer courseId) {
+        Map<String, Object> course = this.tryAdminCourse(currentUser, courseId);
+
+        // Decrease the course lesson files usage counts, if there are files used by the course lessons.
+//        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
+
+//        if (ListUtil.isNotEmpty(lessons)) {
+//            Set<Object> fileIds = ArrayToolkit.column(lessons, "mediaId");
+//            if (fileIds != null) {
+//                uploadFileService.decreaseFileUsedCount(fileIds);
+//            }
+//        }
+
+        // Delete all linked course materials (the UsedCount of each material file will also be decreaased.)
+//        courseMaterialService.deleteMaterialsByCourseId(courseId);
+
+        // Delete course related data
+//        memberDao.deleteMembersByCourseId(courseId);
+//        lessonDao.deleteLessonsByCourseId(courseId);
+//        chapterDao.deleteChaptersByCourseId(courseId);
+
+        courseDao.deleteCourse(courseId);
+
+        if ("live".equals(course.get("type"))) {
+//            courseLessonReplayDao.deleteLessonReplayByCourseId(courseId);
+        }
+
+        logService.info(currentUser, "course", "delete",
+                String.format("删除课程《%s》(#%d)", course.get("title"), course.get("id")));
+
+        return true;
+    }
+
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {
         Map<String, Object> course = courseDao.getCourse(courseId);
         if (MapUtil.isEmpty(course)) {

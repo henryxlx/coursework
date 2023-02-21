@@ -188,6 +188,13 @@ public class CourseController {
         return "redirect:/admin/course";
     }
 
+    @RequestMapping("/admin/course/{id}/delete")
+    @ResponseBody
+    public Boolean deleteAction(HttpServletRequest request, @PathVariable Integer id) {
+        boolean result = courseService.deleteCourse(AppUser.getCurrentUser(request), id);
+        return result ? Boolean.TRUE : Boolean.FALSE;
+    }
+
     @RequestMapping("/admin/course/data")
     public String dataAction(HttpServletRequest request, Model model) {
         Map<String, Object> conditions = ParamMap.toConditionMap(request);

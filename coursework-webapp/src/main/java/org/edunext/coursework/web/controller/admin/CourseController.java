@@ -89,25 +89,24 @@ public class CourseController {
             AppUser user = userService.getUser(course.get("userId"));
 
             if ("recommendList".equals(ref)) {
-                return viewRenderService.renderView("/admin/course/course-recommend-tr.ftl",
-                        new ParamMap().add("ctx", request.getContextPath()).add("course", course).add("user", user).toMap());
+                return viewRenderService.renderView(request, "/admin/course/course-recommend-tr.ftl",
+                        new ParamMap().add("course", course).add("user", user).toMap());
             }
 
-            return this.renderCourseTr(request.getContextPath(), id);
+            return this.renderCourseTr(request, id);
         }
 
 
-        return viewRenderService.renderView("/admin/course/course-recommend-modal.ftl",
-                new ParamMap().add("ctx", request.getContextPath()).add("course", course).add("ref", ref).toMap());
+        return viewRenderService.renderView(request, "/admin/course/course-recommend-modal.ftl",
+                new ParamMap().add("course", course).add("ref", ref).toMap());
     }
 
-    private String renderCourseTr(String contextPath, Integer courseId) {
+    private String renderCourseTr(HttpServletRequest request, Integer courseId) {
         Map<String, Object> course = courseService.getCourse(courseId);
-        return viewRenderService.renderView("/admin/course/tr.ftl",
+        return viewRenderService.renderView(request, "/admin/course/tr.ftl",
                 new ParamMap().add("user", userService.getUser(course.get("userId")))
                         .add("category", categoryService.getCategory(ValueParser.toInteger(course.get("categoryId"))))
                         .add("default", settingService.get("default"))
-                        .add("ctx", contextPath)
                         .add("course", course).toMap());
     }
 
@@ -115,7 +114,7 @@ public class CourseController {
     @ResponseBody
     public String cancelRecommendAction(HttpServletRequest request, @PathVariable Integer id) {
         courseService.cancelRecommendCourse(AppUser.getCurrentUser(request), id);
-        return this.renderCourseTr(request.getContextPath(), id);
+        return this.renderCourseTr(request, id);
     }
 
     @RequestMapping("/admin/course/recommend/list")
@@ -139,14 +138,21 @@ public class CourseController {
     @ResponseBody
     public String publishAction(HttpServletRequest request, @PathVariable Integer id) {
         courseService.publishCourse(AppUser.getCurrentUser(request), id);
-        return this.renderCourseTr(request.getContextPath(), id);
+        return this.renderCourseTr(request, id);
     }
 
     @RequestMapping("/admin/course/{id}/close")
     @ResponseBody
     public String closeAction(HttpServletRequest request, @PathVariable Integer id) {
         courseService.closeCourse(AppUser.getCurrentUser(request), id);
-        return this.renderCourseTr(request.getContextPath(), id);
+        return this.renderCourseTr(request, id);
+    }
+
+    @RequestMapping("/admin/course/{id}/copy")
+    @ResponseBody
+    public String copyAction(HttpServletRequest request, @PathVariable Integer id, Model model) {
+        return viewRenderService.renderView(request, "/admin/course/copy.ftl",
+                new ParamMap().add("course", courseService.getCourse(id)).toMap());
     }
 
     @RequestMapping("/admin/course/data")

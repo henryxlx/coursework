@@ -9,6 +9,7 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.kernel.view.ViewRenderService;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
+import org.edunext.coursework.kernel.service.CourseCopyService;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,18 +29,21 @@ import java.util.Objects;
 public class CourseController {
 
     private final CourseService courseService;
+    private final CourseCopyService courseCopyService;
     private final AppCategoryService categoryService;
     private final AppUserService userService;
     private final AppSettingService settingService;
     private final ViewRenderService viewRenderService;
 
     public CourseController(CourseService courseService,
+                            CourseCopyService courseCopyService,
                             AppCategoryService categoryService,
                             AppUserService userService,
                             AppSettingService settingService,
                             ViewRenderService viewRenderService) {
 
         this.courseService = courseService;
+        this.courseCopyService = courseCopyService;
         this.categoryService = categoryService;
         this.userService = userService;
         this.settingService = settingService;
@@ -150,9 +154,38 @@ public class CourseController {
 
     @RequestMapping("/admin/course/{id}/copy")
     @ResponseBody
-    public String copyAction(HttpServletRequest request, @PathVariable Integer id, Model model) {
+    public String copyAction(HttpServletRequest request, @PathVariable Integer id) {
         return viewRenderService.renderView(request, "/admin/course/copy.ftl",
                 new ParamMap().add("course", courseService.getCourse(id)).toMap());
+    }
+
+    @RequestMapping("/admin/course/{id}/copying")
+    public String copingAction(HttpServletRequest request, @PathVariable Integer id) {
+        Map<String, Object> course = courseService.getCourse(id);
+        course.put("title", request.getParameter("title"));
+        Map<String, Object> newCourse = courseCopyService.copyCourse(course);
+
+//        courseCopyService.copyTeachers(course.get("id"), newCourse);
+
+//        List<Map<String, Object>> newChapters = courseCopyService.copyChapters(course.get("id"), newCourse);
+
+//        List<Map<String, Object>> newLessons = courseCopyService.copyLessons(course.get("id"), newCourse, newChapters);
+
+//        List<Map<String, Object>> newQuestions = courseCopyService.copyQuestions(course.get("id"), newCourse, newLessons);
+
+//        List<Map<String, Object>> newTestpapers = courseCopyService.copyTestpapers(course.get("id"), newCourse, newQuestions);
+
+//        courseCopyService.convertTestpaperLesson(newLessons, newTestpapers);
+
+//        courseCopyService.copyMaterials(course.get("id"), newCourse, newLessons);
+
+        boolean isCopyHomework = "1".equals(settingService.getSettingValue("course.homework.enabled"));
+        if (isCopyHomework) {
+//            courseCopyService.copyHomeworks(course.get("id"), newCourse, newLessons, newQuestions);
+//            courseCopyService.copyExercises(course.get("id"), newCourse, newLessons);
+        }
+
+        return "redirect:/admin/course";
     }
 
     @RequestMapping("/admin/course/data")

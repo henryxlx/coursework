@@ -6,7 +6,7 @@
 
 <#macro blockBody>
 
-    <form id="course-copy-form" class="form-horizontal" method="post" action="${ctx}/course/${course.id}/coping">
+    <form id="course-copy-form" class="form-horizontal" method="post" action="${ctx}/admin/course/${course.id}/copying">
 
         <div class="row form-group">
             <div class="col-md-3 control-label">

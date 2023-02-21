@@ -59,7 +59,7 @@ subprojects {
     }
 }
 
-Task taskForSourceZip = project.task("makeSourceZip", type:Zip){
+project.task("makeSourceZip", type:Zip){
     archiveBaseName = "${rootProject.name}-${subprojects.version[0]}"
     from (project.rootDir){
         excludes = ['.gradle/**', '.idea/**', 'backup4dev/**', '**/out/**', '**/build/**']

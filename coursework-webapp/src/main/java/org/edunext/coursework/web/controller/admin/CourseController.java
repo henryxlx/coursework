@@ -9,6 +9,7 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.kernel.view.ViewRenderService;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
+import org.edunext.coursework.kernel.CategoryBuilder;
 import org.edunext.coursework.kernel.service.CourseCopyService;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
@@ -30,6 +31,7 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseCopyService courseCopyService;
+    private final CategoryBuilder categoryBuilder;
     private final AppCategoryService categoryService;
     private final AppUserService userService;
     private final AppSettingService settingService;
@@ -37,13 +39,14 @@ public class CourseController {
 
     public CourseController(CourseService courseService,
                             CourseCopyService courseCopyService,
-                            AppCategoryService categoryService,
+                            CategoryBuilder categoryBuilder, AppCategoryService categoryService,
                             AppUserService userService,
                             AppSettingService settingService,
                             ViewRenderService viewRenderService) {
 
         this.courseService = courseService;
         this.courseCopyService = courseCopyService;
+        this.categoryBuilder = categoryBuilder;
         this.categoryService = categoryService;
         this.userService = userService;
         this.settingService = settingService;
@@ -221,6 +224,7 @@ public class CourseController {
             course.put("lessonCount", lessonCount);
         }
 
+        model.addAttribute("categoryChoiceCourse", categoryBuilder.buildChoices("course"));
         model.addAttribute("courses", courses);
         model.addAttribute("paginator", paginator);
         return "/admin/course/data";

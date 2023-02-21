@@ -1,6 +1,7 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
@@ -50,12 +51,12 @@ public class CourseManageController {
         Map<String, Object> courseSetting = settingService.get("course");
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> data = ParamMap.toFormDataMap(request);
-            courseService.updateCourse(id, data);
+            courseService.updateCourse(AppUser.getCurrentUser(request), id, data);
             BaseControllerHelper.setFlashMessage("success", "课程基本信息已保存！", request.getSession());
             return String.format("redirect:/course/%d/manage/base", id);
         }
 
-        List<Map<String, Object>> tags = tagService.findTagsByIds((String[]) course.get("tags"));
+        List<Map<String, Object>> tags = tagService.findTagsByIds(EasyStringUtil.explode(",", course.get("tags")));
         model.addAttribute("tags", ArrayToolkit.column(tags, "name"));
         model.addAttribute("default", settingService.get("default"));
         model.addAttribute("course", course);
@@ -73,7 +74,7 @@ public class CourseManageController {
             //$detail['goals'] = (empty($detail['goals']) or !is_array($detail['goals'])) ? array() : $detail['goals'];
             //$detail['audiences'] = (empty($detail['audiences']) or !is_array($detail['audiences'])) ? array() : $detail['audiences'];
 
-            courseService.updateCourse(id, detail);
+            courseService.updateCourse(AppUser.getCurrentUser(request), id, detail);
             BaseControllerHelper.setFlashMessage("success", "课程详细信息已保存！", request.getSession());
 
             return String.format("redirect:/course/%d/manage/detail", id);

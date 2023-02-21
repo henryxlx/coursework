@@ -12,10 +12,12 @@ import com.jetwinner.webfast.kernel.service.AppLogService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
+import com.jetwinner.webfast.module.bigapp.service.AppTagService;
 import org.edunext.coursework.kernel.dao.CourseDao;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xulixin
@@ -27,18 +29,21 @@ public class CourseServiceImpl implements CourseService {
     private final UserAccessControlService userAccessControlService;
     private final AppCategoryService categoryService;
     private final CourseDao courseDao;
+    private final AppTagService tagService;
     private final AppLogService logService;
 
     public CourseServiceImpl(AppUserService userService,
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao,
+                             AppTagService tagService,
                              AppLogService logService) {
 
         this.userService = userService;
         this.userAccessControlService = userAccessControlService;
         this.categoryService = categoryService;
         this.courseDao = courseDao;
+        this.tagService = tagService;
         this.logService = logService;
     }
 
@@ -192,15 +197,10 @@ public class CourseServiceImpl implements CourseService {
 
     private void courseValueToArray(Map<String, Object> map, String key) {
         Object obj = map.get(key);
-        String[] arr;
-        if (obj != null) {
-            String s = String.valueOf(obj);
-            s = s.length() > 0 ? s.substring(1) : s;
-            arr = s.split("\\|");
-        } else {
-            arr = new String[0];
+        String[] arr = String.valueOf(obj).split("\\|");
+        if (arr.length > 1) {
+            map.put(key, arr);
         }
-        map.put(key, arr);
     }
 
     public void unserialize(Map<String, Object> course) {
@@ -228,8 +228,50 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void updateCourse(Integer id, Map<String, Object> fields) {
+    public void updateCourse(AppUser currentUser, Integer id, Map<String, Object> fields) {
+        Map<String, Object> course = courseDao.getCourse(id);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在，更新失败！");
+        }
 
+        this.filterCourseFields(fields);
+
+        int nums = courseDao.updateCourse(id, fields);
+        if (nums > 0) {
+            logService.info(currentUser, "course", "update",
+                    String.format("更新课程《%s》(#%d)的信息", course.get("title"), course.get("id")), fields);
+        }
+    }
+
+    private void filterCourseFields(Map<String, Object> fields) {
+        if (EasyStringUtil.isBlank(fields.get("categoryId"))) {
+            fields.remove("categoryId");
+        }
+        ArrayToolkit.filter(fields, new ParamMap()
+                .add("title", "").add("subtitle", "")
+                .add("about", "").add("expiryDay", 0)
+                .add("serializeMode", "none")
+                .add("categoryId", 0)
+                .add("vipLevelId", 0)
+                .add("goals", null)
+                .add("audiences", null)
+                .add("tags", "")
+                .add("freeStartTime", 0)
+                .add("freeEndTime", 0)
+                .add("locationId", 0)
+                .add("address", "")
+                .add("maxStudentNum", 0).toMap());
+
+        if (EasyStringUtil.isNotBlank(fields.get("about"))) {
+            fields.put("about", EasyStringUtil.purifyHtml(String.valueOf(fields.get("about"))));
+        }
+
+        if (fields.get("tags") != null) {
+            String[] tagNames = EasyStringUtil.explode(",", fields.get("tags"));
+            List<Map<String, Object>> tagList = tagService.findTagsByNames(tagNames);
+            fields.put("tags",
+                    tagList.stream().map(x -> String.valueOf(x.get("id"))).collect(Collectors.joining(",")));
+        }
     }
 
     @Override
@@ -294,7 +336,7 @@ public class CourseServiceImpl implements CourseService {
 //        }
 
 //        uasort($items, function($item1, $item2){
-//            return $item1['seq'] > $item2['seq'];
+//            return $item1["seq"] > $item2["seq"];
 //        });
         return new ArrayList<>();
     }

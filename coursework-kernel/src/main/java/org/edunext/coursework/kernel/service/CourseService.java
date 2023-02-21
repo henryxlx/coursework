@@ -21,7 +21,7 @@ public interface CourseService {
 
     Map<String, Object> tryManageCourse(AppUser currentUser, Integer id);
 
-    void updateCourse(Integer id, Map<String, Object> fields);
+    void updateCourse(AppUser currentUser, Integer id, Map<String, Object> fields);
 
     List<Map<String, Object>> findCoursesByLikeTitle(Object title);
 

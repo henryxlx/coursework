@@ -13,13 +13,15 @@
 
         <div class="form-group">
             <select class="form-control" name="rating">
-                {{ select_options({1:'1星', 2:'2星', 3:'3星', 4:'4星', 5:'5星'}, app.request.get('rating'), '评分') }}
+                <@select_options {'1':'1星', '2':'2星', '3':'3星', '4':'4星', '5':'5星'}, RequestParameters['rating']!, '评分'/>
             </select>
         </div>
 
-        {#  <div class="form-group">
-            <input class="form-control" type="text" placeholder="课程编号" name="courseId" value="${RequestParameters['courseId']! }">
-        </div> #}
+        <#--
+                <div class="form-group">
+                    <input class="form-control" type="text" placeholder="课程编号" name="courseId" value="${RequestParameters['courseId']! }">
+                </div>
+        -->
 
         <div class="form-group">
             <input class="form-control" type="text" placeholder="课程名" name="courseTitle" value="${RequestParameters['courseTitle']! }">

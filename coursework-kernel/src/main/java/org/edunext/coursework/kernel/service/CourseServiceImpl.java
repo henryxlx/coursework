@@ -3,12 +3,13 @@ package org.edunext.coursework.kernel.service;
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
-import com.jetwinner.util.ArrayUtil;
-import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.MapUtil;
+import com.jetwinner.util.*;
+import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.FastAppConst;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.model.AppPathInfo;
 import com.jetwinner.webfast.kernel.service.AppLogService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class CourseServiceImpl implements CourseService {
 
     private final AppUserService userService;
+    private final FastAppConst appConst;
     private final UserAccessControlService userAccessControlService;
     private final AppCategoryService categoryService;
     private final CourseDao courseDao;
@@ -34,6 +36,7 @@ public class CourseServiceImpl implements CourseService {
     private final AppLogService logService;
 
     public CourseServiceImpl(AppUserService userService,
+                             FastAppConst appConst,
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao,
@@ -41,6 +44,7 @@ public class CourseServiceImpl implements CourseService {
                              AppLogService logService) {
 
         this.userService = userService;
+        this.appConst = appConst;
         this.userAccessControlService = userAccessControlService;
         this.categoryService = categoryService;
         this.courseDao = courseDao;
@@ -470,6 +474,72 @@ public class CourseServiceImpl implements CourseService {
                 String.format("删除课程《%s》(#%d)", course.get("title"), course.get("id")));
 
         return true;
+    }
+
+    @Override
+    public void changeCoursePicture(AppUser currentUser, Object courseId, String filePath, Map<String, Object> options) {
+        Map<String, Object> course = courseDao.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在，图标更新失败！");
+        }
+
+        ParamMap fields = new ParamMap().add("id", courseId);
+        AppPathInfo pathInfo = new AppPathInfo(filePath, "!");
+
+        String cropImageFilePath = String.format("%s/%s_crop.%s",
+                pathInfo.getDirname(), pathInfo.getFilename(), pathInfo.getExtension());
+        int x = (int) ValueParser.parseFloat(options.get("x"));
+        int y = (int) ValueParser.parseFloat(options.get("y"));
+        int width = (int) ValueParser.parseFloat(options.get("width"));
+        int height = (int) ValueParser.parseFloat(options.get("height"));
+        ImageUtil.cropPartImage(filePath, cropImageFilePath, pathInfo.getExtension(), x, y, width, height);
+
+        Calendar now = Calendar.getInstance();
+        String courseUploadPath = String.format("course/%d/%02d-%02d", now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
+        String userUploadRealDir = appConst.getUploadPublicDirectory() + "/" + courseUploadPath;
+        if (FastDirectoryUtil.dirNotExists(userUploadRealDir)) {
+            FastDirectoryUtil.makeDir(userUploadRealDir);
+        }
+        String largeFilePath = String.format("%s/%s_large.%s",
+                userUploadRealDir, pathInfo.getFilename(), pathInfo.getExtension());
+        try {
+            ImageUtil.resizeImage(cropImageFilePath, largeFilePath, pathInfo.getExtension(), 480, 0.9f);
+        } catch (Exception e) {
+            throw new RuntimeGoingException("Resize large course image error: " + e.getMessage());
+        }
+        fields.add("largePicture", String.format("public://%s/%s_large.%s",
+                courseUploadPath, pathInfo.getFilename(), pathInfo.getExtension()));
+
+
+        String mediumFilePath = String.format("%s/%s_medium.%s",
+                userUploadRealDir, pathInfo.getFilename(), pathInfo.getExtension());
+        try {
+            ImageUtil.resizeImage(cropImageFilePath, mediumFilePath, pathInfo.getExtension(), 304, 0.9f);
+        } catch (Exception e) {
+            throw new RuntimeGoingException("Resize medium course image error: " + e.getMessage());
+        }
+        fields.add("middlePicture", String.format("public://%s/%s_medium.%s",
+                courseUploadPath, pathInfo.getFilename(), pathInfo.getExtension()));
+
+        String smallFilePath = String.format("%s/%s_small.%s",
+                userUploadRealDir, pathInfo.getFilename(), pathInfo.getExtension());
+        try {
+            ImageUtil.resizeImage(cropImageFilePath, smallFilePath, pathInfo.getExtension(), 96, 0.9f);
+        } catch (Exception e) {
+            throw new RuntimeGoingException("Resize small course image error: " + e.getMessage());
+        }
+        fields.add("smallPicture", String.format("public://%s/%s_small.%s",
+                courseUploadPath, pathInfo.getFilename(), pathInfo.getExtension()));
+
+        // 删除替换的旧的课程图片
+        int courseCount = this.searchCourseCount(new ParamMap().add("smallPicture", course.get("smallPicture")).toMap());
+        if (courseCount <= 1) {
+        }
+        logService.info(currentUser, "course", "update_picture",
+                String.format("更新课程《%s》(#%d)图片", course.get("title"), course.get("id")), fields.toMap());
+
+        courseDao.updateCourse(ValueParser.toInteger(courseId), fields.toMap());
     }
 
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {

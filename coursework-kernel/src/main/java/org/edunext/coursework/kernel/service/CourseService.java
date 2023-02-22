@@ -58,4 +58,6 @@ public interface CourseService {
     void closeCourse(AppUser currentUser, Integer courseId);
 
     boolean deleteCourse(AppUser currentUser, Integer couserId);
+
+    void changeCoursePicture(AppUser currentUser, Object id, String pictureFilePath, Map<String, Object> options);
 }

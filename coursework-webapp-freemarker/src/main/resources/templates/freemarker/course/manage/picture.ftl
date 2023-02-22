@@ -1,5 +1,5 @@
 <#assign side_nav = 'picture'/>
-<#assign script_controller = 'course/manage/picture'/>
+<#assign script_controller = 'course-manage/picture'/>
 <#include "/course/manage/layout.ftl"/>
 <#macro blockTitle>课程图片 - ${blockTitleParent}</#macro>
 <#macro blockMain>

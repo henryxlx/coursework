@@ -3,6 +3,7 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
@@ -16,6 +17,7 @@ import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -50,6 +52,53 @@ public class CourseController implements BlockRenderController {
         this.courseService = courseService;
     }
 
+    @RequestMapping("/course/explore")
+    public String exploreAction(HttpServletRequest request, Model model) {
+        return exploreAction("", request, model);
+    }
+
+    @RequestMapping("/course/explore/{category}")
+    public String exploreAction(@PathVariable(value = "") String category, HttpServletRequest request, Model model) {
+        Map<String, Object> categoryModel;
+        if (EasyStringUtil.isNotBlank(category)) {
+            categoryModel = EasyStringUtil.isNumeric(category) ?
+                    categoryService.getCategory(ValueParser.toInteger(category)) :
+                    categoryService.getCategoryByCode(category);
+
+            if (MapUtil.isEmpty(categoryModel)) {
+                throw new RuntimeGoingException("课程分类信息为空，请联系管理员！");
+            }
+        } else {
+            categoryModel = new ParamMap().add("id", null).toMap();
+        }
+
+
+        String sort = ServletRequestUtils.getStringParameter(request, "sort", "latest");
+        Map<String, Object> conditions = new ParamMap().add("status", "published")
+                .add("type", "normal").add("categoryId", categoryModel.get("id"))
+                .add("recommended", "recommendedSeq".equals(sort) ? 1 : null)
+                .add("price", "free".equals(sort) ? "0.00" : null).toMap();
+
+        Paginator paginator = new Paginator(request, courseService.searchCourseCount(conditions), 10);
+
+        model.addAttribute("courses", courseService.searchCourses(conditions, sort,
+                paginator.getOffsetCount(), paginator.getPerPageCount()));
+
+        model.addAttribute("category", categoryModel);
+        model.addAttribute("sort", sort);
+        model.addAttribute("paginator", paginator);
+
+        Map<String, Object> group = categoryService.getGroupByCode("course");
+        if (MapUtil.isEmpty(group)) {
+            model.addAttribute("categories", new ArrayList<>());
+        } else {
+            model.addAttribute("categories", categoryService.getCategoryTree(group.get("id")));
+        }
+        model.addAttribute("consultDisplay", Boolean.TRUE);
+
+        return "/course/explore";
+    }
+
     @RequestMapping("/course/archive")
     public String archivePage() {
         return "/course/archive";
@@ -81,7 +130,7 @@ public class CourseController implements BlockRenderController {
      * 如果用户已购买了此课程，或者用户是该课程的教师，则显示课程的Dashboard界面。
      * 如果用户未购买该课程，那么显示课程的营销界面。
      */
-    @RequestMapping("/course/{id}")
+    @RequestMapping("/course/{id:[\\d]+}")
     public String showAction(HttpServletRequest request, @PathVariable Integer id, Model model) {
         Map<String, Object> course = courseService.getCourse(id);
         if (MapUtil.isEmpty(course)) {

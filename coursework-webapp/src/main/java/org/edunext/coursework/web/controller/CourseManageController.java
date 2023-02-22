@@ -71,8 +71,12 @@ public class CourseManageController {
 
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> detail = ParamMap.toFormDataMap(request);
-            //$detail['goals'] = (empty($detail['goals']) or !is_array($detail['goals'])) ? array() : $detail['goals'];
-            //$detail['audiences'] = (empty($detail['audiences']) or !is_array($detail['audiences'])) ? array() : $detail['audiences'];
+            if (!detail.containsKey("goals")) {
+                detail.put("goals", "");
+            }
+            if (!detail.containsKey("audiences")) {
+                detail.put("audiences", "");
+            }
 
             courseService.updateCourse(AppUser.getCurrentUser(request), id, detail);
             BaseControllerHelper.setFlashMessage("success", "课程详细信息已保存！", request.getSession());

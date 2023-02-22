@@ -3,6 +3,7 @@ package org.edunext.coursework.kernel.service;
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
+import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.kernel.AppUser;
@@ -195,11 +196,14 @@ public class CourseServiceImpl implements CourseService {
         return course;
     }
 
-    private void courseValueToArray(Map<String, Object> map, String key) {
+    private void objectToArray(Map<String, Object> map, String key) {
         Object obj = map.get(key);
-        String[] arr = String.valueOf(obj).split("\\|");
-        if (arr.length > 1) {
-            map.put(key, arr);
+        if (EasyStringUtil.isNotBlank(obj)) {
+            String s = String.valueOf(obj);
+            if (s.startsWith("|")) {
+                s = s.substring(1);
+            }
+            map.put(key, s.split("\\|"));
         }
     }
 
@@ -208,10 +212,30 @@ public class CourseServiceImpl implements CourseService {
             return;
         }
 
-        courseValueToArray(course, "tags");
-        courseValueToArray(course, "goals");
-        courseValueToArray(course, "audiences");
-        courseValueToArray(course, "teacherIds");
+        objectToArray(course, "goals");
+        objectToArray(course, "audiences");
+        objectToArray(course, "teacherIds");
+    }
+
+    private void arrayToString(Map<String, Object> model, String key) {
+        Object objTarget = model.get(key);
+        boolean needSerialize = true;
+        if (ArrayUtil.isNotArray(objTarget)) {
+            if (EasyStringUtil.isNotBlank(objTarget)) {
+                objTarget = new Object[]{objTarget};
+            } else {
+                needSerialize = false;
+            }
+        }
+        if (needSerialize) {
+            model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
+        }
+    }
+
+    private void serializeCourse(Map<String, Object> course) {
+        arrayToString(course, "goals");
+        arrayToString(course, "audiences");
+        arrayToString(course, "teacherIds");
     }
 
     private boolean hasCourseManagerRole(Integer courseId, Integer userId) {
@@ -236,6 +260,8 @@ public class CourseServiceImpl implements CourseService {
 
         this.filterCourseFields(fields);
 
+        this.serializeCourse(fields);
+
         int nums = courseDao.updateCourse(id, fields);
         if (nums > 0) {
             logService.info(currentUser, "course", "update",
@@ -253,8 +279,8 @@ public class CourseServiceImpl implements CourseService {
                 .add("serializeMode", "none")
                 .add("categoryId", 0)
                 .add("vipLevelId", 0)
-                .add("goals", null)
-                .add("audiences", null)
+                .add("goals", "")
+                .add("audiences", "")
                 .add("tags", "")
                 .add("freeStartTime", 0)
                 .add("freeEndTime", 0)

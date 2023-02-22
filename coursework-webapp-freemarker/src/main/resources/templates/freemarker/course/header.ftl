@@ -24,7 +24,7 @@
           <#if course.teacherIds??>
             教师：
             <#list course.teacherIds! as id>
-          <#assign user = users[''+student.userId]! />
+          <#assign user = users[''+id]! />
               <a href="#modal" data-toggle="modal" data-url="${ctx}/course/${course.Id}/teacher/${user.id}">${user.username}</a>
             </#list>
           </#if>

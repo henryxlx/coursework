@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -351,5 +352,41 @@ public class CourseController implements BlockRenderController {
     @BlockRenderMethod
     public String headerBlockAction() {
         return "/course/header";
+    }
+
+    @RequestMapping("/course/coursesBlock")
+    @BlockRenderMethod
+    public String coursesBlockAction(HttpServletRequest request,
+                                     @RequestParam(defaultValue = "list") String view,
+                                     @RequestParam(defaultValue = "default") String mode,
+                                     Model model) {
+
+        List<Map<String, Object>> courses = (List<Map<String, Object>>) request.getAttribute("courses");
+        Set<Object> courseIds = new HashSet<>();
+        Set<Object> userIds = new HashSet<>();
+        courses.forEach(x -> {
+            String[] teacherIds = EasyStringUtil.explode(", ", x.get("teacherIds"));
+            x.put("teacherIds", teacherIds);
+            courseIds.add(x.get("id"));
+            userIds.add(teacherIds);
+        });
+
+        if ("true".equals(settingService.getSettingValue("classroom.enabled"))) {
+//            List<Classroom> classrooms = classroomService.findClassroomsByCourseIds(courseIds);
+
+//            $classroomIds = ArrayToolkit.column($classrooms,'classroomId');
+
+//            $courses[$key]['classroomCount']=count($classroomIds);
+
+//            if(count($classroomIds)>0) {
+//                $courses[$key]['classroom'] = classroomService.getClassroom(classroomIds[0]);
+//            }
+//            model.addAttribute("classrooms", classrooms);
+        }
+
+        model.addAttribute("courses", courses);
+        model.addAttribute("users", userService.findUsersByIds(userIds));
+        model.addAttribute("mode", mode);
+        return "/course/courses-block-" + view;
     }
 }

@@ -1,5 +1,4 @@
 <#assign menu = 'course-data'/>
-<#assign script_controller = 'Course/data'/>
 
 <#include '/admin/course/layout.ftl'/>
 <#macro blockTitle>数据管理 - ${blockTitleParent}</#macro>

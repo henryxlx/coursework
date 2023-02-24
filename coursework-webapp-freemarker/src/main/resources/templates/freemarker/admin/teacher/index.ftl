@@ -21,7 +21,7 @@
         <tbody>
         <#if users??>
             <#list  users as user>
-                {% include 'TopxiaAdminBundle:Teacher:tr.html.twig' with {user:user} %}
+                <#include '/admin/teacher/tr.ftl' />
             </#list>
         <#else>
             <tr><td colspan="20"><div class="empty">暂无教师记录</div></td></tr>

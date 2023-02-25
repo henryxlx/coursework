@@ -92,7 +92,7 @@
                             <a class="pull-right" href="${ctx}/course/explore">更多&gt;</a>
                         </div>
                         <div class="es-box-body">
-                            <@course_lists data('LatestCourses', {'count':5 }) />
+                            <@course_lists courses 5 />
                         </div>
                     </div>
                 </#if>
@@ -331,13 +331,13 @@
                 <#if setting('group.group_show')??>
                 {% set hotThreads = data('HotThreads', {'count':11}) %}
                 <#if hotThreads??>
-                <div class='es-box hot-threads">
-                <div class="es-box-heading"><h2>最热话题</h2></div>
-                <div class="es-box-body">
-                    <ul class="text-list">
-                        {% for thread in hotThreads %}
-                        {% if thread %}
-                        <li style="border-bottom:none;background:url('${ctx}/assets/img/default/triangle.png') no-repeat
+                    <div class="es-box hot-threads">
+                        <div class="es-box-heading"><h2>最热话题</h2></div>
+                        <div class="es-box-body">
+                            <ul class="text-list">
+                                {% for thread in hotThreads %}
+                                {% if thread %}
+                                <li style="border-bottom:none;background:url('${ctx}/assets/img/default/triangle.png') no-repeat
                 0 3px;padding-left:8px;padding-top:0px;margin-bottom:8px;"><a
                         href="{{path('group_thread_show',{id:thread.groupId,threadId:thread.id})}}">{{thread.title | sub_text
                     (15)}}</a></li>
@@ -356,12 +356,12 @@
     </div>
 </#macro>
 
-<#macro course_lists courses>
+<#macro course_lists courses nums>
     <#local mode = mode!'default' />
     <ul class="course-wide-list">
         <#list courses! as course>
             <li class="course-item clearfix">
-                <a class="course-picture-link" href="${ctx}/course/show?id=${course.id}">
+                <a class="course-picture-link" href="${ctx}/course/${course.id}">
                     <img class="course-picture" src="${default_path('coursePicture', course.middlePicture, 'large')}"
                          alt="${course.title}">
                 </a>
@@ -369,7 +369,7 @@
                     <div class="course-price-info">
                         <#--                {% include "/course/price-widget.ftl" with {shows: ['price', 'discount']} %}-->
                     </div>
-                    <h4 class="course-title"><a href="${ctx}/course/show?id=${course.id}">${course.title}</a>
+                    <h4 class="course-title"><a href="${ctx}/course/${course.id}">${course.title}</a>
                         <#if course.serializeMode=='serialize'>
                             <span class="label label-success ">更新中</span>
                         <#elseif course.serializeMode=='finished'>
@@ -399,8 +399,8 @@
 
                     <div class="course-footer clearfix">
 
-                        <#local teacher = course.teachers[0]!/>
-                        <#if teacher??>
+                        <#local teacher = (course.teachers[0])!'none'/>
+                        <#if teacher?? && teacher != 'none'>
                             <div class="teacher">
                                 <a href="${ctx}/user/${teacher.id}"><img
                                             src="${default_path('avatar', teacher.smallAvatar, '')}"

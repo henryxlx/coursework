@@ -17,22 +17,22 @@
     <div class="panel-heading">
 
         <#if type?? && type == 'courselesson'>
-        <button class="btn btn-info btn-sm pull-right"
-                data-html5-url="${ctx} /course/${course.id}/manage/batch/upload/course/files/{targetType}', {id:course.id, targetType:'courselesson'}) }}"
-                data-normal-url="${ctx}/course/manage/upload/course/files', {id:course.id, targetType:'courselesson'}) }}"
-                data-storage="{{storageSetting.upload_mode}}"
-        >
-            <i class="glyphicon glyphicon-cloud-upload"></i>上传课时文件
-        </button>
+            <button class="btn btn-info btn-sm pull-right"
+                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/files/courselesson"
+                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/files/courselesson"
+                    data-storage="${storageSetting.upload_mode!}"
+            >
+                <i class="glyphicon glyphicon-cloud-upload"></i>上传课时文件
+            </button>
 
         <#elseif type?? && type == 'coursematerial'>
-        <button class="btn btn-info btn-sm pull-right"
-                data-html5-url="${ctx} /course/${course.id}/manage/batch/upload/course/files/{targetType}', {id:course.id, targetType:'coursematerial'}) }}"
-                data-normal-url="{{ path('course_manage_upload_course_files', {id:course.id, targetType:'coursematerial'}) }}"
-                data-storage="{{storageSetting.upload_mode}}"
-        >
-            <i class="glyphicon glyphicon-cloud-upload"></i>上传备用资料文件
-        </button>
+            <button class="btn btn-info btn-sm pull-right"
+                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/files/coursematerial"
+                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/files/coursematerial"
+                    data-storage="${storageSetting.upload_mode!}"
+            >
+                <i class="glyphicon glyphicon-cloud-upload"></i>上传备用资料文件
+            </button>
 
         </#if>
 
@@ -44,14 +44,15 @@
 
         <ul class="nav nav-tabs mbm">
             <li <#if type?? && type== 'courselesson'> class="active" </#if>>
-            <a href="${ctx}/course/${course.id}/manage/files', {id:course.id, type:'courselesson'}) }}">课时文件</a></li>
-            <li <#if type?? && type == 'coursematerial'> class="active" </#if>><a href="${ctx}/course/${course.id}/manage/files', {id:course.id, type:'coursematerial'}) }}">备用资料文件</a></li>
+                <a href="${ctx}/course/${course.id}/manage/files?type=courselesson">课时文件</a></li>
+            <li <#if type?? && type == 'coursematerial'> class="active" </#if>><a
+                        href="${ctx}/course/${course.id}/manage/files?type=coursematerial">备用资料文件</a></li>
         </ul>
 
         <table class="table table-striped table-hover" id="course-lesson-table">
             <thead>
             <tr>
-                <th width="5%"><input type="checkbox"  data-role="batch-select"></th>
+                <th width="5%"><input type="checkbox" data-role="batch-select"></th>
                 <th>文件名</th>
                 <th>类型</th>
                 <th>大小</th>

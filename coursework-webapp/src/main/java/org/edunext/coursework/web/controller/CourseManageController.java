@@ -180,14 +180,6 @@ public class CourseManageController {
         return "/course/manage/lesson/index";
     }
 
-    @RequestMapping("/course/{id}/manage/files")
-    public String fileAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
-        return "/course/manage/files/index";
-    }
-
     @RequestMapping("/course/{id}/manage/teachers")
     public String teachersAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 

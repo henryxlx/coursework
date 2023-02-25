@@ -13,77 +13,80 @@
             <div class="panel-body">
                 <div class="list-group-block">
 
-                    {% if app.user.isTeacher() %}
-                    <div class="list-group-panel">
-                        <div class="list-group-heading">我的教学</div>
-                        <ul class="list-group">
-                            <a class="list-group-item
-               {% if side_nav == 'my-teaching-courses' %} active {% endif %}"
-                               href="{{path('my_teaching_courses')}}">在教课程</a>
+                    <#if is_granted("ROLE_TEACHER")>
+                        <div class="list-group-panel">
+                            <div class="list-group-heading">我的教学</div>
+                            <ul class="list-group">
+                                <a class="list-group-item
+               <#if side_nav == 'my-teaching-courses'> active </#if>"
+                                   href="${ctx}/my/teaching/courses">在教课程</a>
 
-                            {% if is_plugin_installed('Classroom') and setting('classroom.enabled')|default(0) %}
-                            <a class="list-group-item
-               {% if side_nav == 'my-teaching-classroom' %} active {% endif %}"
-                               href="{{path('my_teaching_classrooms')}}">所在{{ setting('classroom.name')|default("班级") }}</a>
-                            {% endif %}
+                                <#if setting('classroom.enabled')! == '1'>
+                                    <a class="list-group-item
+               <#if side_nav == 'my-teaching-classroom'> active </#if>"
+                                       href="${ctx}/my/teaching/classrooms">所在${setting('classroom.name')!'班级'}</a>
+                                </#if>
 
-                            <a class="list-group-item
-               {% if side_nav == 'my-teaching-questions' %} active {% endif %}"
-                               href="{{path('my_teaching_threads', {type:'question'}) }}">{% if setting('default.user_name') %}{{setting('default.user_name')|default('学员')}}{% else %}学员{% endif %}问答</a>
-                            <a class="list-group-item {% if side_nav == 'my-teaching-discussions' %} active {% endif %}"
-                               href="{{path('my_teaching_threads', {type:'discussion'}) }}">{% if setting('default.user_name') %}{{setting('default.user_name')|default('学员')}}{% else %}学员{% endif %}话题</a>
+                                <a class="list-group-item
+               <#if side_nav == 'my-teaching-questions'> active </#if>"
+                                   href="${ctx}/my/teaching/threads/question">${setting('default.user_name')!'学员'}问答</a>
+                                <a class="list-group-item <#if side_nav == 'my-teaching-discussions'> active </#if>"
+                                   href="${ctx}/my/teaching/threads/discussion">${setting('default.user_name')!'学员'}
+                                    话题</a>
 
-                            <a class="list-group-item {% if side_nav == 'my-teaching-check' %} active {% endif %}"
-                               href="{{path('course_manage_list_teacher_test_reviewing') }}">试卷批阅</a>
+                                <a class="list-group-item <#if side_nav == 'my-teaching-check'> active </#if>"
+                                   href="${ctx}/my/teacher/reviewing/test/list">试卷批阅</a>
 
-                            {% if is_plugin_installed('Homework') %}
-                            <a class="list-group-item {% if side_nav == 'my-teaching-homework-check' %} active {% endif %}" href="{{path('my_teaching_homework_list') }}">作业批改</a>
-                            {% endif %}
+                                <#if setting('Homework.enabled')! == '1'>
+                                    <a class="list-group-item <#if side_nav == 'my-teaching-homework-check'> active </#if>"
+                                       href="${ctx}/my/homework">作业批改</a>
+                                </#if>
 
-                            {% if is_plugin_installed('MaterialLib') %}
-                            <a class="list-group-item {% if side_nav == 'material-lib' %} active {% endif %}"
-                               href="{{path('material_lib_browsing') }}">教学资料库</a>
-                            {% endif %}
-                        </ul>
-                    </div>
-                    {% endif %}
+                                <#if setting('material-lib.enabled')! == '1'>
+                                    <a class="list-group-item <#if side_nav == 'material-lib'> active </#if>"
+                                       href="${ctx}/material-lib/browsing">教学资料库</a>
+                                </#if>
+                            </ul>
+                        </div>
+                    </#if>
 
                     <div class="list-group-panel">
                         <div class="list-group-heading">我的学习</div>
                         <ul class="list-group">
                             <a class="list-group-item
-               {% if side_nav == 'my-learning' %} active {% endif %}"
-                               href="{{path('my_courses_learning')}}">我的课程</a>
+               <#if side_nav == 'my-learning'> active </#if>"
+                               href="${ctx}/my/courses/learning">我的课程</a>
 
-                            {% if is_plugin_installed('Classroom') and setting('classroom.enabled')|default(0) %}
-                            <a class="list-group-item
-               {% if side_nav == 'my-classroom' %} active {% endif %}"
-                               href="{{path('my_classrooms')}}">我的{{ setting('classroom.name')|default("班级") }}</a>
-                            {% endif %}
+                            <#if setting('classroom.enabled')! == '1'>
+                                <a class="list-group-item
+               <#if side_nav == 'my-classroom'> active </#if>"
+                                   href="${ctx}/my/classrooms">我的${setting('classroom.name')!'班级'}</a>
+                            </#if>
 
-                            {% if setting('course.live_course_enabled') %}
+                            <#if setting('course.live_course_enabled')! == '1'>
+                                <a class="list-group-item
+               <#if side_nav == 'my-learning-live'> active </#if>"
+                                   href="${ctx}/my/livecourses/learing">我的直播课表</a>
+                            </#if>
                             <a class="list-group-item
-               {% if side_nav == 'my-learning-live' %} active {% endif %}"
-                               href="{{path('my_live_courses_learning')}}">我的直播课表</a>
-                            {% endif %}
+               <#if side_nav == 'my-questions'> active </#if>"
+                               href="${ctx}/my/questions">我的问答</a>
                             <a class="list-group-item
-               {% if side_nav == 'my-questions' %} active {% endif %}"
-                               href="{{path('my_questions')}}">我的问答</a>
+               <#if side_nav == 'my-discussions'> active </#if>"
+                               href="${ctx}/my/discussions">我的话题</a>
                             <a class="list-group-item
-               {% if side_nav == 'my-discussions' %} active {% endif %}"
-                               href="{{path('my_discussions')}}">我的话题</a>
+               <#if side_nav == 'my-notes'> active </#if>"
+                               href="${ctx}/my/notebooks">我的笔记</a>
+                            <#if setting('homework.enabled')! == '1'>
+                                <a class="list-group-item <#if side_nav == 'my-homeworks'> active </#if>"
+                                   href="${ctx}/my/homework">我的作业</a>
+                            </#if>
                             <a class="list-group-item
-               {% if side_nav == 'my-notes' %} active {% endif %}"
-                               href="{{path('my_notebooks')}}">我的笔记</a>
-                            {% if is_plugin_installed('Homework') %}
-                            <a class="list-group-item {% if side_nav == 'my-homeworks' %} active {% endif %}" href="{{ path('my_homework_list') }}">我的作业</a>
-                            {% endif %}
+               <#if side_nav == 'my-quiz'> active </#if>"
+                               href="${ctx}/my/quiz">我的考试</a>
                             <a class="list-group-item
-               {% if side_nav == 'my-quiz' %} active {% endif %}"
-                               href="{{path('my_quiz')}}">我的考试</a>
-                            <a class="list-group-item
-               {% if side_nav == 'my-group' %} active {% endif %}"
-                               href="{{path('group_member_center')}}">我的小组</a>
+               <#if side_nav == 'my-group'> active </#if>"
+                               href="${ctx}/my/group">我的小组</a>
                         </ul>
                     </div>
 

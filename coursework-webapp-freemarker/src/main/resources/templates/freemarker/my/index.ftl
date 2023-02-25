@@ -8,7 +8,7 @@
 <#macro blockContent>
 
 <div class="row">
-<#--    <#include '/my/my-nav.ftl'/>-->
+    <#include '/my/my-nav.ftl'/>
     <div class="col-md-9">
         <div class="panel panel-default panel-col">
             <div class="panel-heading">

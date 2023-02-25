@@ -60,4 +60,12 @@ public interface CourseService {
     boolean deleteCourse(AppUser currentUser, Integer couserId);
 
     void changeCoursePicture(AppUser currentUser, Object id, String pictureFilePath, Map<String, Object> options);
+
+    int findUserLeaningCourseCount(Integer userId);
+
+    List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit);
+
+    int findUserTeachCourseCount(Integer userId, boolean onlyPublished);
+
+    List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished);
 }

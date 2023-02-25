@@ -340,7 +340,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Map<String, Object> getCourse(Integer id) {
-        return courseDao.getCourse(id);
+        Map<String, Object> course = courseDao.getCourse(id);
+        unserialize(course);
+        return course;
     }
 
     @Override
@@ -540,6 +542,26 @@ public class CourseServiceImpl implements CourseService {
                 String.format("更新课程《%s》(#%d)图片", course.get("title"), course.get("id")), fields.toMap());
 
         courseDao.updateCourse(ValueParser.toInteger(courseId), fields.toMap());
+    }
+
+    @Override
+    public int findUserLeaningCourseCount(Integer userId) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit) {
+        return null;
+    }
+
+    @Override
+    public int findUserTeachCourseCount(Integer userId, boolean onlyPublished) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished) {
+        return null;
     }
 
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {

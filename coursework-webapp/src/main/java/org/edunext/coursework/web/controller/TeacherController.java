@@ -37,7 +37,7 @@ public class TeacherController {
                 paginator.getOffsetCount(), paginator.getPerPageCount());
 
         List<Map<String, Object>> profiles = userService.findUserProfilesByIds(ArrayToolkitOnJava8.column(teachers, AppUser::getId));
-        model.addAttribute("profiles", ArrayToolkit.toMap(profiles, "id"));
+        model.addAttribute("profiles", ArrayToolkit.index(profiles, "id"));
         model.addAttribute("teachers", teachers);
         model.addAttribute("paginator", paginator);
         return "/teacher/index";

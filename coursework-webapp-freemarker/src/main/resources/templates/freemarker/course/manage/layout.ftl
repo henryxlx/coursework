@@ -35,21 +35,24 @@
                 <div class="list-group-panel">
                     <div class="list-group-heading">题库</div>
                     <div class="list-group">
-                        <a class="list-group-item <#if side_nav == 'question'>active</#if>" href="${ctx}/course/${course.id}/manage/question">题目管理</a>
-
-                        <a class="list-group-item <#if side_nav == 'question_plumber'>active</#if>" href="${ctx}course_question_plumber', {courseId:course.id, type:'import'}) }}">题目导入/导出</a>
-
+                        <a class="list-group-item <#if side_nav == 'question'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/question">题目管理</a>
                         <!-- <a class="list-group-item <#if side_nav == 'question_category' >active</#if>" href="${ctx}course_manage_question_category', {courseId:course.id}) }}">题目类别管理</a> -->
-                        <a class="list-group-item <#if side_nav == 'testpaper'>active</#if>" href="${ctx}/course/${course.id}/manage/testpaper">试卷管理</a>
-                        <a class="list-group-item <#if side_nav == 'testCheck'>active</#if>" href="${ctx}/course/${course.id}/manage/myquiz/list_course_test_paper">试卷批阅</a>
-                        <a class="list-group-item <#if side_nav == 'homeworkCheck'>active</#if>" href="${ctx}course_homework_check_list', {courseId:course.id,status:'reviewing'}) }}">作业批阅</a>
+
+                        <a class="list-group-item <#if side_nav == 'testpaper'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/testpaper">试卷管理</a>
+                        <a class="list-group-item <#if side_nav == 'testCheck'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/myquiz/list_course_test_paper">试卷批阅</a>
+
+                        <!-- <a class="list-group-item <#if side_nav == 'homeworkCheck'>active</#if>" href="${ctx}/course/${course.id}/manage/homework/check-list?status=reviewing">作业批阅</a> -->
                     </div>
                 </div>
 
                 <div class="list-group-panel">
                     <div class="list-group-heading">课程运营</div>
                     <div class="list-group">
-                        <a class="list-group-item <#if side_nav == 'course_manage_data'>active</#if>" href="${ctx}/course/${course.id}/manage/data">课程学习数据</a>
+                        <a class="list-group-item <#if side_nav == 'course_manage_data'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/data">课程学习数据</a>
                     </div>
                 </div>
             </div>

@@ -15,7 +15,9 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
+import org.edunext.coursework.kernel.dao.CourseChapterDao;
 import org.edunext.coursework.kernel.dao.CourseDao;
+import org.edunext.coursework.kernel.dao.LessonDao;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,6 +34,8 @@ public class CourseServiceImpl implements CourseService {
     private final UserAccessControlService userAccessControlService;
     private final AppCategoryService categoryService;
     private final CourseDao courseDao;
+    private final LessonDao lessonDao;
+    private final CourseChapterDao chapterDao;
     private final AppTagService tagService;
     private final AppLogService logService;
 
@@ -39,7 +43,7 @@ public class CourseServiceImpl implements CourseService {
                              FastAppConst appConst,
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
-                             CourseDao courseDao,
+                             CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
                              AppTagService tagService,
                              AppLogService logService) {
 
@@ -48,6 +52,8 @@ public class CourseServiceImpl implements CourseService {
         this.userAccessControlService = userAccessControlService;
         this.categoryService = categoryService;
         this.courseDao = courseDao;
+        this.lessonDao = lessonDao;
+        this.chapterDao = chapterDao;
         this.tagService = tagService;
         this.logService = logService;
     }
@@ -351,26 +357,23 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<Map<String, Object>> getCourseItems(Object courseId) {
-//        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
+    public Map<String, Map<String, Object>> getCourseItems(Object courseId) {
+        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
 
-//        List<Map<String, Object>> chapters = chapterDao.findChaptersByCourseId(courseId);
+        List<Map<String, Object>> chapters = chapterDao.findChaptersByCourseId(courseId);
 
-        Map<String, Object> items = new HashMap<>();
-//        for (Map<String, Object> lesson : lessons) {
-//            lesson.put("itemType", "lesson");
-//            items.put("lesson-" + lesson.get("id"), lesson);
-//        }
+        Map<String, Map<String, Object>> items = new HashMap<>();
+        for (Map<String, Object> lesson : lessons) {
+            lesson.put("itemType", "lesson");
+            items.put("lesson-" + lesson.get("id"), lesson);
+        }
 
-//        for (Map<String, Object> chapter : chapters) {
-//            chapter.put("itemType", "chapter");
-//            items.put("chapter-" + chapter.get("id"), chapter);
-//        }
+        for (Map<String, Object> chapter : chapters) {
+            chapter.put("itemType", "chapter");
+            items.put("chapter-" + chapter.get("id"), chapter);
+        }
 
-//        uasort($items, function($item1, $item2){
-//            return $item1["seq"] > $item2["seq"];
-//        });
-        return new ArrayList<>();
+        return items;
     }
 
     @Override
@@ -562,6 +565,46 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished) {
         return null;
+    }
+
+    @Override
+    public Map<String, Object> createChapter(Map<String, Object> chapter) {
+        if (!ArrayUtil.inArray(chapter.get("type"), "chapter", "unit")) {
+            throw new RuntimeGoingException("章节类型不正确，添加失败！");
+        }
+
+        if ("unit".equals(chapter.get("type"))) {
+            this.putNextUnitNumberAndParentId(chapter);
+//            chapter.put("number", pid);
+//            chapter.put("parentId", pid);
+        } else {
+            chapter.put("number", this.getNextChapterNumber(chapter.get("courseId")));
+            chapter.put("parentId", 0);
+        }
+
+        chapter.put("seq", this.getNextCourseItemSeq(chapter.get("courseId")));
+        chapter.put("createdTime", System.currentTimeMillis());
+        return chapterDao.addChapter(chapter);
+    }
+
+    private void putNextUnitNumberAndParentId(Map<String, Object> chapter) {
+        Object courseId = chapter.get("id");
+        Map<String, Object> lastChapter = chapterDao.getLastChapterByCourseIdAndType(courseId, "chapter");
+        int parentId = MapUtil.isEmpty(lastChapter) ? 0 : ValueParser.parseInt(lastChapter.get("id"));
+        int unitNum = 1 + chapterDao.getChapterCountByCourseIdAndTypeAndParentId(courseId, "unit", parentId);
+        chapter.put("number", unitNum);
+        chapter.put("parentId", parentId);
+    }
+
+    private Object getNextChapterNumber(Object courseId) {
+        int counter = chapterDao.getChapterCountByCourseIdAndType(courseId, "chapter");
+        return counter + 1;
+    }
+
+    private Object getNextCourseItemSeq(Object courseId) {
+        int chapterMaxSeq = chapterDao.getChapterMaxSeqByCourseId(courseId);
+        int lessonMaxSeq = lessonDao.getLessonMaxSeqByCourseId(courseId);
+        return (chapterMaxSeq > lessonMaxSeq ? chapterMaxSeq : lessonMaxSeq) + 1;
     }
 
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {

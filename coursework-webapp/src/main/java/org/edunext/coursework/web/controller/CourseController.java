@@ -158,9 +158,9 @@ public class CourseController implements BlockRenderController {
 
         AppUser user = AppUser.getCurrentUser(request);
 
-        List<Map<String, Object>> items = courseService.getCourseItems(course.get("id"));
+        Map<String, Map<String, Object>> items = courseService.getCourseItems(course.get("id"));
         Map<String, List<Object>> mediaMap = new HashMap<>();
-        items.forEach(item -> {
+        items.values().forEach(item -> {
             if (EasyStringUtil.isNotBlank(item.get("mediaId"))) {
                 mediaMap.computeIfAbsent(String.valueOf(item.get("mediaId")),
                         k -> new ArrayList<>()).add(item.get("id"));
@@ -317,11 +317,11 @@ public class CourseController implements BlockRenderController {
         return member;
     }
 
-    private List<Map<String, Object>> groupCourseItems(List<Map<String, Object>> items) {
+    private List<Map<String, Object>> groupCourseItems(Map<String, Map<String, Object>> items) {
         List<Map<String, Object>> grouped = ListUtil.newArrayList();
 
         List<Map<String, Object>> list = ListUtil.newArrayList();
-        for (Map<String, Object> item : items) {
+        for (Map<String, Object> item : items.values()) {
             if ("chapter".equals(item.get("itemType"))) {
                 if (list.size() > 0) {
                     grouped.add(new ParamMap().add("type", "list").add("data", list).toMap());
@@ -356,11 +356,13 @@ public class CourseController implements BlockRenderController {
 
     @RequestMapping("/course/coursesBlock")
     @BlockRenderMethod
+    @SuppressWarnings("unchecked")
     public String coursesBlockAction(HttpServletRequest request,
                                      @RequestParam(defaultValue = "list") String view,
                                      @RequestParam(defaultValue = "default") String mode,
                                      Model model) {
 
+        // 此处强制类型转换需要使用注解@SuppressWarnings压制异常检查
         List<Map<String, Object>> courses = (List<Map<String, Object>>) request.getAttribute("courses");
         Set<Object> courseIds = new HashSet<>();
         Set<Object> userIds = new HashSet<>();
@@ -373,11 +375,8 @@ public class CourseController implements BlockRenderController {
 
         if ("true".equals(settingService.getSettingValue("classroom.enabled"))) {
 //            List<Classroom> classrooms = classroomService.findClassroomsByCourseIds(courseIds);
-
 //            $classroomIds = ArrayToolkit.column($classrooms,'classroomId');
-
 //            $courses[$key]['classroomCount']=count($classroomIds);
-
 //            if(count($classroomIds)>0) {
 //                $courses[$key]['classroom'] = classroomService.getClassroom(classroomIds[0]);
 //            }

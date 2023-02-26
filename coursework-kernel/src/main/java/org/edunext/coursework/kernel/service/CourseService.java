@@ -39,7 +39,7 @@ public interface CourseService {
 
     List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, int start, int limit);
 
-    List<Map<String, Object>> getCourseItems(Object id);
+    Map<String, Map<String, Object>> getCourseItems(Object id);
 
     Map<String, Object> getCourseMember(Object courseId, Integer userId);
 
@@ -68,4 +68,6 @@ public interface CourseService {
     int findUserTeachCourseCount(Integer userId, boolean onlyPublished);
 
     List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished);
+
+    Map<String, Object> createChapter(Map<String, Object> chapter);
 }

@@ -47,21 +47,25 @@
         课时管理
     </div>
 
-    <#if items??>
+    <#if !items??>
 
-    <div class="empty">暂无课时内容！</div>
+        <div class="empty">暂无课时内容！</div>
 
     </#if>
 
     <div class="panel-body">
-        <ul class="lesson-list sortable-list" id="course-item-list" data-sort-url="${ctx}/course/${course.id}/manage/lesson/sort">
+        <ul class="lesson-list sortable-list" id="course-item-list"
+            data-sort-url="${ctx}/course/${course.id}/manage/lesson/sort">
 
-            <#list items! as item,id>
-            {% if 'chapter' in id %}
-            {% include 'TopxiaWebBundle:CourseChapterManage:list-item.html.twig' with {chapter: item} %}
-            {% elseif 'lesson' in id %}
-            {% include 'TopxiaWebBundle:CourseLessonManage:list-item.html.twig' with {lesson: item, file: files[item.mediaId]|default(null)} %}
-            {% endif %}
+            <#list (items?keys)! as id>
+                <#if id?contains('chapter')>
+                    <#local chapter = items[id]/>
+                    <#include '/course/manage/chapter/list-item.ftl' />
+                <#elseif id?contains('lesson')>
+                    <#local lesson = items[id] />
+                    <#local file = files[lesson.mediaId]!/>
+                    <#include '/course/manage/lesson/list-item.ftl' />
+                </#if>
             </#list>
 
         </ul>

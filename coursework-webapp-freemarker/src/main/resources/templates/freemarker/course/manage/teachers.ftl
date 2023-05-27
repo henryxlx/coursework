@@ -1,4 +1,4 @@
-<#assign script_controller = 'course/manage/teachers'/>
+<#assign script_controller = 'course-manage/teachers'/>
 <#assign side_nav = 'teachers'/>
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle>教师设置 - ${blockTitleParent}</#macro>
@@ -44,16 +44,17 @@
             <div class="form-group" id="teachers-form-group">
                 <div class="col-md-2 control-label"><label>已添加教师</label></div>
                 <div class="col-md-8 controls">
-                    <ul class="list-group teacher-list-group sortable-list" id="teacher-list-group" data-role="list" style="display:none;"></ul>
+                    <ul class="list-group teacher-list-group sortable-list" id="teacher-list-group" data-role="list"
+                        style="display:none;"></ul>
                     <div class="input-group">
-                        <#assign url = "${ctx}/course/${course.id}/manage/teachersMatch?q=${query!}"/>
-                        <input class="form-control" id="teacher-input" type="text" data-role="item-input" data-url="{{ url }}">
+                        <input class="form-control" id="teacher-input" type="text" data-role="item-input"
+                               data-url="${ctx}/course/${course.id}/manage/teachersMatch?q=${query!}">
                         <span class="input-group-btn">
-              <button class="btn btn-default" type="button" data-role="item-add" >添加</button>
+              <button class="btn btn-default" type="button" data-role="item-add">添加</button>
             </span>
                     </div>
 
-                    <script type="text/plain" data-role="model">{{ teachers|json_encode|raw }}</script>
+                    <script type="text/plain" data-role="model">{teachers|json_encode}</script>
                     <script type="text/x-handlebars-template" data-role="item-template">
                         {% verbatim %}
 

@@ -1,4 +1,4 @@
-<#assign script_controller = 'course/manage/files'/>
+<#assign script_controller = 'course-manage/files'/>
 <#assign side_nav = 'files'/>
 <#assign tab = 'courseLesson'/>
 <#include '/course/manage/layout.ftl'/>

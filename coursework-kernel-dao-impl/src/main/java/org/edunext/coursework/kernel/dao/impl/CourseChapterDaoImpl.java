@@ -22,9 +22,16 @@ public class CourseChapterDaoImpl extends FastJdbcDaoSupport implements CourseCh
         return getJdbcTemplate().queryForList(sql, courseId);
     }
 
+    @Override
     public Map<String, Object> getChapter(Object id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
         return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(new HashMap<>(0));
+    }
+
+    @Override
+    public int deleteChapter(Object chapterId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        return getJdbcTemplate().update(sql, chapterId);
     }
 
     @Override

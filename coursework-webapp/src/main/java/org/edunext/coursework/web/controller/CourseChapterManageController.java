@@ -1,6 +1,7 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.util.ArrayUtil;
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -54,5 +56,17 @@ public class CourseChapterManageController {
         model.addAttribute("parentId", parentId);
 
         return "/course/manage/chapter/chapter-modal";
+    }
+
+    @RequestMapping("/course/{courseId}/manage/chapter/{chapterId}/delete")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer courseId, @PathVariable Integer chapterId,
+                                HttpServletRequest request) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+        if (MapUtil.isNotEmpty(course)) {
+            courseService.deleteChapter(courseId, chapterId);
+        }
+        return Boolean.TRUE;
     }
 }

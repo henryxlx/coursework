@@ -22,4 +22,14 @@ public class LessonDaoImpl implements LessonDao {
     public int getLessonMaxSeqByCourseId(Object courseId) {
         return 0;
     }
+
+    @Override
+    public List<Map<String, Object>> findLessonsByChapterId(Object chapterId) {
+        return null;
+    }
+
+    @Override
+    public void batchUpdateLesson(List<Map<String, Object>> lessons, String pKeyName, String... updateFieldNames) {
+
+    }
 }

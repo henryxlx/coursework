@@ -19,4 +19,8 @@ public interface CourseChapterDao {
     int getChapterCountByCourseIdAndType(Object courseId, String type);
 
     int getChapterMaxSeqByCourseId(Object courseId);
+
+    Map<String, Object> getChapter(Object chapterId);
+
+    int deleteChapter(Object chapterId);
 }

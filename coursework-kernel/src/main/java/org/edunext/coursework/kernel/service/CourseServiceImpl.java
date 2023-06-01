@@ -590,6 +590,43 @@ public class CourseServiceImpl implements CourseService {
         return chapterDao.addChapter(chapter);
     }
 
+    @Override
+    public int deleteChapter(Integer courseId, Integer deletedChapterId) {
+        Map<String, Object> deletedChapter = this.getChapter(courseId, deletedChapterId);
+        if (MapUtil.isEmpty(deletedChapter)) {
+            throw new RuntimeGoingException("章节(ID:" + deletedChapterId + ")不存在，删除失败！");
+        }
+
+        int nums = this.chapterDao.deleteChapter(deletedChapterId);
+
+        Object prevChapterId = "0";
+        int deletedChapterNumber = ValueParser.parseInt(deletedChapter.get("number"));
+        List<Map<String, Object>> chapters = this.getCourseChapters(courseId);
+        for (Map<String, Object> chapter : chapters) {
+            if (ValueParser.parseInt(chapter.get("number")) < deletedChapterNumber) {
+                prevChapterId = chapter.get("id");
+            }
+        }
+
+        List<Map<String, Object>> lessons = this.lessonDao.findLessonsByChapterId(deletedChapterId);
+        if (ListUtil.isNotEmpty(lessons)) {
+            String updateChapterId = String.valueOf(prevChapterId);
+            lessons.forEach(lesson -> lesson.put("chapterId", updateChapterId));
+            this.lessonDao.batchUpdateLesson(lessons, "id", "chapterId");
+        }
+        return nums;
+    }
+
+    public Map<String, Object> getChapter(Integer courseId, Integer chapterId) {
+        Map<String, Object> chapter = this.chapterDao.getChapter(chapterId);
+        return (MapUtil.isEmpty(chapter) || ValueParser.parseInt(chapter.get("courseId")) != courseId) ?
+                MapUtil.newHashMap(0) : chapter;
+    }
+
+    public List<Map<String, Object>> getCourseChapters(Integer courseId) {
+        return this.chapterDao.findChaptersByCourseId(courseId);
+    }
+
     private void putNextUnitNumberAndParentId(Map<String, Object> chapter) {
         Object courseId = chapter.get("id");
         Map<String, Object> lastChapter = chapterDao.getLastChapterByCourseIdAndType(courseId, "chapter");

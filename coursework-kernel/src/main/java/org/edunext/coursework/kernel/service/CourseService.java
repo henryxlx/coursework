@@ -70,4 +70,6 @@ public interface CourseService {
     List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished);
 
     Map<String, Object> createChapter(Map<String, Object> chapter);
+
+    int deleteChapter(Integer courseId, Integer chapterId);
 }

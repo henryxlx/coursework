@@ -158,9 +158,9 @@ public class CourseController implements BlockRenderController {
 
         AppUser user = AppUser.getCurrentUser(request);
 
-        Map<String, Map<String, Object>> items = courseService.getCourseItems(course.get("id"));
+        List<Map<String, Object>> items = courseService.getCourseItems(course.get("id"));
         Map<String, List<Object>> mediaMap = new HashMap<>();
-        items.values().forEach(item -> {
+        items.forEach(item -> {
             if (EasyStringUtil.isNotBlank(item.get("mediaId"))) {
                 mediaMap.computeIfAbsent(String.valueOf(item.get("mediaId")),
                         k -> new ArrayList<>()).add(item.get("id"));
@@ -317,11 +317,11 @@ public class CourseController implements BlockRenderController {
         return member;
     }
 
-    private List<Map<String, Object>> groupCourseItems(Map<String, Map<String, Object>> items) {
+    private List<Map<String, Object>> groupCourseItems(List<Map<String, Object>> items) {
         List<Map<String, Object>> grouped = ListUtil.newArrayList();
 
         List<Map<String, Object>> list = ListUtil.newArrayList();
-        for (Map<String, Object> item : items.values()) {
+        for (Map<String, Object> item : items) {
             if ("chapter".equals(item.get("itemType"))) {
                 if (list.size() > 0) {
                     grouped.add(new ParamMap().add("type", "list").add("data", list).toMap());

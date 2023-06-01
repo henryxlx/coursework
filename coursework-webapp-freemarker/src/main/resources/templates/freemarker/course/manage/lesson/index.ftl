@@ -57,12 +57,13 @@
         <ul class="lesson-list sortable-list" id="course-item-list"
             data-sort-url="${ctx}/course/${course.id}/manage/lesson/sort">
 
-            <#list (items?keys)! as id>
-                <#if id?contains('chapter')>
-                    <#local chapter = items[id]/>
+            <#list items! as item>
+                <#local itemType = item.itemType/>
+                <#if itemType?contains('chapter')>
+                    <#local chapter = item/>
                     <#include '/course/manage/chapter/list-item.ftl' />
-                <#elseif id?contains('lesson')>
-                    <#local lesson = items[id] />
+                <#elseif itemType?contains('lesson')>
+                    <#local lesson = item />
                     <#local file = files[lesson.mediaId]!/>
                     <#include '/course/manage/lesson/list-item.ftl' />
                 </#if>

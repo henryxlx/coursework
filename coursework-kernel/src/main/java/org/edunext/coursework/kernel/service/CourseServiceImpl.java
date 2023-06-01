@@ -357,22 +357,25 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<String, Map<String, Object>> getCourseItems(Object courseId) {
+    public List<Map<String, Object>> getCourseItems(Object courseId) {
         List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
 
         List<Map<String, Object>> chapters = chapterDao.findChaptersByCourseId(courseId);
 
-        Map<String, Map<String, Object>> items = new HashMap<>();
+        Map<String, Map<String, Object>> mapForItems = new HashMap<>();
         for (Map<String, Object> lesson : lessons) {
             lesson.put("itemType", "lesson");
-            items.put("lesson-" + lesson.get("id"), lesson);
+            mapForItems.put("lesson-" + lesson.get("id"), lesson);
         }
 
         for (Map<String, Object> chapter : chapters) {
             chapter.put("itemType", "chapter");
-            items.put("chapter-" + chapter.get("id"), chapter);
+            mapForItems.put("chapter-" + chapter.get("id"), chapter);
         }
 
+        List<Map<String, Object>> items = new ArrayList<>(mapForItems.values());
+        Comparator<Map<String, Object>> seqComparator = Comparator.comparingInt(item -> ValueParser.parseInt(item.get("seq")));
+        items.sort(seqComparator);
         return items;
     }
 

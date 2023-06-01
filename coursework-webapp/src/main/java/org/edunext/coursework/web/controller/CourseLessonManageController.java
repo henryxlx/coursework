@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -35,9 +32,9 @@ public class CourseLessonManageController {
     @RequestMapping("/course/{id}/manage/lesson")
     public String indexAction(HttpServletRequest request, @PathVariable Integer id, Model model) {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        Map<String, Map<String, Object>> courseItems = courseService.getCourseItems(course.get("id"));
+        List<Map<String, Object>> courseItems = courseService.getCourseItems(course.get("id"));
 
-        Set<Object> lessonIds = ArrayToolkit.column(courseItems.values(), "id");
+        Set<Object> lessonIds = ArrayToolkit.column(courseItems, "id");
 
         if ("1".equals(settingService.getSettingValue("homework.enabled"))) {
 //            model.addAttribute("exercises", "Homework.ExerciseService.findExercisesByLessonIds(lessonIds);
@@ -45,7 +42,7 @@ public class CourseLessonManageController {
         }
 
         Map<String, Set<Object>> mediaMap = new HashMap<>();
-        for (Map<String, Object> item : courseItems.values()) {
+        for (Map<String, Object> item : courseItems) {
             if (!"lesson".equals(item.get("itemType"))) {
                 continue;
             }

@@ -39,7 +39,7 @@ public interface CourseService {
 
     List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, int start, int limit);
 
-    Map<String, Map<String, Object>> getCourseItems(Object id);
+    List<Map<String, Object>> getCourseItems(Object id);
 
     Map<String, Object> getCourseMember(Object courseId, Integer userId);
 

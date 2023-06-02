@@ -58,7 +58,7 @@
 
         <button class="btn btn-link delete-chapter-btn" title="删除"
                 data-url="${ctx}/course/${course.id}/manage/chapter/${chapter.id}/delete"
-                data-chapter="${default.chapter_name!'章'}" data-part="${default.part_name!'节'}"><i
+                data-chapter="${(default.chapter_name)!'章'}" data-part="${(default.part_name)!'节'}"><i
                     class="glyphicon glyphicon-trash"></i></button>
 
     </div>

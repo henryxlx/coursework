@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.dao.impl;
 
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import org.edunext.coursework.kernel.dao.CourseChapterDao;
 import org.springframework.stereotype.Repository;
@@ -32,6 +33,13 @@ public class CourseChapterDaoImpl extends FastJdbcDaoSupport implements CourseCh
     public int deleteChapter(Object chapterId) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
         return getJdbcTemplate().update(sql, chapterId);
+    }
+
+    @Override
+    public Map<String, Object> updateChapter(Integer chapterId, Map<String, Object> fields) {
+        fields.put("id", chapterId);
+        int nums = updateMap(TABLE_NAME, fields, "id");
+        return nums > 0 ? getChapter(chapterId) : MapUtil.newHashMap(0);
     }
 
     @Override

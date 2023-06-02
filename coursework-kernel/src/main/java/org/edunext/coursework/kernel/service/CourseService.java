@@ -72,4 +72,8 @@ public interface CourseService {
     Map<String, Object> createChapter(Map<String, Object> chapter);
 
     int deleteChapter(Integer courseId, Integer chapterId);
+
+    Map<String, Object> getChapter(Integer courseId, Integer chapterId);
+
+    Map<String, Object> updateChapter(Integer courseId, Integer chapterId, Map<String, Object> fields);
 }

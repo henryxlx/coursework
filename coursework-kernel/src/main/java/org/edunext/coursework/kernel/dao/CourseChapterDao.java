@@ -23,4 +23,6 @@ public interface CourseChapterDao {
     Map<String, Object> getChapter(Object chapterId);
 
     int deleteChapter(Object chapterId);
+
+    Map<String, Object> updateChapter(Integer chapterId, Map<String, Object> fields);
 }

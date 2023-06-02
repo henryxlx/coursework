@@ -617,10 +617,21 @@ public class CourseServiceImpl implements CourseService {
         return nums;
     }
 
+    @Override
     public Map<String, Object> getChapter(Integer courseId, Integer chapterId) {
         Map<String, Object> chapter = this.chapterDao.getChapter(chapterId);
         return (MapUtil.isEmpty(chapter) || ValueParser.parseInt(chapter.get("courseId")) != courseId) ?
                 MapUtil.newHashMap(0) : chapter;
+    }
+
+    @Override
+    public Map<String, Object> updateChapter(Integer courseId, Integer chapterId, Map<String, Object> fields) {
+        Map<String, Object> chapter = this.getChapter(courseId, chapterId);
+        if (MapUtil.isEmpty(chapter)) {
+            throw new RuntimeGoingException("章节#" + chapterId + "不存在！");
+        }
+        fields = ArrayToolkit.part(fields, "title");
+        return this.chapterDao.updateChapter(chapterId, fields);
     }
 
     public List<Map<String, Object>> getCourseChapters(Integer courseId) {

@@ -35,8 +35,8 @@
 <#macro blockFooter>
     <button type="button" class="btn btn-link" data-dismiss="modal">取消</button>
     <button id="course-chapter-btn" data-submiting-text="正在提交" type="submit" class="btn btn-primary"
-            data-toggle="form-submit" data-target="#course-chapter-form" data-chapter="${default.chapter_name!'章'}"
-            data-part="${default.part_name!'节'}"><#if chapter??>保存<#else>添加</#if></button>
+            data-toggle="form-submit" data-target="#course-chapter-form" data-chapter="${(default.chapter_name)!'章'}"
+            data-part="${(default.part_name)!'节'}"><#if chapter??>保存<#else>添加</#if></button>
 </#macro>
 
 <#--{% set hideFooter = true %}-->

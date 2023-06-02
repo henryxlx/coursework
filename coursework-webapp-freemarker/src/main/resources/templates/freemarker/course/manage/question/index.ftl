@@ -1,29 +1,33 @@
-{% import 'TopxiaWebBundle::macro.html.twig' as macro %}
-<#assign script_controller = 'course/manage/list'/>
+<#assign script_controller = 'course-manage/list'/>
 <#assign side_nav = 'question'/>
-<#assign  parentId= 'parentQuestion.id||default(0)'/>
+<#assign  parentId= '(parentQuestion.id)!0'/>
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle>题目管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<div class="panel panel-default panel-col">
-    <div class="panel-heading">
-        <div class="pull-right">
-            <a href="${ctx}/course/${course.id}/manage/question/create/{type},{courseId:course.id,type:'choice',parentId:parentId, goto:app.request.server.get('REQUEST_URI')}) }}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 选择题</a>
-            <a href="${ctx}/course/${course.id}/manage/question/create/{type},{courseId:course.id,type:'fill',parentId:parentId, goto:app.request.server.get('REQUEST_URI')}) }}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 填空题</a>
-            <a href="${ctx}/course/${course.id}/manage/question/create/{type},{courseId:course.id,type:'determine',parentId:parentId, goto:app.request.server.get('REQUEST_URI')}) }}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 判断题</a>
-            <a href="${ctx}/course/${course.id}/manage/question/create/{type},{courseId:course.id,type:'essay',parentId:parentId, goto:app.request.server.get('REQUEST_URI')}) }}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 问答题</a>
-            <#if parentQuestion??>
-            <a href="${ctx}/course/${course.id}/manage/question/create/{type},{courseId:course.id,type:'material'}) }}" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 材料题</a>
-            </#if>
+    <div class="panel panel-default panel-col">
+        <div class="panel-heading">
+            <div class="pull-right">
+                <a href="${ctx}/course/${course.id}/manage/question/create/choice?parentId=parentId&gotoUrl=${request.requestUri}"
+                   class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 选择题</a>
+                <a href="${ctx}/course/${course.id}/manage/question/create/fill?parentId=parentId&gotoUrl=${request.requestUri}"
+                   class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 填空题</a>
+                <a href="${ctx}/course/${course.id}/manage/question/create/determine?parentId=parentId&gotoUrl=${request.requestUri}"
+                   class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 判断题</a>
+                <a href="${ctx}/course/${course.id}/manage/question/create/essay?parentId=parentId&gotoUrl=${request.requestUri}"
+                   class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 问答题</a>
+                <#if parentQuestion??>
+                    <a href="${ctx}/course/${course.id}/manage/question/create/material"
+                       class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 材料题</a>
+                </#if>
+            </div>
+            题目管理
         </div>
-        题目管理
-    </div>
 
-    <div class="panel-body " id="quiz-table-container">
+        <div class="panel-body " id="quiz-table-container">
 
-        <#if parentQuestion??>
+            <#if parentQuestion??>
         <ol class="breadcrumb">
             <li><a href="${ctx}/course/${course.id}/manage/question/create">题目管理</a></li>
             <li class="active">材料题</li>

@@ -639,7 +639,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     private void putNextUnitNumberAndParentId(Map<String, Object> chapter) {
-        Object courseId = chapter.get("id");
+        Object courseId = chapter.get("courseId");
         Map<String, Object> lastChapter = chapterDao.getLastChapterByCourseIdAndType(courseId, "chapter");
         int parentId = MapUtil.isEmpty(lastChapter) ? 0 : ValueParser.parseInt(lastChapter.get("id"));
         int unitNum = 1 + chapterDao.getChapterCountByCourseIdAndTypeAndParentId(courseId, "unit", parentId);

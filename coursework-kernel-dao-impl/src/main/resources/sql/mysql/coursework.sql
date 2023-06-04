@@ -106,3 +106,20 @@ CREATE TABLE `cw_course_lesson`
     `createdTime`   bigint unsigned NOT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_draft`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_draft`;
+CREATE TABLE `cw_course_draft`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `title`       varchar(255) NOT NULL COMMENT '标题',
+    `summary`     text COMMENT '摘要',
+    `courseId`    int(10) unsigned NOT NULL COMMENT '课程ID',
+    `content`     text COMMENT '内容',
+    `userId`      int(10) unsigned NOT NULL COMMENT '用户ID',
+    `lessonId`    int(10) unsigned NOT NULL COMMENT '课时ID',
+    `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;

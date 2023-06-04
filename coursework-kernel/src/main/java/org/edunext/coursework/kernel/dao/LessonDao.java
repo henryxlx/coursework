@@ -15,4 +15,10 @@ public interface LessonDao {
     List<Map<String, Object>> findLessonsByChapterId(Object chapterId);
 
     void batchUpdateLesson(List<Map<String, Object>> lessons, String pKeyName, String... updateFieldNames);
+
+    Map<String, Object> addLesson(Map<String, Object> lesson);
+
+    Integer getLessonCountByCourseId(Object courseId);
+
+    Integer sumLessonGiveCreditByCourseId(Object courseId);
 }

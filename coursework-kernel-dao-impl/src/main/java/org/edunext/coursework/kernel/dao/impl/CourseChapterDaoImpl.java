@@ -43,6 +43,12 @@ public class CourseChapterDaoImpl extends FastJdbcDaoSupport implements CourseCh
     }
 
     @Override
+    public Map<String, Object> getLastChapterByCourseId(Object courseId) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE  courseId = ? ORDER BY seq DESC LIMIT 1";
+        return getJdbcTemplate().queryForList(sql, courseId).stream().findFirst().orElse(MapUtil.newHashMap(0));
+    }
+
+    @Override
     public Map<String, Object> addChapter(Map<String, Object> chapter) {
         int id = insertMapReturnKey(TABLE_NAME, chapter).intValue();
         return this.getChapter(id);

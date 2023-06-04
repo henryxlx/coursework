@@ -2,6 +2,7 @@ package org.edunext.coursework.kernel.service;
 
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.toolbag.HtmlToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.image.ImageUtil;
@@ -17,6 +18,7 @@ import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
 import org.edunext.coursework.kernel.dao.CourseChapterDao;
 import org.edunext.coursework.kernel.dao.CourseDao;
+import org.edunext.coursework.kernel.dao.CourseDraftDao;
 import org.edunext.coursework.kernel.dao.LessonDao;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseDao courseDao;
     private final LessonDao lessonDao;
     private final CourseChapterDao chapterDao;
+    private final CourseDraftDao courseDraftDao;
     private final AppTagService tagService;
     private final AppLogService logService;
 
@@ -44,7 +47,7 @@ public class CourseServiceImpl implements CourseService {
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
-                             AppTagService tagService,
+                             CourseDraftDao courseDraftDao, AppTagService tagService,
                              AppLogService logService) {
 
         this.userService = userService;
@@ -54,6 +57,7 @@ public class CourseServiceImpl implements CourseService {
         this.courseDao = courseDao;
         this.lessonDao = lessonDao;
         this.chapterDao = chapterDao;
+        this.courseDraftDao = courseDraftDao;
         this.tagService = tagService;
         this.logService = logService;
     }
@@ -275,7 +279,7 @@ public class CourseServiceImpl implements CourseService {
         int nums = courseDao.updateCourse(id, fields);
         if (nums > 0) {
             logService.info(currentUser, "course", "update",
-                    String.format("更新课程《%s》(#%d)的信息", course.get("title"), course.get("id")), fields);
+                    String.format("更新课程《%s》(#%s)的信息", course.get("title"), course.get("id")), fields);
         }
     }
 
@@ -416,7 +420,7 @@ public class CourseServiceImpl implements CourseService {
         if (nums > 0) {
             course.putAll(updateMap);
             logService.info(currentUser, "course", "recommend",
-                    String.format("推荐课程《%s》(#%d),序号为%s", course.get("title"), course.get("id"), number));
+                    String.format("推荐课程《%s》(#%s),序号为%s", course.get("title"), course.get("id"), number));
         }
         return course;
     }
@@ -430,7 +434,7 @@ public class CourseServiceImpl implements CourseService {
 
         if (nums > 0) {
             logService.info(currentUser, "course", "cancel_recommend",
-                    String.format("取消推荐课程《%s》(#%d)", course.get("title"), course.get("id")));
+                    String.format("取消推荐课程《%s》(#%s)", course.get("title"), course.get("id")));
         }
     }
 
@@ -634,6 +638,147 @@ public class CourseServiceImpl implements CourseService {
         return this.chapterDao.updateChapter(chapterId, fields);
     }
 
+    @Override
+    public Map<String, Object> createLesson(Map<String, Object> lesson, AppUser currentUser) {
+        ArrayToolkit.filter(lesson, new ParamMap()
+                .add("courseId", 0)
+                .add("chapterId", 0)
+                .add("free", 0)
+                .add("title", "")
+                .add("summary", "")
+                .add("tags", new String[0])
+                .add("type", "text")
+                .add("content", "")
+                .add("media", new String[0])
+                .add("mediaId", 0)
+                .add("length", 0)
+                .add("startTime", 0)
+                .add("giveCredit", 0)
+                .add("requireCredit", 0)
+                .add("liveProvider", "none").toMap());
+
+        if (!ArrayToolkit.required(lesson, "courseId", "title", "type")) {
+            throw new RuntimeGoingException("参数缺失，创建课时失败！");
+        }
+
+        if (EasyStringUtil.isBlank(lesson.get("courseId"))) {
+            throw new RuntimeGoingException("添加课时失败，课程ID为空。");
+        }
+
+        Map<String, Object> course = this.getCourse(lesson.get("courseId"));
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("添加课时失败，课程不存在。");
+        }
+
+        if (!ArrayUtil.inArray(lesson.get("type"), "text", "audio", "video", "testpaper", "live", "ppt", "document", "flash")) {
+            throw new RuntimeGoingException("课时类型不正确，添加失败！");
+        }
+
+        this.fillLessonMediaFields(lesson);
+
+        //课程内容的过滤 @todo
+        // if(isset($lesson['content'])){
+        // 	$lesson['content'] = $this->purifyHtml($lesson['content']);
+        // }
+        if (EasyStringUtil.isNotBlank(lesson.get("title"))) {
+            lesson.put("title", HtmlToolkit.purifyHtml(lesson.get("title").toString()));
+        }
+
+        // 课程处于发布状态时，新增课时，课时默认的状态为“未发布"
+        lesson.put("status", "published".equals(course.get("status")) ? "unpublished" : "published");
+        lesson.put("free", EasyStringUtil.isBlank(lesson.get("free")) ? 0 : 1);
+        lesson.put("number", this.getNextLessonNumber(lesson.get("courseId")));
+        lesson.put("seq", this.getNextCourseItemSeq(lesson.get("courseId")));
+        lesson.put("userId", currentUser.getId());
+        lesson.put("createdTime", System.currentTimeMillis());
+
+        Map<String, Object> lastChapter = this.chapterDao.getLastChapterByCourseId(lesson.get("courseId"));
+        lesson.put("chapterId", MapUtil.isEmpty(lastChapter) ? 0 : lastChapter.get("id"));
+        if ("live".equals(lesson.get("type"))) {
+            lesson.put("endTime", ValueParser.parseInt(lesson.get("startTime")) +
+                    ValueParser.parseInt(lesson.get("length")) * 60);
+        }
+
+        lesson = this.lessonDao.addLesson(lesson);
+
+        // Increase the linked file usage count, if there's a linked file used by this lesson.
+        if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
+//            this.uploadFileService.increaseFileUsedCount(lesson.get("mediaId"));
+        }
+
+        this.updateCourseCounter(course.get("id"), new ParamMap()
+                .add("lessonNum", this.lessonDao.getLessonCountByCourseId(course.get("id")))
+                .add("giveCredit", this.lessonDao.sumLessonGiveCreditByCourseId(course.get("id"))).toMap());
+
+        this.logService.info(currentUser, "course", "add_lesson",
+                "添加课时《" + lesson.get("title") + "》(" + lesson.get("id") + ")", lesson);
+
+//        this.dispatchEvent("course.lesson.create",
+//                new ParamMap().add("courseId", lesson.get("courseId")).add("lessonId", lesson.get("id")).toMap());
+
+        return lesson;
+    }
+
+    private void fillLessonMediaFields(Map<String, Object> lesson) {
+        if (ArrayUtil.inArray(lesson.get("type"), "video", "audio", "ppt", "document", "flash")) {
+            Map<String, Object> media = EasyStringUtil.isBlank(lesson.get("media")) ?
+                    MapUtil.newHashMap(0) : JsonUtil.jsonDecodeMap(lesson.get("media"));
+            if (MapUtil.isEmpty(media) || EasyStringUtil.isBlank(media.get("source")) ||
+                    EasyStringUtil.isBlank(media.get("name"))) {
+
+                throw new RuntimeGoingException("media参数不正确，添加课时失败！");
+            }
+
+            if ("self".equals(media.get("source"))) {
+                media.put("id", media.get("id"));
+                if (EasyStringUtil.isBlank(media.get("id"))) {
+                    throw new RuntimeGoingException("media id参数不正确，添加/编辑课时失败！");
+                }
+//                Map<String, Object> file = this.uploadFileService.getFile(media.get("id"));
+//                if (MapUtil.isEmpty(file)) {
+//                    throw new RuntimeGoingException("文件不存在，添加/编辑课时失败！");
+//                }
+
+//                lesson.put("mediaId", file.get("id"));
+//                lesson.put("mediaName", file.get("filename"));
+                lesson.put("mediaSource", "self");
+                lesson.put("mediaUri", "");
+            } else {
+                if (EasyStringUtil.isBlank(media.get("uri"))) {
+                    throw new RuntimeGoingException("media uri参数不正确，添加/编辑课时失败！");
+                }
+                lesson.put("mediaId", 0);
+                lesson.put("mediaName", media.get("name"));
+                lesson.put("mediaSource", media.get("source"));
+                lesson.put("mediaUri", media.get("uri"));
+            }
+        } else if ("testpaper".equals(lesson.get("type"))) {
+            lesson.put("mediaId", lesson.get("mediaId"));
+        } else if ("live".equals(lesson.get("type"))) {
+        } else {
+            lesson.put("mediaId", 0);
+            lesson.put("mediaName", "");
+            lesson.put("mediaSource", "");
+            lesson.put("mediaUri", "");
+        }
+
+        lesson.remove("media");
+    }
+
+    @Override
+    public void deleteCourseDrafts(Integer courseId, Integer lessonId, Integer userId) {
+        this.courseDraftDao.deleteCourseDrafts(courseId, lessonId, userId);
+    }
+
+    @Override
+    public Map<String, Object> findCourseDraft(Object courseId, Integer lessonId, Integer userId) {
+        Map<String, Object> draft = this.courseDraftDao.findCourseDraft(courseId, lessonId, userId);
+        if (MapUtil.isEmpty(draft) || (ValueParser.parseInt(draft.get("userId")) != userId)) {
+            return MapUtil.newHashMap(0);
+        }
+        return draft;
+    }
+
     public List<Map<String, Object>> getCourseChapters(Integer courseId) {
         return this.chapterDao.findChaptersByCourseId(courseId);
     }
@@ -674,4 +819,17 @@ public class CourseServiceImpl implements CourseService {
 
         return course;
     }
+
+    public Integer getNextLessonNumber(Object courseId) {
+        return this.lessonDao.getLessonCountByCourseId(courseId) + 1;
+    }
+
+    public void updateCourseCounter(Object id, Map<String, Object> counter) {
+        Map<String, Object> fields = ArrayToolkit.part(counter, "rating", "ratingNum", "lessonNum", "giveCredit");
+        if (MapUtil.isEmpty(fields)) {
+            throw new RuntimeGoingException("参数不正确，更新计数器失败！");
+        }
+        this.courseDao.updateCourse(ValueParser.toInteger(id), fields);
+    }
+
 }

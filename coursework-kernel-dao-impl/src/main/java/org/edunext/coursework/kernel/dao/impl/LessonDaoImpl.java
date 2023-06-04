@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.dao.impl;
 
+import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import org.edunext.coursework.kernel.dao.LessonDao;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +12,7 @@ import java.util.Map;
  * @author xulixin
  */
 @Repository
-public class LessonDaoImpl implements LessonDao {
+public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
 
     @Override
     public List<Map<String, Object>> findLessonsByCourseId(Object courseId) {
@@ -31,5 +32,20 @@ public class LessonDaoImpl implements LessonDao {
     @Override
     public void batchUpdateLesson(List<Map<String, Object>> lessons, String pKeyName, String... updateFieldNames) {
 
+    }
+
+    @Override
+    public Map<String, Object> addLesson(Map<String, Object> lesson) {
+        return null;
+    }
+
+    @Override
+    public Integer getLessonCountByCourseId(Object courseId) {
+        return null;
+    }
+
+    @Override
+    public Integer sumLessonGiveCreditByCourseId(Object courseId) {
+        return null;
     }
 }

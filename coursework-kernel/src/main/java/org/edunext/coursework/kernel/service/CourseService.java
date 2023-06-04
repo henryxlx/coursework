@@ -76,4 +76,10 @@ public interface CourseService {
     Map<String, Object> getChapter(Integer courseId, Integer chapterId);
 
     Map<String, Object> updateChapter(Integer courseId, Integer chapterId, Map<String, Object> fields);
+
+    Map<String, Object> createLesson(Map<String, Object> lesson, AppUser currentUser);
+
+    void deleteCourseDrafts(Integer courseId, Integer lessonId, Integer userId);
+
+    Map<String, Object> findCourseDraft(Object courseId, Integer lessonId, Integer userId);
 }

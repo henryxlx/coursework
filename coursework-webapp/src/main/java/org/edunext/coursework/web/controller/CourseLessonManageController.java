@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -185,4 +186,16 @@ public class CourseLessonManageController {
         model.addAttribute("parentId", parentId);
         return "/course/manage/lesson/testpaper-modal";
     }
+
+    @RequestMapping("/course/{id}/manage/lesson/sort")
+    @ResponseBody
+    public Boolean sortAction(HttpServletRequest request, @PathVariable Integer id) {
+        String[] ids = request.getParameterValues("ids");
+        if (ids != null && ids.length > 0) {
+            Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+            this.courseService.sortCourseItems(course.get("id"), ids);
+        }
+        return Boolean.TRUE;
+    }
+
 }

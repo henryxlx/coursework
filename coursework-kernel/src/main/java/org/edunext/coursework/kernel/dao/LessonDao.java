@@ -21,4 +21,6 @@ public interface LessonDao {
     Integer getLessonCountByCourseId(Object courseId);
 
     Integer sumLessonGiveCreditByCourseId(Object courseId);
+
+    void updateLesson(Integer id, Map<String, Object> fields);
 }

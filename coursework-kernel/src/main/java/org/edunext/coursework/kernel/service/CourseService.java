@@ -82,4 +82,6 @@ public interface CourseService {
     void deleteCourseDrafts(Integer courseId, Integer lessonId, Integer userId);
 
     Map<String, Object> findCourseDraft(Object courseId, Integer lessonId, Integer userId);
+
+    void sortCourseItems(Object courseId, String[] itemIds);
 }

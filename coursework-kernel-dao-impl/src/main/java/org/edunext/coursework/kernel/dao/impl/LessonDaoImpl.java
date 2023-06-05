@@ -48,4 +48,9 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
     public Integer sumLessonGiveCreditByCourseId(Object courseId) {
         return null;
     }
+
+    @Override
+    public void updateLesson(Integer id, Map<String, Object> fields) {
+
+    }
 }

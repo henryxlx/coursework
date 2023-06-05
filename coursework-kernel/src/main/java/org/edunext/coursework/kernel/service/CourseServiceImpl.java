@@ -779,6 +779,74 @@ public class CourseServiceImpl implements CourseService {
         return draft;
     }
 
+    @Override
+    public void sortCourseItems(Object courseId, String[] itemIds) {
+        List<Map<String, Object>> items = this.getCourseItems(courseId);
+        if (itemIds.length != items.size()) {
+            throw new RuntimeGoingException("itemdIds参数不正确");
+        }
+
+        Map<String, Map<String, Object>> itemMap = this.getCourseItemMap(items);
+        for (String itemId : itemIds) {
+            if (!itemMap.containsKey(itemId)) {
+                throw new RuntimeGoingException("itemdIds参数不正确");
+            }
+        }
+
+        int lessonNum = 0, chapterNum = 0, unitNum = 0, seq = 0;
+        Map<String, Object> item, fields, currentChapter = new ParamMap().add("id", 0).toMap(),
+                rootChapter = new ParamMap().add("id", 0).toMap();
+
+        for (String itemId : itemIds) {
+            seq++;
+            String[] arr = itemId.split("-");
+            String type = arr != null && arr.length > 0 ? arr[0] : "";
+            switch (type) {
+                case "lesson":
+                    lessonNum++;
+                    item = itemMap.get(itemId);
+                    fields = new ParamMap().add("number", lessonNum).add("seq", seq).add("chapterId", currentChapter.get("id")).toMap();
+                    if (ValueParser.parseInt(fields.get("number")) != ValueParser.parseInt(item.get("number")) ||
+                            ValueParser.parseInt(fields.get("seq")) != ValueParser.parseInt(item.get("seq")) ||
+                            ValueParser.parseInt(fields.get("chapterId")) != ValueParser.parseInt(item.get("chapterId"))) {
+
+                        this.lessonDao.updateLesson(ValueParser.toInteger(item.get("id")), fields);
+                    }
+                    break;
+                case "chapter":
+                    item = currentChapter = itemMap.get(itemId);
+                    if ("unit".equals(item.get("type"))) {
+                        unitNum++;
+                        fields = new ParamMap().add("number", unitNum).add("seq", seq).add("parentId", rootChapter.get("id")).toMap();
+                    } else {
+                        chapterNum++;
+                        unitNum = 0;
+                        rootChapter = item;
+                        fields = new ParamMap().add("number", chapterNum).add("seq", seq).add("parentId", 0).toMap();
+                    }
+                    if (ValueParser.parseInt(fields.get("parentId")) != ValueParser.parseInt(item.get("parentId")) ||
+                            ValueParser.parseInt(fields.get("number")) != ValueParser.parseInt(item.get("number")) ||
+                            ValueParser.parseInt(fields.get("seq")) != ValueParser.parseInt(item.get("seq"))) {
+                        this.chapterDao.updateChapter(ValueParser.toInteger(item.get("id")), fields);
+                    }
+                    break;
+            }
+        }
+    }
+
+    private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {
+        Map<String, Map<String, Object>> mapForItems = new HashMap<>(items.size());
+        for (Map<String, Object> item : items) {
+            if ("lesson".equals(item.get("itemType"))) {
+                mapForItems.put("lesson-" + item.get("id"), item);
+            }
+            if ("chapter".equals(item.get("itemType"))) {
+                mapForItems.put("chapter-" + item.get("id"), item);
+            }
+        }
+        return mapForItems;
+    }
+
     public List<Map<String, Object>> getCourseChapters(Integer courseId) {
         return this.chapterDao.findChaptersByCourseId(courseId);
     }

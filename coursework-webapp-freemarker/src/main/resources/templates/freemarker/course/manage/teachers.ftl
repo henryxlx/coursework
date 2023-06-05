@@ -54,19 +54,19 @@
             </span>
                     </div>
 
-                    <script type="text/plain" data-role="model">{teachers|json_encode}</script>
+                    <script type="text/plain" data-role="model">${json_encode(teachers!'')}</script>
                     <script type="text/x-handlebars-template" data-role="item-template">
-                        {% verbatim %}
 
                         <li class="list-group-item clearfix" data-role="item">
                             <span class="glyphicon glyphicon-resize-vertical sort-handle"></span>
                             <img src="{{ avatar }}" class="avatar-small">
                             <span class="nickname">{{ nickname }}</span>
-                            <label class="visible-checkbox"><input type="checkbox" value="1" name="visible_{{ id }}" <#if isVisible??>checked="checked"</#if>> 显示</label>
+                            <label class="visible-checkbox"><input type="checkbox" value="1" name="visible_{{ id }}"
+                                                                   <#if isVisible??>checked="checked"</#if>> 显示</label>
                             <input type="hidden" name="ids[]" value="{{ id }}">
-                            <button  class="close delete-btn" data-role="item-delete" type="button" title="删除" >&times; </button>
+                            <button class="close delete-btn" data-role="item-delete" type="button" title="删除">&times;
+                            </button>
                         </li>
-                        {% endverbatim %}
                     </script>
 
                 </div>
@@ -78,7 +78,7 @@
                 </div>
             </div>
 
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('site') }}">
+            <input type="hidden" name="_csrf_token" value="${csrf_token('site')}">
 
         </form>
     </div>

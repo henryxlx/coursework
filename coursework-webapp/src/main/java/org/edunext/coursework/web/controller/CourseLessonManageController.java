@@ -145,4 +145,44 @@ public class CourseLessonManageController {
         lesson.put("minute", minutes);
         lesson.put("second", seconds);
     }
+
+    @RequestMapping("/course/{id}/manage/lesson/create/testpaper")
+    public String createTestPaperAction(HttpServletRequest request, @PathVariable Integer id, Model model) {
+        AppUser user = AppUser.getCurrentUser(request);
+        Map<String, Object> course = courseService.tryManageCourse(user, id);
+        String parentId = request.getParameter("parentId");
+        Map<String, Object> conditions = new ParamMap()
+                .add("target", "course-" + course.get("id"))
+                .add("status", "open").toMap();
+
+//        List<Map<String, Object>> testpapers = this.testpaperService.searchTestpapers(conditions,
+//                OrderBy.build(1).addDesc("createdTime"), 0, 1000);
+        List<Map<String, Object>> testpapers = new ArrayList<>(0);
+
+        Map<String, Object> paperOptions = null;
+        if (testpapers != null && testpapers.size() > 0) {
+            paperOptions = MapUtil.newHashMap(testpapers.size());
+            for (Map<String, Object> testpaper : testpapers) {
+                paperOptions.put(String.valueOf(testpaper.get("id")), testpaper.get("name"));
+            }
+        }
+
+        if ("POST".equals(request.getMethod())) {
+
+            Map<String, Object> lesson = ParamMap.toQueryAllMap(request);
+            lesson.put("type", "testpaper");
+            lesson.put("courseId", course.get("id"));
+            lesson = this.courseService.createLesson(lesson, user);
+            model.addAttribute("course", course);
+            model.addAttribute("lesson", lesson);
+            return "/course/manage/lesson/list-item";
+        }
+
+        Map<String, Object> features = settingService.get("enabled_features");
+        model.addAttribute("course", course);
+        model.addAttribute("paperOptions", paperOptions);
+        model.addAttribute("features", features.values());
+        model.addAttribute("parentId", parentId);
+        return "/course/manage/lesson/testpaper-modal";
+    }
 }

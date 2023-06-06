@@ -13,7 +13,7 @@
         <form class="form-inline">
             <div class="form-group">
                 <select class="form-control" name="type">
-                    <@select_options dict['threadType']! {}  RequestParameters['type']! '帖子类型'/>
+                    <@select_options dict['threadType']!{},  RequestParameters['type']!'帖子类型'/>
                 </select>
             </div>
 
@@ -21,7 +21,7 @@
 
             <div class="form-group">
                 <select class="form-control" name="threadType">
-                    {{ select_options({isStick:'置顶', isElite: '加精'}, app.request.get('threadType'), '属性') }}
+                    <@select_options {'isStick':'置顶', 'isElite':'加精'}, RequestParameters['threadType']!'属性' />
                 </select>
             </div>
 
@@ -29,7 +29,7 @@
 
             <div class="form-group">
                 <select class="form-control" name="keywordType">
-                    {{ select_options({title:'标题', content: '内容', courseId:'课程编号', courseTitle:'课程名'}, app.request.get('keywordType')) }}
+                    <@select_options {'title':'标题', 'content':'内容', 'courseId':'课程编号', 'courseTitle':'课程名'}, RequestParameters['keywordType']/>
                 </select>
             </div>
 

@@ -67,8 +67,9 @@
 
                         <div class="alert alert-info">
                             <ul>
-                                <li>支持<strong>mp4</strong>格式的视频文件上传，文件大小不能超过<strong>{{ upload_max_filesize()
-                                        }} </strong>。MP4文件的视频编码格式，请使用AVC(H264)编码，否则浏览器无法播放。
+                                <li>支持<strong>mp4</strong>格式的视频文件上传，文件大小不能超过
+                                    <strong>${upload_max_filesize()}</strong>。
+                                    MP4文件的视频编码格式，请使用AVC(H264)编码，否则浏览器无法播放。
                                 </li>
                                 <li>视频将上传到<strong>网站服务器</strong>，如需使用云视频，请联系CourseWork官方购买。使用云视频，将获得更好的播放体验。</li>
                             </ul>
@@ -168,7 +169,7 @@
                         <div class="alert alert-info">
                             <ul>
                                 <li>支持<strong>mp3</strong>格式的音频文件上传，且文件大小不能超过<strong>
-                                        {{ upload_max_filesize() }}
+                                        ${upload_max_filesize()}
                                     </strong>。
                                 </li>
                                 <li>音频将上传到<strong>网站服务器</strong></li>

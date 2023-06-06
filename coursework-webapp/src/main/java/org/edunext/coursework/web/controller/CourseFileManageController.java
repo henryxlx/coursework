@@ -76,6 +76,6 @@ public class CourseFileManageController {
 //        model.addAttribute("paginator", paginator);
         model.addAttribute("now", System.currentTimeMillis());
         model.addAttribute("storageSetting", settingService.get("storage"));
-        return "/course/manage/files/index";
+        return "/course/manage/file/index";
     }
 }

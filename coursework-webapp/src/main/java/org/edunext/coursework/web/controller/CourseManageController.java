@@ -177,7 +177,7 @@ public class CourseManageController {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
         model.addAttribute("course",course);
-        return "/course/manage/teachers";
+        return "/course/manage/teacher";
     }
 
     @RequestMapping("/course/{id}/manage/students")

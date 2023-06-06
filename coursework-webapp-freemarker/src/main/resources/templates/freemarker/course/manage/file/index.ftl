@@ -61,7 +61,7 @@
             </thead>
             <tbody>
             <#list courseLessons! as uploadFile>
-            <#include '/course/manage/files/tbody_tr.ftl' />
+            <#include '/course/manage/file/tbody_tr.ftl' />
             <#else>
             <tr class="empty"><td colspan="20">无文件记录</td></tr>
             </#list>

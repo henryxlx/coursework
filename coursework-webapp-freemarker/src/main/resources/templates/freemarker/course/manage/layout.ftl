@@ -12,23 +12,31 @@
                 <div class="list-group-panel">
                     <div class="list-group-heading">课程信息</div>
                     <div class="list-group">
-                        <a class="list-group-item <#if side_nav == 'base'>active</#if>" href="${ctx}/course/${course.id}/manage/base">基本信息</a>
-                        <a class="list-group-item <#if side_nav == 'detail'>active</#if>" href="${ctx}/course/${course.id}/manage/detail">详细信息</a>
-                        <a class="list-group-item <#if side_nav == 'picture'>active</#if>" href="${ctx}/course/${course.id}/manage/picture">课程图片</a>
+                        <a class="list-group-item <#if side_nav == 'base'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/base">基本信息</a>
+                        <a class="list-group-item <#if side_nav == 'detail'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/detail">详细信息</a>
+                        <a class="list-group-item <#if side_nav == 'picture'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/picture">课程图片</a>
 
-                        <a class="list-group-item <#if side_nav == 'lesson'>active</#if>" href="${ctx}/course/${course.id}/manage/lesson">课时管理</a>
+                        <a class="list-group-item <#if side_nav == 'lesson'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/lesson">课时管理</a>
                         <#if course.type?? && course.type == 'live'>
-                        <a class="list-group-item <#if side_nav == 'replay'>active</#if>" href="${ctx}/livecourse/${course.id}/manage/replay">录播管理</a>
+                            <a class="list-group-item <#if side_nav == 'replay'>active</#if>"
+                               href="${ctx}/livecourse/${course.id}/manage/replay">录播管理</a>
                         </#if>
-                        <a class="list-group-item <#if side_nav == 'files'>active</#if>" href="${ctx}/course/${course.id}/manage/files">文件管理</a>
+                        <a class="list-group-item <#if side_nav == 'file'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/file">文件管理</a>
                     </div>
                 </div><!-- /list-group-block -->
 
                 <div class="list-group-panel">
                     <div class="list-group-heading">课程设置</div>
                     <div class="list-group">
-                        <a class="list-group-item <#if side_nav == 'teachers'>active</#if>" href="${ctx}/course/${course.id}/manage/teachers">教师设置</a>
-                        <a class="list-group-item <#if side_nav == 'students'>active</#if>" href="${ctx}/course/${course.id}/manage/students">${setting('default.user_name')!'学员'}管理</a>
+                        <a class="list-group-item <#if side_nav == 'teacher'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/teacher">教师设置</a>
+                        <a class="list-group-item <#if side_nav == 'student'>active</#if>"
+                           href="${ctx}/course/${course.id}/manage/student">${setting('default.user_name')!'学员'}管理</a>
                     </div>
                 </div>
 

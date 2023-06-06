@@ -1,5 +1,5 @@
 <#assign script_controller = 'course-manage/teachers'/>
-<#assign side_nav = 'teachers'/>
+<#assign side_nav = 'teacher'/>
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle>教师设置 - ${blockTitleParent}</#macro>
 

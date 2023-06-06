@@ -33,7 +33,7 @@ public class CourseFileManageController {
         this.settingService = settingService;
     }
 
-    @RequestMapping("/course/{id}/manage/files")
+    @RequestMapping("/course/{id}/manage/file")
     public String fileAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
 
@@ -79,7 +79,7 @@ public class CourseFileManageController {
         return "/course/manage/file/index";
     }
 
-    @RequestMapping("/course/{id}/manage/upload/course/files/{targetType}")
+    @RequestMapping("/course/{id}/manage/upload/course/file/{targetType}")
     public String uploadCourseFilesAction(@PathVariable Integer id, @PathVariable String targetType,
                                           HttpServletRequest request, Model model) {
 
@@ -88,6 +88,6 @@ public class CourseFileManageController {
         model.addAttribute("storageSetting", this.settingService.get("storage"));
         model.addAttribute("targetType", targetType);
         model.addAttribute("targetId", id);
-        return "/course/manage/file/modal-upload-course-files";
+        return "/course/manage/file/modal-upload-course-file";
     }
 }

@@ -1,5 +1,5 @@
 <#assign script_controller = 'course-manage-file/index'/>
-<#assign side_nav = 'files'/>
+<#assign side_nav = 'file'/>
 <#assign tab = 'courseLesson'/>
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle>文件管理 - ${blockTitleParent}</#macro>
@@ -18,8 +18,8 @@
 
         <#if type?? && type == 'courselesson'>
             <button class="btn btn-info btn-sm pull-right"
-                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/files/courselesson"
-                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/files/courselesson"
+                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/file/courselesson"
+                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/file/courselesson"
                     data-storage="${storageSetting.upload_mode!}"
             >
                 <i class="glyphicon glyphicon-cloud-upload"></i>上传课时文件
@@ -27,8 +27,8 @@
 
         <#elseif type?? && type == 'coursematerial'>
             <button class="btn btn-info btn-sm pull-right"
-                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/files/coursematerial"
-                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/files/coursematerial"
+                    data-html5-url="${ctx}/course/${course.id}/manage/batch/upload/course/file/coursematerial"
+                    data-normal-url="${ctx}/course/${course.id}/manage/upload/course/file/coursematerial"
                     data-storage="${storageSetting.upload_mode!}"
             >
                 <i class="glyphicon glyphicon-cloud-upload"></i>上传备用资料文件
@@ -44,9 +44,9 @@
 
         <ul class="nav nav-tabs mbm">
             <li <#if type?? && type== 'courselesson'> class="active" </#if>>
-                <a href="${ctx}/course/${course.id}/manage/files?type=courselesson">课时文件</a></li>
+                <a href="${ctx}/course/${course.id}/manage/file?type=courselesson">课时文件</a></li>
             <li <#if type?? && type == 'coursematerial'> class="active" </#if>><a
-                        href="${ctx}/course/${course.id}/manage/files?type=coursematerial">备用资料文件</a></li>
+                        href="${ctx}/course/${course.id}/manage/file?type=coursematerial">备用资料文件</a></li>
         </ul>
 
         <table class="table table-striped table-hover" id="course-lesson-table">

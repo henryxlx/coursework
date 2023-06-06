@@ -1,5 +1,5 @@
 <#assign script_controller = 'course-manage/students'/>
-<#assign side_nav = 'students'/>
+<#assign side_nav = 'student'/>
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle><#if setting('default.user_name')?? && setting('default.user_name')='学员'><#else>学员</#if>管理-${blockTitleParent}</#macro>
 

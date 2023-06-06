@@ -172,7 +172,7 @@ public class CourseManageController {
         return mav;
     }
 
-    @RequestMapping("/course/{id}/manage/teachers")
+    @RequestMapping("/course/{id}/manage/teacher")
     public String teachersAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
@@ -180,12 +180,12 @@ public class CourseManageController {
         return "/course/manage/teacher";
     }
 
-    @RequestMapping("/course/{id}/manage/students")
+    @RequestMapping("/course/{id}/manage/student")
     public String studentsAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
         model.addAttribute("course",course);
-        return "/course/manage/students/index";
+        return "/course/manage/student/index";
     }
 
     @RequestMapping("/course/{id}/manage/question")

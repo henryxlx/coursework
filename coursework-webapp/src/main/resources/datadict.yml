@@ -15,3 +15,6 @@ data:
       text: 图文
       ppt: PPT
       document: 文档
+    threadType:
+      discussion: 话题
+      question: 问答

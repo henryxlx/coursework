@@ -78,4 +78,16 @@ public class CourseFileManageController {
         model.addAttribute("storageSetting", settingService.get("storage"));
         return "/course/manage/file/index";
     }
+
+    @RequestMapping("/course/{id}/manage/upload/course/files/{targetType}")
+    public String uploadCourseFilesAction(@PathVariable Integer id, @PathVariable String targetType,
+                                          HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course", course);
+        model.addAttribute("storageSetting", this.settingService.get("storage"));
+        model.addAttribute("targetType", targetType);
+        model.addAttribute("targetId", id);
+        return "/course/manage/file/modal-upload-course-files";
+    }
 }

@@ -16,10 +16,7 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
-import org.edunext.coursework.kernel.dao.CourseChapterDao;
-import org.edunext.coursework.kernel.dao.CourseDao;
-import org.edunext.coursework.kernel.dao.CourseDraftDao;
-import org.edunext.coursework.kernel.dao.LessonDao;
+import org.edunext.coursework.kernel.dao.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -39,6 +36,7 @@ public class CourseServiceImpl implements CourseService {
     private final LessonDao lessonDao;
     private final CourseChapterDao chapterDao;
     private final CourseDraftDao courseDraftDao;
+    private final CourseMemberDao memberDao;
     private final AppTagService tagService;
     private final AppLogService logService;
 
@@ -47,7 +45,8 @@ public class CourseServiceImpl implements CourseService {
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
-                             CourseDraftDao courseDraftDao, AppTagService tagService,
+                             CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
+                             AppTagService tagService,
                              AppLogService logService) {
 
         this.userService = userService;
@@ -58,6 +57,7 @@ public class CourseServiceImpl implements CourseService {
         this.lessonDao = lessonDao;
         this.chapterDao = chapterDao;
         this.courseDraftDao = courseDraftDao;
+        this.memberDao = memberDao;
         this.tagService = tagService;
         this.logService = logService;
     }
@@ -182,11 +182,11 @@ public class CourseServiceImpl implements CourseService {
                 .add("userId", course.get("userId"))
                 .add("role", "teacher")
                 .add("createdTime", System.currentTimeMillis()).toMap();
-        //MemberDao.addMember(member);
+        this.memberDao.addMember(member);
 
         course = getCourse(course.get("id"));
         logService.info(currentUser, "course", "create",
-                String.format("创建课程《%s》(#%d)", course.get("title"), course.get("id")));
+                String.format("创建课程《%s》(#%s)", course.get("title"), course.get("id")));
 
         return course;
     }
@@ -257,10 +257,10 @@ public class CourseServiceImpl implements CourseService {
             return true;
         }
 
-//        Map<String, Object> member = memberDao.getMemberByCourseIdAndUserId(courseId, userId);
-//        if (member != null && "teacher".equals(member.get("role"))) {
-//            return true;
-//        }
+        Map<String, Object> member = memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if (member != null && "teacher".equals(member.get("role"))) {
+            return true;
+        }
 
         return false;
     }
@@ -443,7 +443,7 @@ public class CourseServiceImpl implements CourseService {
         Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
         courseDao.updateCourse(courseId, new ParamMap().add("status", "published").toMap());
         logService.info(currentUser, "course", "publish",
-                String.format("发布课程《%s》(#%d)", course.get("title"), course.get("id")));
+                String.format("发布课程《%s》(#%s)", course.get("title"), course.get("id")));
     }
 
     @Override
@@ -451,7 +451,7 @@ public class CourseServiceImpl implements CourseService {
         Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
         courseDao.updateCourse(courseId, new ParamMap().add("status", "closed").toMap());
         logService.info(currentUser, "course", "close",
-                String.format("关闭课程《%s》(#%d)", course.get("title"), course.get("id")));
+                String.format("关闭课程《%s》(#%s)", course.get("title"), course.get("id")));
     }
 
     @Override
@@ -832,6 +832,69 @@ public class CourseServiceImpl implements CourseService {
                     break;
             }
         }
+    }
+
+    @Override
+    public void setCourseTeachers(AppUser currentUser, Integer courseId, List<Map<String, Object>> teachers) {
+        // 过滤数据
+        List<Map<String, Object>> teacherMembers = new ArrayList<>();
+        int index = 1;
+        for (Map<String, Object> teacher : teachers) {
+            if (EasyStringUtil.isBlank(teacher.get("id"))) {
+                throw new RuntimeGoingException("教师ID不能为空，设置课程(#" + courseId + ")教师失败");
+            }
+            AppUser user = this.userService.getUser(teacher.get("id"));
+            if (user == null) {
+                throw new RuntimeGoingException("用户不存在或没有教师角色，设置课程(#" + courseId + ")教师失败");
+            }
+
+            teacherMembers.add(new ParamMap()
+                    .add("courseId", courseId)
+                    .add("userId", user.getId())
+                    .add("role", "teacher")
+                    .add("seq", index++)
+                    .add("isVisible", EasyStringUtil.isBlank(teacher.get("isVisible")) ? 0 : 1)
+                    .add("createdTime", System.currentTimeMillis()).toMap());
+        }
+        // 先清除所有的已存在的教师学员
+        List<Map<String, Object>> existTeacherMembers = this.findCourseTeachers(courseId);
+        List<Object> ids = existTeacherMembers.stream().map(member -> member.get("id")).collect(Collectors.toList());
+        this.memberDao.batchDeleteMember(ids);
+
+        // 逐个插入新的教师的学员数据
+        List<Object> visibleTeacherIds = new ArrayList<>();
+        for (Map<String, Object> member : teacherMembers) {
+            // 存在学员信息，说明该用户先前是学生学员，则删除该学员信息。
+            Map<String, Object> existMember = this.memberDao.getMemberByCourseIdAndUserId(courseId, member.get("userId"));
+            if (MapUtil.isEmpty(existMember)) {
+                this.memberDao.deleteMember(existMember.get("id"));
+            }
+            this.memberDao.addMember(member);
+            if (EasyStringUtil.isNotBlank(member.get("isVisible"))) {
+                visibleTeacherIds.add(member.get("userId"));
+            }
+        }
+
+        Map<String, Object> dataMap = new HashMap<>(teacherMembers.size());
+        teacherMembers.forEach(x -> dataMap.put(String.valueOf(x.get("id")), x));
+        this.logService.info(currentUser, "course", "update_teacher",
+                "更新课程#" + courseId + "的教师", dataMap);
+
+        // 更新课程的teacherIds，该字段为课程可见教师的ID列表
+        Map<String, Object> fields = new ParamMap().add("teacherIds", JsonUtil.objectToString(visibleTeacherIds)).toMap();
+        this.courseDao.updateCourse(courseId, fields);
+
+//        this.dispatchEvent("course.teacher.update", new ParamMap().add("courseId", courseId).toMap());
+    }
+
+    @Override
+    public List<Map<String, Object>> findCourseTeachers(Integer courseId) {
+        return this.memberDao.findMembersByCourseIdAndRole(courseId, "teacher", 0, MAX_TEACHER);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit) {
+        return null;
     }
 
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {

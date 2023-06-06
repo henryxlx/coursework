@@ -8,10 +8,12 @@ import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastAppConst;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
+import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
+import com.jetwinner.webfast.mvc.extension.WebExtensionPack;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,18 +41,21 @@ public class CourseManageController {
     private final AppSettingService settingService;
     private final FastAppConst appConst;
     private final AppTagService tagService;
+    private final AppUserService userService;
 
     public CourseManageController(CourseService courseService,
                                   AppCategoryService categoryService,
                                   AppSettingService settingService,
                                   FastAppConst appConst,
-                                  AppTagService tagService) {
+                                  AppTagService tagService,
+                                  AppUserService userService) {
 
         this.courseService = courseService;
         this.categoryService = categoryService;
         this.settingService = settingService;
         this.appConst = appConst;
         this.tagService = tagService;
+        this.userService = userService;
     }
 
     @RequestMapping("/course/{id}/manage")
@@ -174,18 +180,46 @@ public class CourseManageController {
 
     @RequestMapping("/course/{id}/manage/teacher")
     public String teachersAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course = courseService.tryManageCourse(currentUser, id);
 
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
+        if ("POST".equals(request.getMethod())) {
+            String[] ids = request.getParameterValues("ids[]");
+            if (ids != null && ids.length > 0) {
+                List<Map<String, Object>> teachers = new ArrayList<>(ids.length);
+                for (String teacherId : ids) {
+                    String isVisible = request.getParameter("visible_" + teacherId);
+                    teachers.add(new ParamMap().add("id", teacherId)
+                            .add("isVisible", EasyStringUtil.isBlank(isVisible) ? 0 : 1).toMap());
+                }
+                this.courseService.setCourseTeachers(currentUser, id, teachers);
+                BaseControllerHelper.setFlashMessage("success", "教师设置成功！", request.getSession());
+            }
+
+            return "redirect:/course/" + id + "/manage/teacher";
+        }
+
+        List<Map<String, Object>> teacherMembers = this.courseService.findCourseTeachers(id);
+        Map<String, AppUser> users = this.userService.findUsersByIds(ArrayToolkit.column(teacherMembers, "userId"));
+
+        List<Map<String, Object>> teachers = new ArrayList<>(teacherMembers.size());
+        for (Map<String, Object> member : teacherMembers) {
+            String toUserId = String.valueOf(member.get("userId"));
+            if (users.get(toUserId) == null) {
+                continue;
+            }
+            teachers.add(new ParamMap()
+                    .add("id", toUserId)
+                    .add("nickname", users.get(toUserId).getUsername())
+                    .add("avatar", new WebExtensionPack(request).getFilePath(users.get(toUserId).getSmallAvatar(),
+                            "avatar.png"))
+                    .add("isVisible", EasyStringUtil.isNotBlank(member.get("isVisible")) ? Boolean.TRUE : Boolean.FALSE)
+                    .toMap());
+        }
+
+        model.addAttribute("teachers", "");
+        model.addAttribute("course", course);
         return "/course/manage/teacher";
-    }
-
-    @RequestMapping("/course/{id}/manage/student")
-    public String studentsAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
-        return "/course/manage/student/index";
     }
 
     @RequestMapping("/course/{id}/manage/question")

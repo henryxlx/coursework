@@ -12,6 +12,11 @@ import java.util.Set;
  */
 public interface CourseService {
 
+    /**
+     * 每个课程可添加的最大的教师人数
+     */
+    Integer MAX_TEACHER = 100;
+
     int searchCourseCount(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchCourses(Map<String, Object> conditions,
@@ -84,4 +89,10 @@ public interface CourseService {
     Map<String, Object> findCourseDraft(Object courseId, Integer lessonId, Integer userId);
 
     void sortCourseItems(Object courseId, String[] itemIds);
+
+    void setCourseTeachers(AppUser currentUser, Integer courseId, List<Map<String, Object>> teachers);
+
+    List<Map<String, Object>> findCourseTeachers(Integer courseId);
+
+    List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit);
 }

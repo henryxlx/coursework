@@ -190,7 +190,7 @@ public class CourseLessonManageController {
     @RequestMapping("/course/{id}/manage/lesson/sort")
     @ResponseBody
     public Boolean sortAction(HttpServletRequest request, @PathVariable Integer id) {
-        String[] ids = request.getParameterValues("ids");
+        String[] ids = request.getParameterValues("ids[]");
         if (ids != null && ids.length > 0) {
             Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
             this.courseService.sortCourseItems(course.get("id"), ids);

@@ -9,7 +9,7 @@
 		<div class="panel-heading">我的课程</span></div>
 		<div class="panel-body">
 			<#include '/my/course/nav-pill.ftl'/>
-			<#if courses??>
+			<#if courses?? && courses?size gt 0>
 				<@renderController path='/course/coursesBlock' params={'courses': courses, 'view': 'grid', 'mode': 'learn'} />
 				<@web_macro.paginator paginator! />
 			<#else>

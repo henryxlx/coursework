@@ -5,9 +5,11 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.SetUtil;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
+import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.block.BlockRenderController;
 import com.jetwinner.webfast.mvc.block.BlockRenderMethod;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.ThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,14 +28,17 @@ import java.util.Set;
 public class CourseBlockController implements BlockRenderController {
 
     private final CourseService courseService;
+    private final ThreadService threadService;
     private final AppSettingService settingService;
     private final AppUserService userService;
 
     public CourseBlockController(CourseService courseService,
+                                 ThreadService threadService,
                                  AppSettingService settingService,
                                  AppUserService userService) {
 
         this.courseService = courseService;
+        this.threadService = threadService;
         this.settingService = settingService;
         this.userService = userService;
     }
@@ -97,5 +102,15 @@ public class CourseBlockController implements BlockRenderController {
         model.addAttribute("users", this.userService.findUsersByIds(ArrayToolkit.column(students, "userId")));
         model.addAttribute("students", students);
         return "/course/latest-members-block";
+    }
+
+    @RequestMapping("/courseThread/latestBlock")
+    @BlockRenderMethod
+    public String latestThreadBlockAction(Integer courseId, Model model) {
+        model.addAttribute("threads",
+                this.threadService.searchThreads(new ParamMap().add("courseId", courseId).toMap(),
+                        "createdNotStick", 0, 10));
+
+        return "course/thread/latest-block";
     }
 }

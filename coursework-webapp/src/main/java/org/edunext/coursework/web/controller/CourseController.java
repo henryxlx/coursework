@@ -11,8 +11,6 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
-import com.jetwinner.webfast.mvc.block.BlockRenderController;
-import com.jetwinner.webfast.mvc.block.BlockRenderMethod;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +18,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -29,7 +26,7 @@ import java.util.*;
  * @author xulixin
  */
 @Controller("frontCourseController")
-public class CourseController implements BlockRenderController {
+public class CourseController {
 
     private final AppUserService userService;
     private final UserAccessControlService userAccessControlService;
@@ -346,46 +343,5 @@ public class CourseController implements BlockRenderController {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
         model.addAttribute("course", course);
         return "/course/manage/myquiz/list_course_test_paper.ftl";
-    }
-
-    @RequestMapping("/course/header")
-    @BlockRenderMethod
-    public String headerBlockAction() {
-        return "/course/header";
-    }
-
-    @RequestMapping("/course/coursesBlock")
-    @BlockRenderMethod
-    @SuppressWarnings("unchecked")
-    public String coursesBlockAction(HttpServletRequest request,
-                                     @RequestParam(defaultValue = "list") String view,
-                                     @RequestParam(defaultValue = "default") String mode,
-                                     Model model) {
-
-        // 此处强制类型转换需要使用注解@SuppressWarnings压制异常检查
-        List<Map<String, Object>> courses = (List<Map<String, Object>>) request.getAttribute("courses");
-        Set<Object> courseIds = new HashSet<>();
-        Set<Object> userIds = new HashSet<>();
-        courses.forEach(x -> {
-            String[] teacherIds = EasyStringUtil.explode(", ", x.get("teacherIds"));
-            x.put("teacherIds", teacherIds);
-            courseIds.add(x.get("id"));
-            userIds.add(teacherIds);
-        });
-
-        if ("true".equals(settingService.getSettingValue("classroom.enabled"))) {
-//            List<Classroom> classrooms = classroomService.findClassroomsByCourseIds(courseIds);
-//            $classroomIds = ArrayToolkit.column($classrooms,'classroomId');
-//            $courses[$key]['classroomCount']=count($classroomIds);
-//            if(count($classroomIds)>0) {
-//                $courses[$key]['classroom'] = classroomService.getClassroom(classroomIds[0]);
-//            }
-//            model.addAttribute("classrooms", classrooms);
-        }
-
-        model.addAttribute("courses", courses);
-        model.addAttribute("users", userService.findUsersByIds(userIds));
-        model.addAttribute("mode", mode);
-        return "/course/courses-block-" + view;
     }
 }

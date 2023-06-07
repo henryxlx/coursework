@@ -171,7 +171,7 @@ public class CourseController implements BlockRenderController {
 //        List<Map<String, Object>> files = uploadFileService.findFilesByIds(mediaIds);
 
         Map<String, Object> member = user != null ?
-                courseService.getCourseMember(course.get("id"), user.getId()) : new HashMap<>(0);
+                courseService.getCourseMember(ValueParser.toInteger(course.get("id")), user.getId()) : new HashMap<>(0);
 
         courseService.hitCourse(id);
 

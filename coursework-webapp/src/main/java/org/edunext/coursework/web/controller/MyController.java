@@ -24,4 +24,9 @@ public class MyController {
             return "redirect:/my/courses/learning";
         }
     }
+
+    @RequestMapping("/my/group")
+    public String myGroup() {
+        return "/my/group/group-member-center";
+    }
 }

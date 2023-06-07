@@ -123,3 +123,33 @@ CREATE TABLE `cw_course_draft`
     `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_member`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_member`;
+CREATE TABLE `cw_course_member`
+(
+    `id`                 int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '课程学员记录ID',
+    `courseId`           int(10) unsigned NOT NULL COMMENT '课程ID',
+    `classroomId`        INT(10) NOT NULL DEFAULT '0' COMMENT '班级ID',
+    `joinedType`         ENUM('course','classroom') NOT NULL DEFAULT 'course' COMMENT '购买班级或者课程加入学习',
+    `userId`             int(10) unsigned NOT NULL COMMENT '学员ID',
+    `orderId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学员购买课程时的订单ID',
+    `deadline`           int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学习最后期限',
+    `levelId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户以会员的方式加入课程学员时的会员ID',
+    `learnedNum`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已学课时数',
+    `credit`             int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学员已获得的学分',
+    `noteNum`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '笔记数目',
+    `noteLastUpdateTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '最新的笔记更新时间',
+    `isLearned`          tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已学完',
+    `seq`                int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序序号',
+    `remark`             varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+    `isVisible`          tinyint(2) NOT NULL DEFAULT '1' COMMENT '可见与否，默认为可见',
+    `role`               enum('student','teacher') NOT NULL DEFAULT 'student' COMMENT '课程会员角色',
+    `locked`             tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '学员是否被锁定',
+    `deadlineNotified`   int(10) NOT NULL DEFAULT '0' COMMENT '有效期通知',
+    `createdTime`        bigint unsigned NOT NULL COMMENT '学员加入课程时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `courseId` (`courseId`,`userId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

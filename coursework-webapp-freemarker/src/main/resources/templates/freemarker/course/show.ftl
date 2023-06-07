@@ -2,7 +2,7 @@
 <#assign metaKeywords>${(category.name)!}<#list tags as tag>${tag.name}</#list>${course.title}${setting('site.name')}</#assign>
 <#assign metaDescription = course.about!''?substring(0, 150) />
 
-<#include '/default/layout.ftl'>
+<#include '/layout.ftl'>
 
 <#macro blockTitle>课程存档 - ${blockTitleParent}</#macro>
 

@@ -24,4 +24,6 @@ public interface CourseDao {
     List<Map<String, Object>> findCoursesByLikeTitle(Object title);
 
     List<Map<String, Object>> findCoursesByIds(Set<Object> ids);
+
+    void waveCourse(Integer id, String field, Integer diff);
 }

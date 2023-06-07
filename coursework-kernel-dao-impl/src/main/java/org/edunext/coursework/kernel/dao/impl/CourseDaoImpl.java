@@ -1,10 +1,12 @@
 package org.edunext.coursework.kernel.dao.impl;
 
+import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.CourseDao;
 import org.springframework.stereotype.Repository;
 
@@ -78,6 +80,16 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
         String marks = repeatQuestionMark(ids.size());
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
         return getJdbcTemplate().queryForList(sql, ids.toArray());
+    }
+
+    @Override
+    public void waveCourse(Integer id, String field, Integer diff) {
+        String[] fields = {"hitNum"};
+        if (!ArrayUtil.inArray(field, fields)) {
+            throw new RuntimeGoingException(String.format("%s字段不允许增减，只有%s才被允许增减", field, Arrays.toString(fields)));
+        }
+        String sql = String.format("UPDATE %s SET %s = %s + ? WHERE id = ? LIMIT 1", TABLE_NAME, field, field);
+        getJdbcTemplate().update(sql, diff, id);
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

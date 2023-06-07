@@ -331,7 +331,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Integer searchMemberCount(Map<String, Object> conditions) {
-        return null;
+        this.prepareCourseConditions(conditions);
+        return this.memberDao.searchMemberCount(conditions);
     }
 
     @Override

@@ -17,4 +17,6 @@ public interface CourseMemberDao {
     void addMember(Map<String, Object> member);
 
     List<Map<String, Object>> findMembersByCourseIdAndRole(Integer courseId, String roleName, Integer start, Integer limit);
+
+    Integer searchMemberCount(Map<String, Object> conditions);
 }

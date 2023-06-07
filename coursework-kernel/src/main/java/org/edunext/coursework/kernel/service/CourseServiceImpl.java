@@ -206,50 +206,8 @@ public class CourseServiceImpl implements CourseService {
             throw new RuntimeGoingException("您不是课程的教师或管理员，无权操作！");
         }
 
-        unserialize(course);
+        CourseSerialize.unserialize(course);
         return course;
-    }
-
-    private void objectToArray(Map<String, Object> map, String key) {
-        Object obj = map.get(key);
-        if (EasyStringUtil.isNotBlank(obj)) {
-            String s = String.valueOf(obj);
-            if (s.startsWith("|")) {
-                s = s.substring(1);
-            }
-            map.put(key, s.split("\\|"));
-        }
-    }
-
-    public void unserialize(Map<String, Object> course) {
-        if (course == null || course.isEmpty()) {
-            return;
-        }
-
-        objectToArray(course, "goals");
-        objectToArray(course, "audiences");
-        objectToArray(course, "teacherIds");
-    }
-
-    private void arrayToString(Map<String, Object> model, String key) {
-        Object objTarget = model.get(key);
-        boolean needSerialize = true;
-        if (ArrayUtil.isNotArray(objTarget)) {
-            if (EasyStringUtil.isNotBlank(objTarget)) {
-                objTarget = new Object[]{objTarget};
-            } else {
-                needSerialize = false;
-            }
-        }
-        if (needSerialize) {
-            model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
-        }
-    }
-
-    private void serializeCourse(Map<String, Object> course) {
-        arrayToString(course, "goals");
-        arrayToString(course, "audiences");
-        arrayToString(course, "teacherIds");
     }
 
     private boolean hasCourseManagerRole(Integer courseId, Integer userId) {
@@ -274,7 +232,7 @@ public class CourseServiceImpl implements CourseService {
 
         this.filterCourseFields(fields);
 
-        this.serializeCourse(fields);
+        CourseSerialize.serialize(fields);
 
         int nums = courseDao.updateCourse(id, fields);
         if (nums > 0) {
@@ -352,7 +310,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Map<String, Object> getCourse(Integer id) {
         Map<String, Object> course = courseDao.getCourse(id);
-        unserialize(course);
+        CourseSerialize.unserialize(course);
         return course;
     }
 
@@ -484,7 +442,7 @@ public class CourseServiceImpl implements CourseService {
         }
 
         logService.info(currentUser, "course", "delete",
-                String.format("删除课程《%s》(#%d)", course.get("title"), course.get("id")));
+                String.format("删除课程《%s》(#%s)", course.get("title"), course.get("id")));
 
         return true;
     }
@@ -550,7 +508,7 @@ public class CourseServiceImpl implements CourseService {
         if (courseCount <= 1) {
         }
         logService.info(currentUser, "course", "update_picture",
-                String.format("更新课程《%s》(#%d)图片", course.get("title"), course.get("id")), fields.toMap());
+                String.format("更新课程《%s》(#%s)图片", course.get("title"), course.get("id")), fields.toMap());
 
         courseDao.updateCourse(ValueParser.toInteger(courseId), fields.toMap());
     }
@@ -964,4 +922,49 @@ public class CourseServiceImpl implements CourseService {
         this.courseDao.updateCourse(ValueParser.toInteger(id), fields);
     }
 
+}
+
+class CourseSerialize {
+
+    private static void objectToArray(Map<String, Object> map, String key) {
+        Object obj = map.get(key);
+        if (EasyStringUtil.isNotBlank(obj)) {
+            String s = String.valueOf(obj);
+            if (s.startsWith("|")) {
+                s = s.substring(1);
+            }
+            map.put(key, s.split("\\|"));
+        }
+    }
+
+    public static void unserialize(Map<String, Object> course) {
+        if (course == null || course.isEmpty()) {
+            return;
+        }
+
+        objectToArray(course, "goals");
+        objectToArray(course, "audiences");
+        objectToArray(course, "teacherIds");
+    }
+
+    private static void arrayToString(Map<String, Object> model, String key) {
+        Object objTarget = model.get(key);
+        boolean needSerialize = true;
+        if (ArrayUtil.isNotArray(objTarget)) {
+            if (EasyStringUtil.isNotBlank(objTarget)) {
+                objTarget = new Object[]{objTarget};
+            } else {
+                needSerialize = false;
+            }
+        }
+        if (needSerialize) {
+            model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
+        }
+    }
+
+    public static void serialize(Map<String, Object> course) {
+        arrayToString(course, "goals");
+        arrayToString(course, "audiences");
+        arrayToString(course, "teacherIds");
+    }
 }

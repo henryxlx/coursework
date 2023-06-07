@@ -170,7 +170,8 @@ public class CourseServiceImpl implements CourseService {
                 "tags", "price", "startTime", "endTime", "locationId", "address");
 
         course.put("status", "draft");
-        course.put("about", EasyStringUtil.isNotBlank(fields.get("about")) ? fields.get("about") : ""); // purifyHtml($course["about"])
+        course.put("about", EasyStringUtil.isNotBlank(fields.get("about")) ?
+                EasyStringUtil.purifyHtml(String.valueOf(fields.get("about"))) : "");
         course.put("tags", EasyStringUtil.isNotBlank(fields.get("tags")) ? fields.get("tags") : "");
         course.put("userId", currentUser.getId());
         course.put("createdTime", System.currentTimeMillis());
@@ -287,7 +288,10 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Map<String, Object>> findLessonsByIds(Set<Object> ids) {
-        return null;
+        List<Map<String, Object>> lessons = this.lessonDao.findLessonsByIds(ids);
+//        LessonSerialize.unserializes(lessons);
+//        return ArrayToolkit.index(lessons, "id");
+        return lessons;
     }
 
     @Override
@@ -303,7 +307,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Integer searchLessonCount(Map<String, Object> conditions) {
-        return null;
+        return this.lessonDao.searchLessonCount(conditions);
     }
 
     public Map<String, Object> getCourse(Object id) {
@@ -319,7 +323,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, int start, int limit) {
-        return new ArrayList<>();
+        return this.lessonDao.searchLessons(conditions, orderBy, start, limit);
     }
 
     @Override
@@ -346,13 +350,19 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Map<String, Object> getCourseMember(Object courseId, Integer userId) {
-        return null;
+    public Map<String, Object> getCourseMember(Integer courseId, Integer userId) {
+        return this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
     }
 
     @Override
     public void hitCourse(Integer id) {
+        Map<String, Object> checkCourse = this.getCourse(id);
 
+        if (MapUtil.isEmpty(checkCourse)) {
+            throw new RuntimeGoingException("课程不存在，操作失败。");
+        }
+
+        this.courseDao.waveCourse(id, "hitNum", +1);
     }
 
     @Override
@@ -517,23 +527,64 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public int findUserLeaningCourseCount(Integer userId) {
-        return 0;
+    public int findUserLeaningCourseCount(Integer userId, Map<String, Object> filters) {
+        if (filters != null && EasyStringUtil.isNotBlank(filters.get("type"))) {
+            return this.memberDao.findMemberCountByUserIdAndCourseTypeAndIsLearned(userId, "student",
+                    String.valueOf(filters.get("type")), 0);
+        }
+        return this.memberDao.findMemberCountByUserIdAndRoleAndIsLearned(userId, "student", 0);
     }
 
     @Override
-    public List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit) {
-        return null;
+    public List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit, Map<String, Object> filters) {
+        List<Map<String, Object>> members;
+        if (filters != null && EasyStringUtil.isNotBlank(filters.get("type"))) {
+            members = this.memberDao.findMembersByUserIdAndCourseTypeAndIsLearned(userId, "student",
+                    String.valueOf(filters.get("type")), "0", start, limit);
+        } else {
+            members = this.memberDao.findMembersByUserIdAndRoleAndIsLearned(userId, "student", "0", start, limit);
+        }
+
+        Map<String, Map<String, Object>> courses = ArrayToolkit.index(
+                this.findCoursesByIds(ArrayToolkit.column(members, "courseId")), "id");
+
+        List<Map<String, Object>> sortedCourses = new ArrayList<>();
+        members.forEach(member -> {
+            Map<String, Object> course = courses.get(member.get("courseId"));
+            if (MapUtil.isEmpty(course)) {
+                return;
+            }
+            course.put("memberIsLearned", 0);
+            course.put("memberLearnedNum", member.get("learnedNum"));
+            sortedCourses.add(course);
+        });
+        return sortedCourses;
     }
 
     @Override
     public int findUserTeachCourseCount(Integer userId, boolean onlyPublished) {
-        return 0;
+        return this.memberDao.findMemberCountByUserIdAndRole(userId, "teacher", onlyPublished);
     }
 
     @Override
     public List<Map<String, Object>> findUserTeachCourses(Integer userId, Integer start, Integer limit, boolean onlyPublished) {
-        return null;
+        List<Map<String, Object>> members = this.memberDao.findMembersByUserIdAndRole(userId, "teacher", start, limit, onlyPublished);
+
+        Map<String, Map<String, Object>> courses = ArrayToolkit.index(
+                this.findCoursesByIds(ArrayToolkit.column(members, "courseId")), "id");
+
+        /**
+         * @todo 以下排序代码有共性，需要重构成一函数。
+         */
+        List<Map<String, Object>> sortedCourses = new ArrayList<>();
+        members.forEach(member -> {
+            Map<String, Object> course = courses.get(member.get("courseId"));
+            if (MapUtil.isEmpty(course)) {
+                return;
+            }
+            sortedCourses.add(course);
+        });
+        return sortedCourses;
     }
 
     @Override
@@ -856,7 +907,8 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit) {
-        return null;
+        this.prepareCourseConditions(conditions);
+        return this.memberDao.searchMember(conditions, start, limit);
     }
 
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {

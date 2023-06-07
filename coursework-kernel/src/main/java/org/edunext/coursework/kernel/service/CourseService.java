@@ -46,7 +46,7 @@ public interface CourseService {
 
     List<Map<String, Object>> getCourseItems(Object id);
 
-    Map<String, Object> getCourseMember(Object courseId, Integer userId);
+    Map<String, Object> getCourseMember(Integer courseId, Integer userId);
 
     void hitCourse(Integer id);
 
@@ -66,9 +66,9 @@ public interface CourseService {
 
     void changeCoursePicture(AppUser currentUser, Object id, String pictureFilePath, Map<String, Object> options);
 
-    int findUserLeaningCourseCount(Integer userId);
+    int findUserLeaningCourseCount(Integer userId, Map<String, Object> filters);
 
-    List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit);
+    List<Map<String, Object>> findUserLeaningCourses(Integer userId, Integer start, Integer limit, Map<String, Object> filters);
 
     int findUserTeachCourseCount(Integer userId, boolean onlyPublished);
 

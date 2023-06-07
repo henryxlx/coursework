@@ -22,11 +22,11 @@ public class MyCourseController {
     public String learningAction(HttpServletRequest request, Model model) {
         AppUser currentUser = AppUser.getCurrentUser(request);
         Paginator paginator = new Paginator(request,
-                courseService.findUserLeaningCourseCount(currentUser.getId()),
+                courseService.findUserLeaningCourseCount(currentUser.getId(), null),
                 12);
 
         model.addAttribute("courses", courseService.findUserLeaningCourses(currentUser.getId(),
-                paginator.getOffsetCount(), paginator.getPerPageCount()));
+                paginator.getOffsetCount(), paginator.getPerPageCount(), null));
 
         model.addAttribute("paginator", paginator);
 

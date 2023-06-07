@@ -1,29 +1,27 @@
-{% extends 'TopxiaWebBundle:My:layout.html.twig' %}
+<#assign side_nav = 'my-questions'>
+<#include '/my/layout.ftl'/>
 
-{% block title %}我的问答 - {{ parent() }}{% endblock %}
+<#macro blockTitle>我的问答 - ${blockTitleParent}</#macro>
 
-{% set side_nav = 'my-questions' %}
-
-{% block main %}
-
-
-<div class="panel panel-default panel-col">
+<#macro blockMain>
 
 
-    <div class="panel-heading">我的问答
+    <div class="panel panel-default panel-col">
+
+
+        <div class="panel-heading">我的问答
+        </div>
+
+        <div class="panel-body">
+
+            <#if threads??>
+                <#include '/my/thread/thread-list.ftl'/>
+            <#else>
+                <div class="empty">暂无提问的记录</div>
+            </#if>
+
+        </div>
+
     </div>
 
-    <div class="panel-body">
-
-        {% if threads %}
-        {% include 'TopxiaWebBundle:MyThread:thread-list.html.twig' with {type: 'question'} %}
-        {% else %}
-        <div class="empty">暂无提问的记录</div>
-        {% endif %}
-
-    </div>
-
-</div>
-
-
-{% endblock %}
+</#macro>

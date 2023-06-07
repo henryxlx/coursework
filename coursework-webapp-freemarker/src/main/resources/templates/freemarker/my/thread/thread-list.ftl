@@ -1,18 +1,16 @@
-{% set type = type|default('discussion') %}
-
 <ul class="media-list">
-    {% for thread in threads %}
-    {% if courses %}
-    {% set course = courses[thread.courseId]|default(null) %}
-    <li class="media">
-        <div class="media-body">
-            {% if thread.postNum > 0 %}
-            <span class="badge pull-right" style="margin-top:15px;">{{ thread.postNum }}</span>
-            {% endif %}
-            <div class="mbm">
-                {% if thread.type == 'question' %}
-                <span class="label label-info" title="问答帖">问</span>
-                {% endif %}
+    <#list threads! as thread>
+        <#if courses??>
+            {% set course = courses[thread.courseId]|default(null) %}
+            <li class="media">
+                <div class="media-body">
+                    {% if thread.postNum > 0 %}
+                    <span class="badge pull-right" style="margin-top:15px;">{{ thread.postNum }}</span>
+                    {% endif %}
+                    <div class="mbm">
+                        {% if thread.type == 'question' %}
+                        <span class="label label-info" title="问答帖">问</span>
+                        {% endif %}
 
                 <a href="{{ path('course_thread_show', {courseId:thread.courseId, id:thread.id}) }}"><strong>{{ thread.title
                         }}</strong></a>
@@ -43,19 +41,19 @@
                 {% endif %}
                 <span>{{ thread.hitNum }}浏览</span>
             </div>
-        </div>
-    </li>
-    {% else %}
-    {% if type == 'question' %}
-    <li class="empty">你还没提过问题</li>
-    {% else %}
-    <li class="empty">你还没发表过话题</li>
-    {% endif %}
+                </div>
+            </li>
+        <#else>
+            <#if type == 'question'>
+                <li class="empty">你还没提过问题</li>
+            <#else>
+                <li class="empty">你还没发表过话题</li>
+            </#if>
 
-    {% endif %}
+        </#if>
 
-    {% endfor %}
+    </#list>
 
 </ul>
 
-{{ web_macro.paginator(paginator) }} 
+<@web_macro.paginator paginator! />

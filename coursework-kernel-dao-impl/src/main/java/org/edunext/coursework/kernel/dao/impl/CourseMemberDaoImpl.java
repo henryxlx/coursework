@@ -50,6 +50,41 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
         return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
     }
 
+    @Override
+    public List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit) {
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public Integer findMemberCountByUserIdAndRole(Integer userId, String role, boolean onlyPublished) {
+        return 0;
+    }
+
+    @Override
+    public Integer findMemberCountByUserIdAndCourseTypeAndIsLearned(Integer userId, String role, String type, Integer isLearned) {
+        return 0;
+    }
+
+    @Override
+    public Integer findMemberCountByUserIdAndRoleAndIsLearned(Integer userId, String role, Integer isLearned) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> findMembersByUserIdAndRole(Integer userId, String role, Integer start, Integer limit, boolean onlyPublished) {
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public List<Map<String, Object>> findMembersByUserIdAndCourseTypeAndIsLearned(Integer userId, String role, String type, String isLearned, Integer start, Integer limit) {
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public List<Map<String, Object>> findMembersByUserIdAndRoleAndIsLearned(Integer userId, String role, String isLearned, Integer start, Integer limit) {
+        return new ArrayList<>(0);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME, "course_member")

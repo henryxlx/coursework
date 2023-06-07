@@ -8,9 +8,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.CourseDao;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
@@ -61,6 +59,25 @@ public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
     @Override
     public int deleteCourse(Integer courseId) {
         return getJdbcTemplate().update("DELETE FROM " + TABLE_NAME + " WHERE id = ?", courseId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findCoursesByLikeTitle(Object title) {
+        if (EasyStringUtil.isBlank(title)) {
+            return new ArrayList<>(0);
+        }
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE `title` LIKE ?; ";
+        return getJdbcTemplate().queryForList(sql, "%" + title + "%");
+    }
+
+    @Override
+    public List<Map<String, Object>> findCoursesByIds(Set<Object> ids) {
+        if (ids == null || ids.size() < 1) {
+            return new ArrayList<>(0);
+        }
+        String marks = repeatQuestionMark(ids.size());
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
+        return getJdbcTemplate().queryForList(sql, ids.toArray());
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

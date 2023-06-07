@@ -4,6 +4,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface CourseDao {
 
@@ -19,4 +20,8 @@ public interface CourseDao {
     int updateCourse(Integer id, Map<String, Object> fields);
 
     int deleteCourse(Integer courseId);
+
+    List<Map<String, Object>> findCoursesByLikeTitle(Object title);
+
+    List<Map<String, Object>> findCoursesByIds(Set<Object> ids);
 }

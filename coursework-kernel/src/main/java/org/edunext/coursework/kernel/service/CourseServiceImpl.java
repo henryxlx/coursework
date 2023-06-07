@@ -274,12 +274,15 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Map<String, Object>> findCoursesByLikeTitle(Object title) {
-        return new ArrayList<>(0);
+        List<Map<String, Object>> coursesUnserialized = this.courseDao.findCoursesByLikeTitle(title);
+//        CourseSerialize.unserializes(coursesUnserialized);
+//        return ArrayToolkit.index(coursesUnserialized, "id");
+        return coursesUnserialized;
     }
 
     @Override
     public List<Map<String, Object>> findCoursesByIds(Set<Object> ids) {
-        return null;
+        return this.courseDao.findCoursesByIds(ids);
     }
 
     @Override

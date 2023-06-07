@@ -1,14 +1,18 @@
 package org.edunext.coursework.kernel.dao.impl;
 
 import com.jetwinner.util.MapUtil;
+import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.LessonDao;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -82,5 +86,50 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
     @Override
     public void updateLesson(Integer id, Map<String, Object> fields) {
         updateMap(TABLE_NAME, fields, "id", id);
+    }
+
+    @Override
+    public List<Map<String, Object>> findLessonsByIds(Set<Object> ids) {
+        if (ids == null || ids.size() < 1) {
+            return new ArrayList<>(0);
+        }
+        String marks = repeatQuestionMark(ids.size());
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
+        return getJdbcTemplate().queryForList(sql, ids.toArray());
+    }
+
+    @Override
+    public Integer searchLessonCount(Map<String, Object> conditions) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions).select("COUNT(id)");
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit) {
+        DynamicQueryBuilder builder = createSearchQueryBuilder(conditions)
+                .select("*")
+                .orderBy(orderBy)
+                .setFirstResult(start)
+                .setMaxResults(limit);
+        return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
+    }
+
+    private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
+        return new DynamicQueryBuilder(conditions)
+                .from(TABLE_NAME)
+                .andWhere("courseId = :courseId")
+                .andWhere("status = :status")
+                .andWhere("type = :type")
+                .andWhere("free = :free")
+                .andWhere("userId = :userId")
+                .andWhere("mediaId = :mediaId")
+                .andWhere("startTime >= :startTimeGreaterThan")
+                .andWhere("endTime < :endTimeLessThan")
+                .andWhere("startTime <= :startTimeLessThan")
+                .andWhere("endTime > :endTimeGreaterThan")
+                .andWhere("title LIKE :titleLike")
+                .andWhere("createdTime >= :startTime")
+                .andWhere("createdTime <= :endTime")
+                .andWhere("courseId IN ( :courseIds )");
     }
 }

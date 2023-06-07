@@ -95,4 +95,6 @@ public interface CourseService {
     List<Map<String, Object>> findCourseTeachers(Integer courseId);
 
     List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit);
+
+    List<Map<String, Object>> findCourseStudents(Integer courseId, Integer start, Integer limit);
 }

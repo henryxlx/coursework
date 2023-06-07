@@ -1,11 +1,13 @@
 package org.edunext.coursework.web.controller;
 
+import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.SetUtil;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.mvc.block.BlockRenderController;
 import com.jetwinner.webfast.mvc.block.BlockRenderMethod;
+import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +25,15 @@ import java.util.Set;
 @Controller("frontCourseBlockController")
 public class CourseBlockController implements BlockRenderController {
 
+    private final CourseService courseService;
     private final AppSettingService settingService;
     private final AppUserService userService;
 
-    public CourseBlockController(AppSettingService settingService, AppUserService userService) {
+    public CourseBlockController(CourseService courseService,
+                                 AppSettingService settingService,
+                                 AppUserService userService) {
+
+        this.courseService = courseService;
         this.settingService = settingService;
         this.userService = userService;
     }
@@ -81,5 +88,14 @@ public class CourseBlockController implements BlockRenderController {
         model.addAttribute("profiles", this.userService.findUserProfilesByIds(teacherIds));
 
         return "/course/teachers-block";
+    }
+
+    @RequestMapping("/course/latestMembersBlock")
+    @BlockRenderMethod
+    public String latestMembersBlockAction(Integer courseId, Model model) {
+        List<Map<String, Object>> students = this.courseService.findCourseStudents(courseId, 0, 12);
+        model.addAttribute("users", this.userService.findUsersByIds(ArrayToolkit.column(students, "userId")));
+        model.addAttribute("students", students);
+        return "/course/latest-members-block";
     }
 }

@@ -911,6 +911,11 @@ public class CourseServiceImpl implements CourseService {
         return this.memberDao.searchMember(conditions, start, limit);
     }
 
+    @Override
+    public List<Map<String, Object>> findCourseStudents(Integer courseId, Integer start, Integer limit) {
+        return this.memberDao.findMembersByCourseIdAndRole(courseId, "student", start, limit);
+    }
+
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {
         Map<String, Map<String, Object>> mapForItems = new HashMap<>(items.size());
         for (Map<String, Object> item : items) {

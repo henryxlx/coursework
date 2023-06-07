@@ -113,4 +113,13 @@ public class CourseBlockController implements BlockRenderController {
 
         return "course/thread/latest-block";
     }
+
+    @RequestMapping("/courseAnnouncement/block")
+    @BlockRenderMethod
+    public String blockAction(Integer courseId, Model model) {
+//        model.addAttribute("announcements", this.courseService.findAnnouncements(courseId, 0, 10));
+//        model.addAttribute("canManage", this.courseService.canManageCourse(courseId));
+//        model.addAttribute("canTake", this.courseService.canTakeCourse(course));
+        return "/course/announcement-block";
+    }
 }

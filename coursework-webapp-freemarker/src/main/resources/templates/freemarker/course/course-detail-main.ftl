@@ -40,7 +40,7 @@
         <div class="mtm">
             <span class="text-muted">标签：</span>
             <#list tags as tag>
-                <a href="${ctx}/tag/${tag.name}" class="mrs">${tag.name}</a>
+                <a href="${ctx}/tag/${tag.id}" class="mrs">${tag.name}</a>
             </#list>
         </div>
     </#if>

@@ -8,7 +8,7 @@
 
 <#macro blockContent>
 
-  <#if member?? && member.locked??>
+  <#if member?? && member.locked?? && member.locked == 1>
     <div class="row">
       <div class="col-md-12">
         <div class="mtl alert alert-warning">

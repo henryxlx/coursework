@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller("adminReviewController")
 @RequestMapping("/admin/course/review")
-public class CourseReviewController {
+public class ReviewController {
 
     private static final String VIEW_PREFIX = "/admin/course/review/";
 

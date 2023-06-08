@@ -24,8 +24,9 @@
           <#if course.teacherIds??>
             教师：
             <#list course.teacherIds! as id>
-          <#assign user = users[''+id]! />
-              <a href="#modal" data-toggle="modal" data-url="${ctx}/course/${course.Id}/teacher/${user.id}">${user.username}</a>
+              <#assign user = users[''+id]! />
+              <a href="#modal" data-toggle="modal"
+                 data-url="${ctx}/course/${course.id}/teacher/${user.id}">${user.username}</a>
             </#list>
           </#if>
         </div>
@@ -91,7 +92,7 @@
       </div>
     </div>
 
-    <#if vipChecked?? && default('ok') != 'ok'>
+    <#if vipChecked?? && vipChecked != 'ok'>
       <div class="alert alert-danger alert-dismissable">
         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
         <#if vipChecked?? && vipChecked == 'not_member'>
@@ -99,7 +100,8 @@
           <#if course.price gt 0 >
             请重新<a class="btn-link" href="${ctx}/vip/" target="_blank">开通会员</a>
           <#else>
-            <a class="btn-link js-exit-course" data-url="${ctx}/course/${course.id}/exit" data-go="${ctx}/course/${course.id}">返回课程首页</a>
+            <a class="btn-link js-exit-course" data-url="${ctx}/course/${course.id}/exit"
+               data-go="${ctx}/course/${course.id}">返回课程首页</a>
           </#if>
         <#elseif vipChecked?? && vipChecked == 'member_expired'>
           您的会员已过期，不能学习此课程，请先<a class="btn-link" href="${ctx}/vip/renew'" target="_blank">续费</a>。

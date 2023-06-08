@@ -7,6 +7,7 @@ import com.jetwinner.webfast.image.ImageSize;
 import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastAppConst;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -202,6 +204,7 @@ public class CourseManageController {
         List<Map<String, Object>> teacherMembers = this.courseService.findCourseTeachers(id);
         Map<String, AppUser> users = this.userService.findUsersByIds(ArrayToolkit.column(teacherMembers, "userId"));
 
+        WebExtensionPack webExtensionPack = new WebExtensionPack(request);
         List<Map<String, Object>> teachers = new ArrayList<>(teacherMembers.size());
         for (Map<String, Object> member : teacherMembers) {
             String toUserId = String.valueOf(member.get("userId"));
@@ -210,23 +213,43 @@ public class CourseManageController {
             }
             teachers.add(new ParamMap()
                     .add("id", toUserId)
-                    .add("nickname", users.get(toUserId).getUsername())
-                    .add("avatar", new WebExtensionPack(request).getFilePath(users.get(toUserId).getSmallAvatar(),
+                    .add("username", users.get(toUserId).getUsername())
+                    .add("avatar", webExtensionPack.getFilePath(users.get(toUserId).getSmallAvatar(),
                             "avatar.png"))
                     .add("isVisible", EasyStringUtil.isNotBlank(member.get("isVisible")) ? Boolean.TRUE : Boolean.FALSE)
                     .toMap());
         }
 
-        model.addAttribute("teachers", "");
+        model.addAttribute("teachers", teachers);
         model.addAttribute("course", course);
         return "/course/manage/teacher";
+    }
+
+    @RequestMapping("/course/{id}/manage/teachersMatch")
+    @ResponseBody
+    public List<Map<String, Object>> teachersMatchAction(@PathVariable Integer id, HttpServletRequest request) {
+        String likeString = request.getParameter("q");
+        List<AppUser> users = this.userService.searchUsers(
+                new ParamMap().add("username", likeString).add("roles", "ROLE_TEACHER").toMap(),
+                OrderBy.build(1).addDesc("createdTime"), 0, 10);
+
+        List<Map<String, Object>> teachers = new ArrayList<>(users.size());
+        WebExtensionPack webExtensionPack = new WebExtensionPack(request);
+        users.forEach(user -> {
+            teachers.add(new ParamMap()
+                    .add("id", user.getId())
+                    .add("username", user.getUsername())
+                    .add("avatar", webExtensionPack.getFilePath(user.getSmallAvatar(), "avatar.png"))
+                    .add("isVisible", 1).toMap());
+        });
+        return teachers;
     }
 
     @RequestMapping("/course/{id}/manage/question")
     public String questionAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
+        model.addAttribute("course", course);
         return "/course/manage/question/index";
     }
 

@@ -1,11 +1,10 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.util.SetUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -97,4 +96,12 @@ public interface CourseService {
     List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit);
 
     List<Map<String, Object>> findCourseStudents(Integer courseId, Integer start, Integer limit);
+
+    default Set<Object> getTeacherIds(Object teacherIds) {
+        Set<Object> ids = new HashSet<>(0);
+        if (teacherIds instanceof Collection) {
+            ids = SetUtil.newHashSet((Collection) teacherIds);
+        }
+        return ids;
+    }
 }

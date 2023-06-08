@@ -894,7 +894,7 @@ public class CourseServiceImpl implements CourseService {
                 "更新课程#" + courseId + "的教师", dataMap);
 
         // 更新课程的teacherIds，该字段为课程可见教师的ID列表
-        Map<String, Object> fields = new ParamMap().add("teacherIds", JsonUtil.objectToString(visibleTeacherIds)).toMap();
+        Map<String, Object> fields = new ParamMap().add("teacherIds", CourseSerialize.listToString(visibleTeacherIds)).toMap();
         this.courseDao.updateCourse(courseId, fields);
 
 //        this.dispatchEvent("course.teacher.update", new ParamMap().add("courseId", courseId).toMap());
@@ -988,7 +988,7 @@ class CourseSerialize {
 
     private static final String UNSERIALIZE_KEY = "unserialize";
 
-    private static void objectToArray(Map<String, Object> map, String key) {
+    public static void objectToArray(Map<String, Object> map, String key) {
         Object obj = map.get(key);
         if (EasyStringUtil.isNotBlank(obj)) {
             String s = String.valueOf(obj);
@@ -1010,7 +1010,12 @@ class CourseSerialize {
         course.put(UNSERIALIZE_KEY, Boolean.TRUE);
     }
 
-    private static void arrayToString(Map<String, Object> model, String key) {
+    public static String listToString(List<?> list) {
+        List<String> strList = list.stream().map(String::valueOf).collect(Collectors.toList());
+        return strList.stream().collect(Collectors.joining("|", "|", "|"));
+    }
+
+    public static void arrayToString(Map<String, Object> model, String key) {
         Object objTarget = model.get(key);
         boolean needSerialize = true;
         if (ArrayUtil.isNotArray(objTarget)) {

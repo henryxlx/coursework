@@ -21,7 +21,7 @@
         </h1>
 
         <div class="teachers">
-          <#if course.teacherIds??>
+          <#if course.teacherIds?? && course.teacherIds?is_sequence>
             教师：
             <#list course.teacherIds! as id>
               <#assign user = users[''+id]! />

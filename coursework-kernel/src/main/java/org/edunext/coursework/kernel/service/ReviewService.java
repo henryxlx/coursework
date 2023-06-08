@@ -11,4 +11,8 @@ public interface ReviewService {
     Integer getCourseReviewCount(Integer courseId);
 
     List<Map<String, Object>> findCourseReviews(Integer courseId, Integer start, Integer limit);
+
+    Map<String, Object> getUserCourseReview(Integer userId, Integer courseId);
+
+    int saveReview(Map<String, Object> fields);
 }

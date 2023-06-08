@@ -1,14 +1,16 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.util.ValueParser;
+import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
+import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.ReviewService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -53,5 +55,28 @@ public class CourseReviewController {
         model.addAttribute("previewAs", previewAs);
         model.addAttribute("paginator", paginator);
         return "/course/review/list";
+    }
+
+    @GetMapping("/course/{id}/review/create")
+    public String createPage(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course = this.courseService.getCourse(id);
+        Map<String, Object> review = this.reviewService.getUserCourseReview(currentUser.getId(),
+                ValueParser.toInteger(course.get("id")));
+        model.addAttribute("review", review);
+        model.addAttribute("course", course);
+        return "/course/review/write-modal";
+    }
+
+    @PostMapping("/course/{id}/review/create")
+    @ResponseBody
+    public Boolean createAction(@PathVariable Integer id, HttpServletRequest request) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> fields = ParamMap.toFormDataMap(request);
+        fields.put("rating", fields.get("review[rating]"));
+        fields.put("userId", currentUser.getId());
+        fields.put("courseId", id);
+        int nums = this.reviewService.saveReview(fields);
+        return nums > 0 ? Boolean.TRUE : Boolean.FALSE;
     }
 }

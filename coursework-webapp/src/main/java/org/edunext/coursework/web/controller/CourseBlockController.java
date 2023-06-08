@@ -1,8 +1,11 @@
 package org.edunext.coursework.web.controller;
 
+import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.SetUtil;
+import com.jetwinner.util.MapUtil;
+import com.jetwinner.util.ValueParser;
+import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -16,10 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -29,23 +29,68 @@ public class CourseBlockController implements BlockRenderController {
 
     private final CourseService courseService;
     private final ThreadService threadService;
+    private final UserAccessControlService userAccessControlService;
     private final AppSettingService settingService;
     private final AppUserService userService;
 
     public CourseBlockController(CourseService courseService,
                                  ThreadService threadService,
+                                 UserAccessControlService userAccessControlService,
                                  AppSettingService settingService,
                                  AppUserService userService) {
 
         this.courseService = courseService;
         this.threadService = threadService;
+        this.userAccessControlService = userAccessControlService;
         this.settingService = settingService;
         this.userService = userService;
     }
 
     @RequestMapping("/course/header")
     @BlockRenderMethod
-    public String headerBlockAction() {
+    public String headerBlockAction(HttpServletRequest request,
+                                    Map<String, Object> course,
+                                    Integer courseId,
+                                    Boolean manage,
+                                    Model model) {
+
+        AppUser user = AppUser.getCurrentUser(request);
+        course = (Map<String, Object>) request.getAttribute("course");
+
+        Map<String, Object> member = this.courseService.getCourseMember(courseId, user.getId());
+        Map<String, AppUser> users = MapUtil.newHashMap(0);
+        if (MapUtil.isNotEmpty(course)) {
+            Set<Object> teacherIds = this.courseService.getTeacherIds(course.get("teacherIds"));
+            users = this.userService.findUsersByIds(teacherIds);
+        }
+        model.addAttribute("users", users);
+
+        if (MapUtil.isEmpty(member)) {
+            member.put("deadline", 0);
+            member.put("levelId", 0);
+        }
+
+        String vipChecked = "ok";
+        if (ValueParser.parseInt(member.get("levelId")) > 0) {
+//            vipChecked = this.vipService.checkUserInMemberLevel(user.get("id"), course.get("vipLevelId"));
+        }
+
+        Boolean canExit = false;
+//        List<Map<String, Object>> classroomMembers = this.getClassroomMembersByCourseId(courseId);
+        List<Map<String, Object>> classroomMembers = new ArrayList<>(0);
+        Set<Object> classroomMemberRoles = ArrayToolkit.column(classroomMembers, "role");
+        if ("student".equals(member.get("role")) && "course".equals(member.get("joinedType"))
+                || ("classroom".equals(member.get("joinedType")) && (classroomMemberRoles == null || classroomMemberRoles.size() == 0))) {
+            canExit = true;
+        }
+//        model.addAttribute("course", course);
+//        model.addAttribute("canManage", this.courseService.canManageCourse(courseId));
+        model.addAttribute("canExit", canExit);
+        model.addAttribute("member", member);
+        model.addAttribute("manage", manage);
+//        model.addAttribute("isNonExpired", this.courseService.isMemberNonExpired(course, member));
+        model.addAttribute("vipChecked", vipChecked);
+        model.addAttribute("isAdmin", userAccessControlService.hasRole("ROLE_SUPER_ADMIN"));
         return "/course/header";
     }
 
@@ -86,11 +131,13 @@ public class CourseBlockController implements BlockRenderController {
 
     @RequestMapping("/course/teachersBlock")
     @BlockRenderMethod
-    public String teachersBlockAction(Map<String, Object> course, Model model) {
-        Object ids = course.get("teacherIds");
-        Set<Object> teacherIds = SetUtil.newHashSet();
-        model.addAttribute("users", this.userService.findUsersByIds(teacherIds));
-        model.addAttribute("profiles", this.userService.findUserProfilesByIds(teacherIds));
+    public String teachersBlockAction(HttpServletRequest request,
+                                      Model model) {
+
+        List<Object> teacherIds = (List<Object>) request.getAttribute("teacherIds");
+        Set<Object> ids = courseService.getTeacherIds(teacherIds);
+        model.addAttribute("users", this.userService.findUsersByIds(ids));
+        model.addAttribute("profiles", ArrayToolkit.index(this.userService.findUserProfilesByIds(ids), "id"));
 
         return "/course/teachers-block";
     }

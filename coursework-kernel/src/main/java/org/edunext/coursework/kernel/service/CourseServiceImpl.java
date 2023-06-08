@@ -986,6 +986,8 @@ public class CourseServiceImpl implements CourseService {
 
 class CourseSerialize {
 
+    private static final String UNSERIALIZE_KEY = "unserialize";
+
     private static void objectToArray(Map<String, Object> map, String key) {
         Object obj = map.get(key);
         if (EasyStringUtil.isNotBlank(obj)) {
@@ -998,13 +1000,14 @@ class CourseSerialize {
     }
 
     public static void unserialize(Map<String, Object> course) {
-        if (course == null || course.isEmpty()) {
+        if (course == null || course.isEmpty() || course.containsKey(UNSERIALIZE_KEY)) {
             return;
         }
 
         objectToArray(course, "goals");
         objectToArray(course, "audiences");
         objectToArray(course, "teacherIds");
+        course.put(UNSERIALIZE_KEY, Boolean.TRUE);
     }
 
     private static void arrayToString(Map<String, Object> model, String key) {

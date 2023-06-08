@@ -15,7 +15,7 @@ import java.util.*;
 @Repository
 public class CourseDaoImpl extends FastJdbcDaoSupport implements CourseDao {
 
-    private static final String TABLE_NAME = "cw_course";
+    static final String TABLE_NAME = "cw_course";
 
     @Override
     public int searchCourseCount(Map<String, Object> conditions) {

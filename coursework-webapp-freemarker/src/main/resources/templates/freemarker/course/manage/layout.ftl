@@ -1,7 +1,7 @@
 <#include '/layout.ftl'/>
 
 <#macro blockContent>
-<@renderController path='/course/header' params={'course':course, 'manage': true} />
+<@renderController path='/course/header' params={'course':course, 'courseId':course.id, 'manage': true} />
 
 <div class="row">
     <div class="col-md-3">

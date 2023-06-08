@@ -4,14 +4,14 @@
     </div>
     <div class="panel-body">
 
-        <#if course.teacherIds??>
+        <#if course.teacherIds?? && course.teacherIds?is_sequence>
             <div class="teacher-carousel <#if course.teacherIds?size == 1>teacher-carousel-onlyone</#if>">
                 <div class="carousel slide" id="teacher-carousel">
                     <div class="carousel-inner">
                         <#list course.teacherIds as teacherId>
                             <#assign user = users[teacherId] />
                             <#if profiles??>
-                                <#assign profile = profiles[teacherId] />
+                                <#assign profile = profiles[teacherId]!{} />
                                 <div class="item <#if teacherId?counter== 1>active</#if>" data-id="${user.id}">
                                     <a href="${ctx}/user/${user.id}"><img
                                                 src="${default_path('avatar',user.largeAvatar, 'large')}"
@@ -31,7 +31,7 @@
                     <#list course.teacherIds as teacherId>
                         <#assign user = users[teacherId] />
                         <#if profiles??>
-                            <#assign profile = profiles[teacherId] />
+                            <#assign profile = profiles[teacherId]!{} />
                             <div class="teacher-item teacher-item-${user.id} <#if teacherId?counter == 1>teacher-item-active</#if>">
                                 <div class="nickname"><a href="${ctx}/user/${user.id}">${user.username}</a>
                                 </div>

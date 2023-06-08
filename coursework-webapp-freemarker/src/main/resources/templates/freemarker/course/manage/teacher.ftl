@@ -60,7 +60,7 @@
                         <li class="list-group-item clearfix" data-role="item">
                             <span class="glyphicon glyphicon-resize-vertical sort-handle"></span>
                             <img src="{{ avatar }}" class="avatar-small">
-                            <span class="nickname">{{ nickname }}</span>
+                            <span class="nickname">{{ username }}</span>
                             <label class="visible-checkbox"><input type="checkbox" value="1" name="visible_{{ id }}"
                                                                    <#if isVisible??>checked="checked"</#if>> 显示</label>
                             <input type="hidden" name="ids[]" value="{{ id }}">

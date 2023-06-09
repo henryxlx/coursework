@@ -13,14 +13,14 @@
 
 <ul class="media-list">
     <#list reviews! as review>
-        <#assign user = users[review.userId] />
+        <#assign user = users['' + review.userId]!{} />
         <li class="media">
             <@web_macro.user_avatar user, 'pull-left'/>
             <div class="media-body">
                 <div class="media-heading">
                     <@web_macro.user_link user/>
                     <span class="bullet">•</span>
-                    <span class="text-muted">${review.createdTime?number_to_date?string('YYYY-mm-dd') }}</span>
+                    <span class="text-muted">${review.createdTime?number_to_date?string('yyyy-MM-dd')}</span>
                 </div>
 
                 <div class="media-content">

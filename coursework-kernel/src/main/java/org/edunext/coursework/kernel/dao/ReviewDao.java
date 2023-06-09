@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.dao;
 
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,4 +21,8 @@ public interface ReviewDao {
     int updateReview(Object id, Map<String, Object> fields);
 
     int getReviewRatingSumByCourseId(Integer courseId);
+
+    int searchReviewsCount(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchReviews(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 }

@@ -5,6 +5,7 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -92,6 +94,24 @@ public class ReviewServiceImpl implements ReviewService {
         return nums;
     }
 
+    @Override
+    public int searchReviewsCount(Map<String, Object> conditions) {
+        conditions = this.prepareReviewSearchConditions(conditions);
+        return this.reviewDao.searchReviewsCount(conditions);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchReviews(Map<String, Object> conditions, String sort, Integer start, Integer limit) {
+        OrderBy orderBy = OrderBy.build(1);
+        if ("latest".equals(sort)) {
+            orderBy.addDesc("createdTime");
+        } else {
+            orderBy.addDesc("rating");
+        }
+        conditions = this.prepareReviewSearchConditions(conditions);
+        return this.reviewDao.searchReviews(conditions, orderBy, start, limit);
+    }
+
     private void calculateCourseRating(Integer courseId) {
         int ratingSum = this.reviewDao.getReviewRatingSumByCourseId(courseId);
         int ratingNum = this.reviewDao.getReviewCountByCourseId(courseId);
@@ -99,5 +119,21 @@ public class ReviewServiceImpl implements ReviewService {
         this.courseService.updateCourseCounter(courseId, new ParamMap()
                 .add("rating", ratingNum > 0 ? ratingSum / ratingNum : 0)
                 .add("ratingNum", ratingNum).toMap());
+    }
+
+    private Map<String, Object> prepareReviewSearchConditions(Map<String, Object> conditions) {
+        Set<String> keys = conditions.keySet();
+        for (String key : keys) {
+            if (!EasyStringUtil.isNumeric(String.valueOf(conditions.get(key)))) {
+                conditions.remove(key);
+            }
+        }
+
+        if (EasyStringUtil.isNotBlank(conditions.get("author"))) {
+            AppUser author = this.userService.getUserByUsername(String.valueOf(conditions.get("author")));
+            conditions.put("userId", author != null ? author.getId() : -1);
+        }
+
+        return conditions;
     }
 }

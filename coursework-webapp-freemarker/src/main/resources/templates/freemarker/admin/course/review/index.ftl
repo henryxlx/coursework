@@ -51,36 +51,44 @@
             </thead>
             <tbody>
             <#list reviews! as review>
-                {% set author = users[review.userId]|default(null) %}
-                {% set course = courses[review.courseId]|default(null) %}
-                <tr id="review-table-tr-{{review.id}}" data-role="item">
-                    <td><input type="checkbox" value="{{review.id}}" data-role="batch-item"></td>
+                <#assign author = users['' +review.userId]!{} />
+                <#assign course = courses['' + review.courseId]!{} />
+                <tr id="review-table-tr-${review.id}" data-role="item">
+                    <td><input type="checkbox" value="${review.id}" data-role="batch-item"></td>
                     <td>
                         <div class="short-long-text">
                             <div class="short-text">
-                                {{ review.content||plain_text(60) }} <span class="text-muted trigger">(展开)</span>
+                                ${plain_text(review.content, 60)} <span class="text-muted trigger">(展开)</span>
                             </div>
-                            <div class="long-text">{{ review.content|nl2br }} <span class="text-muted trigger">(收起)</span></div>
+                            <div class="long-text">${review.content!''?replace("\\r", "</br>")} <span
+                                        class="text-muted trigger">(收起)</span></div>
                         </div>
                         <div class="mts">
                             <#if course??>
-                                <a class="text-success text-sm" href="${ctx}/course_show', {id:review.courseId}) }}" target="_blank">{{ courses[review.courseId].title }}</a>
+                                <a class="text-success text-sm" href="${ctx}/course/${review.courseId}"
+                                   target="_blank">${courses['' + review.courseId].title}</a>
                             <#else>
                                 <span class="text-muted text-sm">课程已删除</span>
                             </#if>
                         </div>
                     </td>
-                    <td>{{ review.rating }}星</td>
+                    <td>${review.rating}星</td>
                     <td>
-                        {{ admin_macro.user_link(author) }}<br>
-                        <span class="text-muted">{{review.createdTime||date('Y-n-d H:i')}}</span>
+                        <@admin_macro.user_link author! /><br>
+                        <span class="text-muted">${review.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm')}</span>
                     </td>
                     <td>
-                        <button class="btn btn-default btn-sm" data-role="item-delete" data-name="评价" data-url="${ctx}/admin/review_delete', {id:review.id}) }}">删除</button>
+                        <button class="btn btn-default btn-sm" data-role="item-delete" data-name="评价"
+                                data-url="${ctx}/admin/review/${review.id}/delete">删除
+                        </button>
                     </td>
                 </tr>
             <#else>
-                <tr><td colspan="20"><div class="empty">暂无评价记录</div></td></tr>
+                <tr>
+                    <td colspan="20">
+                        <div class="empty">暂无评价记录</div>
+                    </td>
+                </tr>
             </#list>
             </tbody>
         </table>

@@ -15,4 +15,8 @@ public interface ReviewService {
     Map<String, Object> getUserCourseReview(Integer userId, Integer courseId);
 
     int saveReview(Map<String, Object> fields);
+
+    int searchReviewsCount(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchReviews(Map<String, Object> conditions, String sort, Integer start, Integer limit);
 }

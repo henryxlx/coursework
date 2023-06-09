@@ -153,3 +153,19 @@ CREATE TABLE `cw_course_member`
     PRIMARY KEY (`id`),
     UNIQUE KEY `courseId` (`courseId`,`userId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_review`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_review`;
+CREATE TABLE `cw_course_review`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '课程评价ID',
+    `userId`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '评价人ID',
+    `courseId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被评价的课程ID',
+    `title`       varchar(255) NOT NULL DEFAULT '' COMMENT '评价标题',
+    `content`     text         NOT NULL COMMENT '评论内容',
+    `rating`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '评分',
+    `private`     tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否隐藏',
+    `createdTime` bigint unsigned NOT NULL COMMENT '评价创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

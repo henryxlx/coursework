@@ -104,4 +104,6 @@ public interface CourseService {
         }
         return ids;
     }
+
+    void updateCourseCounter(Integer courseId, Map<String, Object> counter);
 }

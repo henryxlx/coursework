@@ -916,6 +916,15 @@ public class CourseServiceImpl implements CourseService {
         return this.memberDao.findMembersByCourseIdAndRole(courseId, "student", start, limit);
     }
 
+    @Override
+    public void updateCourseCounter(Integer courseId, Map<String, Object> counter) {
+        Map<String, Object> fields = ArrayToolkit.part(counter, "rating", "ratingNum", "lessonNum", "giveCredit");
+        if (MapUtil.isEmpty(fields)) {
+            throw new RuntimeGoingException("参数不正确，更新计数器失败！");
+        }
+        this.courseDao.updateCourse(courseId, fields);
+    }
+
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {
         Map<String, Map<String, Object>> mapForItems = new HashMap<>(items.size());
         for (Map<String, Object> item : items) {

@@ -10,7 +10,7 @@
             <a id="list_reviews" class="btn btn-sm btn-link pull-right"
                data-url="${ctx}/course/${course.id}/review/list?isModal=true">查看全部评价</a>
             <div class="controls">
-                请打分： <span id="my-course-rate" data-rating="${review.rating!0}"
+                请打分： <span id="my-course-rate" data-rating="${(review.rating)!0}"
                            data-url="${ctx}/course/${course.id}/review/create" data-img-path="${ctx}/assets/img/raty"
                            class="mrm"></span>
                 <input type="hidden" id="review_rating" name="review[rating]" value="">

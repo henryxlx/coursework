@@ -64,7 +64,7 @@
                     <#include '/course/manage/chapter/list-item.ftl' />
                 <#elseif itemType?contains('lesson')>
                     <#local lesson = item />
-                    <#local file = files[lesson.mediaId]!/>
+                    <#local file = files[''+lesson.mediaId]!{}/>
                     <#include '/course/manage/lesson/list-item.ftl' />
                 </#if>
             </#list>

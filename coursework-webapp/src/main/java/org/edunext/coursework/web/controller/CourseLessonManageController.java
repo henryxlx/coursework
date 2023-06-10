@@ -52,22 +52,31 @@ public class CourseLessonManageController {
             if (EasyStringUtil.isBlank(item.get("mediaId"))) {
                 continue;
             }
-
-            mediaMap.putIfAbsent(String.valueOf(item.get("mediaId")), new HashSet<>()).add(item.get("id"));
+            String keyForMediaId = String.valueOf(item.get("mediaId"));
+            if (!mediaMap.containsKey(keyForMediaId)) {
+                mediaMap.put(keyForMediaId, new HashSet<>());
+            }
+            mediaMap.get(keyForMediaId).add(item.get("id"));
         }
 
         Set<String> mediaIds = mediaMap.keySet();
 
-/*
-        List<Map<String, Object>> files = uploadFileService.findFilesByIds(mediaIds);
+//        List<Map<String, Object>> files = uploadFileService.findFilesByIds(mediaIds);
+        Map<String, Map<String, Object>> mapForCourseItems = MapUtil.newHashMap(courseItems.size());
+        courseItems.forEach(e -> {
+            mapForCourseItems.put(e.get("itemType") + "-" + e.get("id"), e);
+        });
+        List<Map<String, Object>> files = ListUtil.newArrayList();
         for (Map<String, Object> file : files) {
             lessonIds = mediaMap.get(file.get("id"));
             for (Object lessonId : lessonIds) {
-                courseItems.get("lesson-" + lessonId).put("mediaStatus", file.get("convertStatus"));
+                Map<String, Object> val = mapForCourseItems.get("lesson-" + lessonId);
+                if (val != null) {
+                    val.put("mediaStatus", file.get("convertStatus"));
+                }
             }
         }
         model.addAttribute("files", ArrayToolkit.index(files, "id"));
-*/
         model.addAttribute("course", course);
         model.addAttribute("items", courseItems);
         model.addAttribute("default", settingService.get("default"));

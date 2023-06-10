@@ -140,8 +140,6 @@ public class CourseController {
 
         Map<String, Object> nextLiveLesson = null;
 
-        String[] weeks = {"日", "一", "二", "三", "四", "五", "六"};
-
         long currentTime = System.currentTimeMillis();
 
         if ("live".equals(course.get("type"))) {
@@ -224,7 +222,6 @@ public class CourseController {
             model.addAttribute("member", member);
             model.addAttribute("items", items);
             model.addAttribute("currentTime", currentTime);
-            model.addAttribute("weeks", weeks);
 //            model.addAttribute("files", ArrayToolkit.index(files, "id"));
 //            model.addAttribute("ChargeCoin", ChargeCoin);
 //            model.addAttribute("homeworkLessonIds", homeworkLessonIds);
@@ -266,7 +263,6 @@ public class CourseController {
         model.addAttribute("nextLiveLesson", nextLiveLesson);
         model.addAttribute("currentTime", currentTime);
 //        model.addAttribute("courseReviews", reviewService.findCourseReviews(course.get("id"), "0", "1"));
-        model.addAttribute("weeks", weeks);
         model.addAttribute("consultDisplay", Boolean.TRUE);
 //        model.addAttribute("ChargeCoin", ChargeCoin);
 //        model.addAttribute("classrooms", classrooms);

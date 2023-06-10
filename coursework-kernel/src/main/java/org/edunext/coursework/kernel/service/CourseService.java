@@ -97,6 +97,7 @@ public interface CourseService {
 
     List<Map<String, Object>> findCourseStudents(Integer courseId, Integer start, Integer limit);
 
+    @SuppressWarnings("unchecked")
     default Set<Object> getTeacherIds(Object teacherIds) {
         Set<Object> ids = new HashSet<>(0);
         if (teacherIds instanceof Collection) {

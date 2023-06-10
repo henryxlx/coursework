@@ -23,6 +23,7 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
 
     private static final String TABLE_NAME = "cw_course_lesson";
 
+    @Override
     public Map<String, Object> getLesson(Object id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
         return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(MapUtil.newHashMap(0));

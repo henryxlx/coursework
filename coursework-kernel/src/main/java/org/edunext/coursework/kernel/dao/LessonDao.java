@@ -11,6 +11,8 @@ import java.util.Set;
  */
 public interface LessonDao {
 
+    Map<String, Object> getLesson(Object id);
+
     List<Map<String, Object>> findLessonsByCourseId(Object courseId);
 
     int getLessonMaxSeqByCourseId(Object courseId);

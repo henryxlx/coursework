@@ -925,6 +925,15 @@ public class CourseServiceImpl implements CourseService {
         this.courseDao.updateCourse(courseId, fields);
     }
 
+    @Override
+    public Map<String, Object> getCourseLesson(Integer courseId, Integer lessonId) {
+        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
+        if (MapUtil.isEmpty(lesson) || courseId.toString().equals(lesson.get("courseId"))) {
+            return null;
+        }
+        return lesson;
+    }
+
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {
         Map<String, Map<String, Object>> mapForItems = new HashMap<>(items.size());
         for (Map<String, Object> item : items) {

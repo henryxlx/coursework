@@ -48,6 +48,7 @@ public class CourseBlockController implements BlockRenderController {
 
     @RequestMapping("/course/header")
     @BlockRenderMethod
+    @SuppressWarnings("unchecked")
     public String headerBlockAction(HttpServletRequest request,
                                     Map<String, Object> course,
                                     Integer courseId,
@@ -131,6 +132,7 @@ public class CourseBlockController implements BlockRenderController {
 
     @RequestMapping("/course/teachersBlock")
     @BlockRenderMethod
+    @SuppressWarnings("unchecked")
     public String teachersBlockAction(HttpServletRequest request,
                                       Model model) {
 

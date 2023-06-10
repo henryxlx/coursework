@@ -1,6 +1,7 @@
 package org.edunext.coursework.kernel.dao.impl;
 
 import com.jetwinner.util.MapUtil;
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
@@ -35,8 +36,9 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
 
     @Override
     public int getLessonMaxSeqByCourseId(Object courseId) {
-        String sql = "SELECT MAX(seq) FROM " + TABLE_NAME + " WHERE  courseId = ?";
-        return getJdbcTemplate().queryForObject(sql, Integer.class, courseId);
+        String sql = "SELECT MAX(seq) FROM " + TABLE_NAME + " WHERE courseId = ?";
+        return getJdbcTemplate().query(sql, (rs, rowNum) -> new Integer(ValueParser.parseInt(rs.getObject(1))), courseId)
+                .stream().findFirst().orElse(0);
     }
 
     @Override

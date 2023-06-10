@@ -9,88 +9,83 @@
             </#if>
         <#else>
             <ul class="row">
-                {% for item in group.data %}
-                <li class="{% if item.type == 'live' %}col-md-6 live-item{% else %}col-md-4{% endif %} clearfix item">
-                    <a class="item-object item-object-{{ item.type }}" href="#modal" data-toggle="modal"
-                       data-url="{{ path('course_lesson_preview', {courseId:item.courseId, lessonId:item.id}) }}"
-                       data-backdrop="static" data-keyboard="false" title="{{ item.title }}">
-                        {% if item.free %}<span class="item-free"></span>{% endif %}
-                        {% if item.type == 'video' %}
-                        <i class="fa fa-file-video-o"></i>
-                        {% elseif item.type == 'text' %}
-                        <i class="fa fa-file-photo-o"></i>
-                        {% elseif item.type == 'audio' %}
-                        <i class="fa fa-file-audio-o"></i>
-                        {% elseif item.type == 'ppt' %}
-                        <i class="fa fa-file-powerpoint-o"></i>
-                        {% elseif item.type == 'testpaper' %}
-                        <i class="fa fa-file-text-o"></i>
-                        {% elseif item.type == 'document' %}
-                        <i class="fa fa-files-o"></i>
-                        {% elseif item.type == 'flash' %}
-                        <i class="fa fa-film"></i>
-                        {% elseif item.type == 'live' %}
-                        <i class="fa fa-video-camera"></i>
-                        {% endif %}
-                        {% if item.status == 'published' %}
-                        <span class="item-length">
-								{% if item.type == 'text' %}
-									图文
-								{% elseif item.type == 'testpaper' %}
-									试卷
-								{% elseif item.type == 'live' %}
-									{{ item.length | duration }}
-								{% elseif item.type == 'ppt' %}
-									PPT
-								{% elseif item.type == 'document' %}
-									文档
-								{% elseif item.type == 'flash' %}
-									Flash
-								{% else %}
-									{{ item.length | duration }}
-								{% endif %}
+                <#list group.data! as item>
+                    <li class="<#if item.type == 'live'>col-md-6 live-item<#else>col-md-4</#if> clearfix item">
+                        <a class="item-object item-object-${item.type}" href="#modal" data-toggle="modal"
+                           data-url="${ctx}/course/${item.courseId}/lesson/${item.id}/preview"
+                           data-backdrop="static" data-keyboard="false" title="${item.title}">
+                            <#if item.free == 1><span class="item-free"></span></#if>
+                            <#if item.type == 'video'>
+                                <i class="fa fa-file-video-o"></i>
+                            <#elseif item.type == 'text'>
+                                <i class="fa fa-file-photo-o"></i>
+                            <#elseif item.type == 'audio'>
+                                <i class="fa fa-file-audio-o"></i>
+                            <#elseif item.type == 'ppt'>
+                                <i class="fa fa-file-powerpoint-o"></i>
+                            <#elseif item.type == 'testpaper'>
+                                <i class="fa fa-file-text-o"></i>
+                            <#elseif item.type == 'document'>
+                                <i class="fa fa-files-o"></i>
+                            <#elseif item.type == 'flash'>
+                                <i class="fa fa-film"></i>
+                            <#elseif item.type == 'live'>
+                                <i class="fa fa-video-camera"></i>
+                            </#if>
+                            <#if item.status == 'published'>
+                                <span class="item-length">
+								<#if item.type == 'text'>
+                                    图文
+                                <#elseif item.type == 'testpaper'>
+                                    试卷
+                                <#elseif item.type == 'live'>
+                                    {{ item.length | duration }}
+                                <#elseif item.type == 'ppt'>
+                                    PPT
+                                <#elseif item.type == 'document'>
+                                    文档
+                                <#elseif item.type == 'flash'>
+                                    Flash
+                                <#else>
+                                    {{ item.length | duration }}
+                                </#if>
 							</span>
-                        {% else %}
-                        <span class="item-length">未发布</span>
-                        {% endif %}
-                    </a>
-                    <div class="item-body">
-                        <div class="item-seq-name">课时{{ item.number }}:</div>
-                        <div class="item-title">
-                            <a href="#modal" data-toggle="modal"
-                               data-url="{{ path('course_lesson_preview', {courseId:item.courseId, lessonId:item.id}) }}"
-                               title="{{ item.title }}">{{ item.title }}</a>
-                        </div>
+                            <#else>
+                                <span class="item-length">未发布</span>
+                            </#if>
+                        </a>
+                        <div class="item-body">
+                            <div class="item-seq-name">课时${item.number}:</div>
+                            <div class="item-title">
+                                <a href="#modal" data-toggle="modal"
+                                   data-url="${ctx}/course/${item.courseId}/lesson/${item.id}/preview"
+                                   title="${item.title}">${item.title}</a>
+                            </div>
 
-                        <div class="text-muted" style="font-weight:normal;font-size:12px;color:#aaa;">
+                            <div class="text-muted" style="font-weight:normal;font-size:12px;color:#aaa;">
 
-                            {% if item.type == 'live' %}
+                                <#if item.type == 'live'>
 
-                            {% if item.startTime > currentTime %}
-                            <span>{{ item.startTime | date
-                                ('m月d日') }}
-											{% for key,week in weeks %}
-												{% if key == item.startTime|date('w')  %}
-													星期{{ week }}
-												{% endif %}
-												{% endfor %}
-											{{ item.startTime | date
-                                ('H：i') }}
+                                    <#if item.startTime gt currentTime>
+                                        <span>${item.startTime?number_to_date?string('MM月dd日')}
+                                            <#assign weeks = {'Mon':'一','Tus':'二','Wed':'三','Thu':'四','Fri':'五','Sat':'六','Sun':'日'}/>
+                                            星期${weeks[item.startTime?number_to_date?string('E')]}
+                                            ${item.startTime?number_to_time?string('HH:mm')}
 										</span>
-                            {% elseif item.startTime <= currentTime and item.endTime >= currentTime %}
-                            <span class="text-warning">正在直播中</span>
-                            {% elseif item.endTime < currentTime %}
-                            <span>直播结束</span>
-                            {% endif %}
+                                    <#elseif item.startTime lte currentTime && item.endTime gte currentTime>
+                                        <span class="text-warning">正在直播中</span>
+                                    <#elseif item.endTime lt currentTime>
+                                        <span>直播结束</span>
+                                    </#if>
 
-                            {% endif %}
+                                </#if>
+
+                            </div>
+
 
                         </div>
-
-
-                    </div>
-                </li>
-                {% endfor %}
+                    </li>
+                </#list>
             </ul>
         </#if>
     </#list>

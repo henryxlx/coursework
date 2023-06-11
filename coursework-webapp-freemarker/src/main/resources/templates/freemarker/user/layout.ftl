@@ -3,11 +3,11 @@
 
 <#include '/layout.ftl'/>
 
-<#macro blockTitle>${(user.nickname)!'佚名'}的公共主页 - ${blockTitleParent}</#macro>
+<#macro blockTitle>${(user.username)!'佚名'}的公共主页 - ${blockTitleParent}</#macro>
 
 <#macro blockContent>
 
-<@renderController path='/user/headerBlock'/>
+    <@renderController path='/user/headerBlock' params={'userId':user.id}/>
 
 <div class="es-row-wrap container-gap userpage-body">
     <ul class="nav nav-pills userpage-nav clearfix">

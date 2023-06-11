@@ -1,5 +1,12 @@
-ChangeLog for Dev
+ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.3.7: @2023-06-11
+* 在FreeMarker页面中使用哈希类型处理星期显示
+* queryForObject查询结果为null时类型转换错误，使用Lambda方式自定义的RowMap进行转换
+* 课程显示中课时显示条目的页面item-list-multi.ftl处理使用FreeMarker指令完成
+* 前台课程管理中课时管理条目的页面/course/manage/lesson/list-item.ftl处理使用FreeMarker指令完成
+* 完成前台课程信息显示中课时信息预览功能
+
 0.3.6: @2023-06-10
 * 完成课程前台管理中评价信息输入页面显示功能
 * 前台课程管理中教师设置的反序列化使用自定义的方法listToString，使用竖线(|)分隔，而不是JSON的格式

@@ -12,14 +12,14 @@
     <div class="es-row-wrap container-gap userpage-body">
         <ul class="nav nav-pills userpage-nav clearfix">
             <#if (user.roles)?? && user.roles?contains('ROLE_TEACHER')>
-                <li <#if pageNav! == 'teach'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/teach">在教课程</a>
+                <li <#if pageNav == 'teach'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/teach">在教课程</a>
                 </li>
             </#if>
-            <li <#if pageNav! == 'learn'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/learn">在学课程</a></li>
-            <li <#if pageNav! == 'favorited'>class="active"</#if>><a
+            <li <#if pageNav == 'learn'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/learn">在学课程</a></li>
+            <li <#if pageNav == 'favorited'>class="active"</#if>><a
                         href="${ctx}/user/${(user.id)!}/favorited">收藏的课程</a></li>
-            <li <#if pageNav! == 'group'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/group">加入的小组</a></li>
-            <li <#if pageNav! == 'friend'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/following">关注/粉丝</a>
+            <li <#if pageNav == 'group'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/group">加入的小组</a></li>
+            <li <#if pageNav == 'friend'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/following">关注/粉丝</a>
             </li>
 
             <#if setting('classroom.enabled')??>

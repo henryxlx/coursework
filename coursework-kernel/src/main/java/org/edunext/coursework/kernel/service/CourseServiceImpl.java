@@ -552,9 +552,9 @@ public class CourseServiceImpl implements CourseService {
         List<Map<String, Object>> members;
         if (filters != null && EasyStringUtil.isNotBlank(filters.get("type"))) {
             members = this.memberDao.findMembersByUserIdAndCourseTypeAndIsLearned(userId, "student",
-                    String.valueOf(filters.get("type")), "0", start, limit);
+                    String.valueOf(filters.get("type")), 0, start, limit);
         } else {
-            members = this.memberDao.findMembersByUserIdAndRoleAndIsLearned(userId, "student", "0", start, limit);
+            members = this.memberDao.findMembersByUserIdAndRoleAndIsLearned(userId, "student", 0, start, limit);
         }
 
         Map<String, Map<String, Object>> courses = ArrayToolkit.index(
@@ -562,7 +562,7 @@ public class CourseServiceImpl implements CourseService {
 
         List<Map<String, Object>> sortedCourses = new ArrayList<>();
         members.forEach(member -> {
-            Map<String, Object> course = courses.get(member.get("courseId"));
+            Map<String, Object> course = courses.get("" + member.get("courseId"));
             if (MapUtil.isEmpty(course)) {
                 return;
             }

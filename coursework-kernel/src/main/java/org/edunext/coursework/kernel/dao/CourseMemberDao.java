@@ -32,10 +32,10 @@ public interface CourseMemberDao {
                                                          Integer start, Integer limit, boolean onlyPublished);
 
     List<Map<String, Object>> findMembersByUserIdAndCourseTypeAndIsLearned(Integer userId, String role, String type,
-                                                                           String isLearned, Integer start, Integer limit);
+                                                                           Integer isLearned, Integer start, Integer limit);
 
     List<Map<String, Object>> findMembersByUserIdAndRoleAndIsLearned(Integer userId, String role,
-                                                                     String isLearned, Integer start, Integer limit);
+                                                                     Integer isLearned, Integer start, Integer limit);
 
     void updateMember(Object id, Map<String, Object> member);
 

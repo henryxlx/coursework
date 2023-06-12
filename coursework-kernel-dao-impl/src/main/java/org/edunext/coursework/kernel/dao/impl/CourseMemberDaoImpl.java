@@ -123,7 +123,10 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
     }
 
     @Override
-    public List<Map<String, Object>> findMembersByUserIdAndCourseTypeAndIsLearned(Integer userId, String role, String type, String isLearned, Integer start, Integer limit) {
+    public List<Map<String, Object>> findMembersByUserIdAndCourseTypeAndIsLearned(Integer userId, String role,
+                                                                                  String type, Integer isLearned,
+                                                                                  Integer start, Integer limit) {
+
         StringBuilder sql = new StringBuilder();
         sql.append("SELECT m.* FROM ").append(TABLE_NAME).append(" m ");
         sql.append(" JOIN  ").append(CourseDaoImpl.TABLE_NAME).append(" AS c ON m.userId = ? ");
@@ -134,7 +137,10 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
     }
 
     @Override
-    public List<Map<String, Object>> findMembersByUserIdAndRoleAndIsLearned(Integer userId, String role, String isLearned, Integer start, Integer limit) {
+    public List<Map<String, Object>> findMembersByUserIdAndRoleAndIsLearned(Integer userId, String role,
+                                                                            Integer isLearned,
+                                                                            Integer start, Integer limit) {
+
         String sql = "SELECT * FROM " + TABLE_NAME +
                 " WHERE userId = ? AND role = ? AND isLearned = ? ORDER BY createdTime DESC LIMIT " + start + ", " + limit;
         return getJdbcTemplate().queryForList(sql, userId, role, isLearned);

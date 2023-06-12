@@ -36,4 +36,8 @@ public interface CourseMemberDao {
 
     List<Map<String, Object>> findMembersByUserIdAndRoleAndIsLearned(Integer userId, String role,
                                                                      String isLearned, Integer start, Integer limit);
+
+    void updateMember(Object id, Map<String, Object> member);
+
+    Integer findMemberCountByCourseIdAndRole(Integer courseId, String role);
 }

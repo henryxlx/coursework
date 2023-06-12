@@ -5,8 +5,10 @@ import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
+import com.jetwinner.webfast.kernel.service.AppUserFieldService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
@@ -33,6 +35,7 @@ public class CourseController {
     private final AppSettingService settingService;
     private final AppCategoryService categoryService;
     private final AppTagService tagService;
+    private final AppUserFieldService userFieldService;
     private final CourseService courseService;
 
     public CourseController(AppUserService userService,
@@ -40,6 +43,7 @@ public class CourseController {
                             AppSettingService settingService,
                             AppCategoryService categoryService,
                             AppTagService tagService,
+                            AppUserFieldService userFieldService,
                             CourseService courseService) {
 
         this.userService = userService;
@@ -47,6 +51,7 @@ public class CourseController {
         this.settingService = settingService;
         this.categoryService = categoryService;
         this.tagService = tagService;
+        this.userFieldService = userFieldService;
         this.courseService = courseService;
     }
 
@@ -339,5 +344,93 @@ public class CourseController {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
         model.addAttribute("course", course);
         return "/course/manage/myquiz/list_course_test_paper.ftl";
+    }
+
+    @RequestMapping("/course/{id}/joinlearning")
+    public String joinLearningAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = this.courseService.getCourse(id);
+
+        AppUser user = AppUser.getCurrentUser(request);
+        if (user == null) {
+            throw new RuntimeGoingException("请登录系统才能加入学习！");
+        }
+
+//        int remainingStudentNum = this.getRemainStudentNum(course);
+        int remainingStudentNum = 100;
+
+        String previewAs = request.getParameter("previewAs");
+
+        Map<String, Object> member = this.courseService.getCourseMember(ValueParser.toInteger(course.get("id")), user.getId());
+        member = this.previewAsMember(previewAs, member, course, user);
+
+        model.addAttribute("courseSetting", this.settingService.get("course"));
+
+        Map<String, Object> userInfo = this.userService.getUserProfile(user.getId());
+        userInfo.put("approvalStatus", user.getApprovalStatus());
+
+        List<Map<String, Object>> userFields = this.userFieldService.getAllFieldsOrderBySeqAndEnabled();
+
+        userFields.forEach(e -> {
+            checkFieldNamePutType(e, "textField", "text");
+            checkFieldNamePutType(e, "varcharField", "varchar");
+            checkFieldNamePutType(e, "intField", "int");
+            checkFieldNamePutType(e, "floatField", "float");
+            checkFieldNamePutType(e, "dateField", "date");
+
+        });
+        model.addAttribute("userFields", null);
+
+        model.addAttribute("course", course);
+        model.addAttribute("user", userInfo);
+        model.addAttribute("member", MapUtil.isEmpty(member) ? null : member);
+        model.addAttribute("noVerifiedMobile", EasyStringUtil.isBlank(user.getVerifiedMobile()));
+        model.addAttribute("verifiedMobile", EasyStringUtil.isNotBlank(user.getVerifiedMobile()) ?
+                user.getVerifiedMobile() : "");
+        model.addAttribute("avatarAlert", alertJoinCourse(user));
+        return "/course/join-modal";
+    }
+
+    private void checkFieldNamePutType(Map<String, Object> field, String fieldNameContain, String type) {
+        String fieldName = String.valueOf(field.get("fieldName"));
+        if (fieldName.contains(fieldNameContain)) {
+            field.put("type", type);
+        }
+    }
+
+    private boolean alertJoinCourse(AppUser user) {
+        Map<String, Object> setting = this.settingService.get("user_partner");
+        if (EasyStringUtil.isBlank(setting.get("avatar_alert"))) {
+            return false;
+        }
+
+        if ("when_join_course".equals(setting.get("avatar_alert")) && EasyStringUtil.isBlank(user.getMediumAvatar())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    @RequestMapping("/course/{id}/join/modify_user_info")
+    public String modifyUserInfoAction(@PathVariable Integer id, HttpServletRequest request) {
+        AppUser user = AppUser.getCurrentUser(request);
+        if (user == null || user.getId() == null) {
+            throw new RuntimeGoingException("用户未登录，不能加入课程学习。");
+        }
+
+        Map<String, Object> course = this.courseService.getCourse(id);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在，不能加入课程学习。");
+        }
+
+        if (!"published".equals(course.get("status"))) {
+            throw new RuntimeGoingException("不能加入未发布课程.");
+        }
+
+        try {
+            this.courseService.becomeStudent(course, id, user.getId(), null);
+        } catch (ActionGraspException e) {
+            throw new RuntimeGoingException("加入课程学习发生错误：" + e.getMessage());
+        }
+        return "redirect:/course/" + id;
     }
 }

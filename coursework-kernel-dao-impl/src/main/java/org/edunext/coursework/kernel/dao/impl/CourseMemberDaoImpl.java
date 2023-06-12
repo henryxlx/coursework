@@ -140,6 +140,17 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
         return getJdbcTemplate().queryForList(sql, userId, role, isLearned);
     }
 
+    @Override
+    public void updateMember(Object id, Map<String, Object> member) {
+        updateMap(TABLE_NAME, member, "id", id);
+    }
+
+    @Override
+    public Integer findMemberCountByCourseIdAndRole(Integer courseId, String role) {
+        String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE  courseId = ? AND role = ?";
+        return getJdbcTemplate().queryForObject(sql, Integer.class, courseId, role);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME, "course_member")

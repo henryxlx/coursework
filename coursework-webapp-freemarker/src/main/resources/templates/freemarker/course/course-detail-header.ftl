@@ -72,10 +72,10 @@
         <div class="actions clearfix">
             <div class="pull-left">
                 <a class="btn btn-primary btn-fat " id="course-buy-btn"
-                        <#if setting("course.buy_fill_userinfo", "false") != "false">
+                        <#if setting("course.buy_fill_userinfo", "false") == "false">
                             href="#modal"
                             data-toggle="modal"
-                            data-url="${ctx}/course/${course.id}/buy?targetType=course"
+                            data-url="${ctx}/course/${course.id}/joinlearning"
                         <#else>
                             href="${ctx}/order/show?targetId=${course.id}&targetType=course"
                         </#if>

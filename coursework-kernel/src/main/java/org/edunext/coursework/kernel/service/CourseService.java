@@ -3,6 +3,7 @@ package org.edunext.coursework.kernel.service;
 import com.jetwinner.util.SetUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 
 import java.util.*;
 
@@ -117,4 +118,6 @@ public interface CourseService {
     Integer findUserFavoritedCourseCount(Integer userId);
 
     List<Map<String, Object>> findUserFavoritedCourses(Integer userId, Integer start, Integer limit);
+
+    void becomeStudent(Map<String, Object> course, Integer courseId, Integer userId, Map<String, Object> info) throws ActionGraspException;
 }

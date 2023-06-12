@@ -9,9 +9,12 @@ import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastAppConst;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.model.AppPathInfo;
 import com.jetwinner.webfast.kernel.service.AppLogService;
+import com.jetwinner.webfast.kernel.service.AppMessageService;
+import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
@@ -37,8 +40,11 @@ public class CourseServiceImpl implements CourseService {
     private final CourseChapterDao chapterDao;
     private final CourseDraftDao courseDraftDao;
     private final CourseMemberDao memberDao;
+    private final CourseNoteDao noteDao;
     private final FavoriteDao favoriteDao;
+    private final AppMessageService messageService;
     private final AppTagService tagService;
+    private final AppSettingService settingService;
     private final AppLogService logService;
 
     public CourseServiceImpl(AppUserService userService,
@@ -47,9 +53,9 @@ public class CourseServiceImpl implements CourseService {
                              AppCategoryService categoryService,
                              CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
-                             FavoriteDao favoriteDao,
-                             AppTagService tagService,
-                             AppLogService logService) {
+                             CourseNoteDao noteDao, FavoriteDao favoriteDao,
+                             AppMessageService messageService, AppTagService tagService,
+                             AppSettingService settingService, AppLogService logService) {
 
         this.userService = userService;
         this.appConst = appConst;
@@ -60,8 +66,11 @@ public class CourseServiceImpl implements CourseService {
         this.chapterDao = chapterDao;
         this.courseDraftDao = courseDraftDao;
         this.memberDao = memberDao;
+        this.noteDao = noteDao;
         this.favoriteDao = favoriteDao;
+        this.messageService = messageService;
         this.tagService = tagService;
+        this.settingService = settingService;
         this.logService = logService;
     }
 
@@ -968,6 +977,79 @@ public class CourseServiceImpl implements CourseService {
     public List<Map<String, Object>> findUserFavoritedCourses(Integer userId, Integer start, Integer limit) {
         List<Map<String, Object>> courseFavorites = this.favoriteDao.findCourseFavoritesByUserId(userId, start, limit);
         return this.courseDao.findCoursesByIds(ArrayToolkit.column(courseFavorites, "courseId"));
+    }
+
+    @Override
+    public void becomeStudent(Map<String, Object> course, Integer courseId, Integer userId, Map<String, Object> info) throws ActionGraspException {
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if (MapUtil.isNotEmpty(member)) {
+            throw new ActionGraspException("用户(#" + userId + ")已加入该课程！");
+        }
+
+        long deadline = 0;
+        long expiryDay = ValueParser.parseLong(course.get("expiryDay"));
+        if (expiryDay > 0) {
+            deadline = expiryDay * 24 * 60 * 60 + System.currentTimeMillis();
+        }
+
+        Map<String, Object> fields = new ParamMap()
+                .add("courseId", courseId)
+                .add("userId", userId)
+                .add("orderId", 0)
+                .add("deadline", deadline)
+                .add("levelId", 0)
+                .add("role", "student")
+                .add("remark", "")
+                .add("createdTime", System.currentTimeMillis()).toMap();
+
+        if (info != null && EasyStringUtil.isNotBlank(info.get("note"))) {
+            fields.put("remark", info.get("note"));
+        }
+
+        this.memberDao.addMember(fields);
+
+        this.setMemberNoteNumber(courseId, userId, this.noteDao.getNoteCountByUserIdAndCourseId(userId, courseId));
+
+        Map<String, Object> setting = this.settingService.get("course");
+        if (EasyStringUtil.isNotBlank(setting.get("welcome_message_enabled")) &&
+                EasyStringUtil.isNotBlank(course.get("teacherIds"))) {
+
+            String message = this.getWelcomeMessageBody(userService.getUser(userId), course);
+            Object teacherIds = course.get("teacherIds");
+            Integer fromId = 0;
+            if (teacherIds instanceof String[]) {
+                fromId = ValueParser.parseInt(((String[]) teacherIds)[0]);
+            }
+            this.messageService.sendMessage(fromId, userId, message);
+        }
+
+        fields = new ParamMap().add("studentNum", this.getCourseStudentCount(courseId)).toMap();
+        this.courseDao.updateCourse(courseId, fields);
+        // this.dispatchEvent("course.join", new ServiceEvent(course, new ParamMap().add("userId", member.get("userId"))));
+    }
+
+    public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
+        Map<String, Object> member = this.getCourseMember(courseId, userId);
+        if (MapUtil.isEmpty(member)) {
+            return false;
+        }
+
+        this.memberDao.updateMember(member.get("id"),
+                new ParamMap().add("noteNum", number).add("noteLastUpdateTime", System.currentTimeMillis()).toMap());
+
+        return true;
+    }
+
+    public Integer getCourseStudentCount(Integer courseId) {
+        return this.memberDao.findMemberCountByCourseIdAndRole(courseId, "student");
+    }
+
+    private String getWelcomeMessageBody(AppUser user, Map<String, Object> course) {
+        Map<String, Object> setting = this.settingService.get("course");
+        String welcomeMessageBody = String.valueOf(setting.get("welcome_message_body"));
+        welcomeMessageBody = welcomeMessageBody.replace("{{nickname}}", user.getUsername());
+        welcomeMessageBody = welcomeMessageBody.replace("{{course}}", String.valueOf(course.get("title")));
+        return welcomeMessageBody;
     }
 
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {

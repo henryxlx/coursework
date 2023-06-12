@@ -581,7 +581,7 @@ public class CourseServiceImpl implements CourseService {
          */
         List<Map<String, Object>> sortedCourses = new ArrayList<>();
         members.forEach(member -> {
-            Map<String, Object> course = courses.get(member.get("courseId"));
+            Map<String, Object> course = courses.get(String.valueOf(member.get("courseId")));
             if (MapUtil.isEmpty(course)) {
                 return;
             }

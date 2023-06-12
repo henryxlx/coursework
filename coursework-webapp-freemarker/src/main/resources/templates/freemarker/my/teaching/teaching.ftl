@@ -63,9 +63,9 @@
                                 </a>
                                 <ul class="dropdown-menu pull-right">
                                     <li><a href="${ctx}/course/${course.id}/manage/lesson">课时管理</a></li>
-                                    <li><a href="${ctx}/course/${course.id}/manage/files">文件管理</a></li>
+                                    <li><a href="${ctx}/course/${course.id}/manage/file">文件管理</a></li>
                                     <li>
-                                        <a href="${ctx}/course/${course.id}/manage/students">${setting('default.user_name')!'学员'}
+                                        <a href="${ctx}/course/${course.id}/manage/student">${setting('default.user_name')!'学员'}
                                             管理</a></li>
                                 </ul>
                             </div>

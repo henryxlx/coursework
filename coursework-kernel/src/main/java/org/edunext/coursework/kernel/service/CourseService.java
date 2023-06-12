@@ -109,4 +109,12 @@ public interface CourseService {
     void updateCourseCounter(Integer courseId, Map<String, Object> counter);
 
     Map<String, Object> getCourseLesson(Integer courseId, Integer lessonId);
+
+    Integer findUserLearnCourseCount(Integer userId);
+
+    List<Map<String, Object>> findUserLearnCourses(Integer userId, Integer start, Integer limit);
+
+    Integer findUserFavoritedCourseCount(Integer userId);
+
+    List<Map<String, Object>> findUserFavoritedCourses(Integer userId, Integer start, Integer limit);
 }

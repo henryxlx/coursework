@@ -37,6 +37,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseChapterDao chapterDao;
     private final CourseDraftDao courseDraftDao;
     private final CourseMemberDao memberDao;
+    private final FavoriteDao favoriteDao;
     private final AppTagService tagService;
     private final AppLogService logService;
 
@@ -46,6 +47,7 @@ public class CourseServiceImpl implements CourseService {
                              AppCategoryService categoryService,
                              CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
+                             FavoriteDao favoriteDao,
                              AppTagService tagService,
                              AppLogService logService) {
 
@@ -58,6 +60,7 @@ public class CourseServiceImpl implements CourseService {
         this.chapterDao = chapterDao;
         this.courseDraftDao = courseDraftDao;
         this.memberDao = memberDao;
+        this.favoriteDao = favoriteDao;
         this.tagService = tagService;
         this.logService = logService;
     }
@@ -932,6 +935,39 @@ public class CourseServiceImpl implements CourseService {
             return null;
         }
         return lesson;
+    }
+
+    @Override
+    public Integer findUserLearnCourseCount(Integer userId) {
+        return this.memberDao.findMemberCountByUserIdAndRole(userId, "student", true);
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserLearnCourses(Integer userId, Integer start, Integer limit) {
+        List<Map<String, Object>> members = this.memberDao.findMembersByUserIdAndRole(userId,
+                "student", start, limit, true);
+
+        List<Map<String, Object>> courses = this.findCoursesByIds(ArrayToolkit.column(members, "courseId"));
+        Map<String, Map<String, Object>> mapForCourse = ArrayToolkit.index(courses, "id");
+        members.forEach(member -> {
+            Map<String, Object> course = mapForCourse.get(member.get("courseId"));
+            if (MapUtil.isNotEmpty(course)) {
+                course.put("memberIsLearned", member.get("isLearned"));
+                course.put("memberLearnedNum", member.get("learnedNum"));
+            }
+        });
+        return courses;
+    }
+
+    @Override
+    public Integer findUserFavoritedCourseCount(Integer userId) {
+        return this.favoriteDao.getFavoriteCourseCountByUserId(userId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserFavoritedCourses(Integer userId, Integer start, Integer limit) {
+        List<Map<String, Object>> courseFavorites = this.favoriteDao.findCourseFavoritesByUserId(userId, start, limit);
+        return this.courseDao.findCoursesByIds(ArrayToolkit.column(courseFavorites, "courseId"));
     }
 
     private Map<String, Map<String, Object>> getCourseItemMap(List<Map<String, Object>> items) {

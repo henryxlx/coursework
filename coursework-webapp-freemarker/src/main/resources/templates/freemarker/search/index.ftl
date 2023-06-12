@@ -51,7 +51,7 @@
 
             <#if keywords??>
             <#if courses??>
-                <@renderController path='/course/courseBlock' params={'view': 'list'}/>
+                <@renderController path='/course/coursesBlock' params={'courses': courses, 'view':'list'}/>
                 <@web_macro.paginator paginator!/>
             <#else>
             <div class="empty">没有搜到相关课程，请换个关键词试试！</div>

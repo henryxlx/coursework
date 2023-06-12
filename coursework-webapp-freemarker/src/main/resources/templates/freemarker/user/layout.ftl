@@ -33,10 +33,11 @@
                             href="${ctx}/user/learning/classrooms?id=${(user.id)!}">在学${setting('classroom.name', '班级')}</a>
                 </li>
             </#if>
+            <li <#if pageNav! == 'about'>class="active"</#if>><a href="${ctx}/user/${(user.id)!}/about">个人介绍</a></li>
         </ul>
 
         <#if blockMain??><@blockMain/></#if>
 
-</div>
+    </div>
 
 </#macro>

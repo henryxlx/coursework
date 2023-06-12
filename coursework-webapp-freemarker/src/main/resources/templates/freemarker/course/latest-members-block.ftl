@@ -5,11 +5,11 @@
         </div>
         <div class="panel-body">
             <ul class="user-grids">
-                <#list students as student>
-                    <#assign user = users[student.userId]>
+                <#list students! as student>
+                    <#assign user = users['' + student.userId]>
                     <li>
-                        <@web_macro.user_avatar(user) />
-                        <p><@web_macro.user_link(user) /></p>
+                        <@web_macro.user_avatar user! />
+                        <p><@web_macro.user_link user! /></p>
                     </li>
                 </#list>
             </ul>

@@ -1028,6 +1028,49 @@ public class CourseServiceImpl implements CourseService {
         // this.dispatchEvent("course.join", new ServiceEvent(course, new ParamMap().add("userId", member.get("userId"))));
     }
 
+    @Override
+    public int findUserLearnedCourseCount(Integer userId, Map<String, Object> filters) {
+        if (filters != null && EasyStringUtil.isNotBlank(filters.get("type"))) {
+            return this.memberDao.findMemberCountByUserIdAndCourseTypeAndIsLearned(userId, "student",
+                    String.valueOf(filters.get("type")), 1);
+        }
+        return this.memberDao.findMemberCountByUserIdAndRoleAndIsLearned(userId, "student", 1);
+    }
+
+    @Override
+    public List<Map<String, Object>> findUserLearnedCourses(Integer userId, Integer start, Integer limit, Map<String, Object> filters) {
+        List<Map<String, Object>> members;
+        if (filters != null && EasyStringUtil.isNotBlank(filters.get("type"))) {
+            members = this.memberDao.findMembersByUserIdAndCourseTypeAndIsLearned(userId, "student",
+                    String.valueOf(filters.get("type")), 1, start, limit);
+        } else {
+            members = this.memberDao.findMembersByUserIdAndRoleAndIsLearned(userId, "student", 1, start, limit);
+        }
+
+        Map<String, Map<String, Object>> courses = ArrayToolkit.index(
+                this.findCoursesByIds(ArrayToolkit.column(members, "courseId")), "id");
+
+        List<Map<String, Object>> sortedCourses = new ArrayList<>();
+        members.forEach(member -> {
+            Map<String, Object> course = courses.get(String.valueOf(member.get("courseId")));
+            if (MapUtil.isEmpty(course)) {
+                return;
+            }
+            course.put("memberIsLearned", 1);
+            course.put("memberLearnedNum", member.get("learnedNum"));
+            sortedCourses.add(course);
+        });
+        return sortedCourses;
+    }
+
+    @Override
+    public void mergeTeacherIds(Set<Object> userIds, Object teacherIds) {
+        String[] arr = CourseSerialize.objectToArray(teacherIds);
+        for (int i = 0, len = arr != null ? arr.length : 0; i < len; i++) {
+            userIds.add(arr[i]);
+        }
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {
@@ -1124,14 +1167,23 @@ class CourseSerialize {
 
     private static final String UNSERIALIZE_KEY = "unserialize";
 
-    public static void objectToArray(Map<String, Object> map, String key) {
-        Object obj = map.get(key);
+    public static String[] objectToArray(Object obj) {
+        String[] arr = null;
         if (EasyStringUtil.isNotBlank(obj)) {
             String s = String.valueOf(obj);
             if (s.startsWith("|")) {
                 s = s.substring(1);
             }
-            map.put(key, s.split("\\|"));
+            arr = s.split("\\|");
+        }
+        return arr;
+    }
+
+    public static void objectToArray(Map<String, Object> map, String key) {
+        Object obj = map.get(key);
+        String[] arr = objectToArray(obj);
+        if (arr != null) {
+            map.put(key, arr);
         }
     }
 

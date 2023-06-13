@@ -120,4 +120,18 @@ public interface CourseService {
     List<Map<String, Object>> findUserFavoritedCourses(Integer userId, Integer start, Integer limit);
 
     void becomeStudent(Map<String, Object> course, Integer courseId, Integer userId, Map<String, Object> info) throws ActionGraspException;
+
+    default int findUserLearnedCourseCount(Integer userId) {
+        return this.findUserLearnedCourseCount(userId, null);
+    }
+
+    int findUserLearnedCourseCount(Integer userId, Map<String, Object> filters);
+
+    default List<Map<String, Object>> findUserLearnedCourses(Integer userId, Integer start, Integer limit) {
+        return this.findUserLearnedCourses(userId, start, limit, null);
+    }
+
+    List<Map<String, Object>> findUserLearnedCourses(Integer userId, Integer start, Integer limit, Map<String, Object> filters);
+
+    void mergeTeacherIds(Set<Object> userIds, Object teacherIds);
 }

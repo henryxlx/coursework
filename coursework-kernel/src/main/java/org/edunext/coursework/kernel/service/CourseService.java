@@ -26,6 +26,8 @@ public interface CourseService {
 
     Map<String, Object> tryManageCourse(AppUser currentUser, Integer id);
 
+    Map<String, Object> tryAdminCourse(AppUser currentUser, Integer courseId);
+
     void updateCourse(AppUser currentUser, Integer id, Map<String, Object> fields);
 
     List<Map<String, Object>> findCoursesByLikeTitle(Object title);
@@ -144,4 +146,6 @@ public interface CourseService {
     Boolean canManageCourse(Integer courseId, Integer userId);
 
     Map<String, Object> remarkStudent(Integer courseId, Integer userId, String remark);
+
+    void removeStudent(AppUser currentUser, Integer courseId, Integer userId);
 }

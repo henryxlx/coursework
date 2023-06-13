@@ -9,6 +9,7 @@ import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppNotificationService;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserFieldService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,18 +37,21 @@ public class CourseStudentManageController {
     private final CourseService courseService;
     private final AppUserService userService;
     private final AppUserFieldService userFieldService;
+    private final AppNotificationService notificationService;
     private final AppSettingService settingService;
     private final UserAccessControlService userAccessControlService;
 
     public CourseStudentManageController(CourseService courseService,
                                          AppUserService userService,
                                          AppUserFieldService userFieldService,
+                                         AppNotificationService notificationService,
                                          AppSettingService settingService,
                                          UserAccessControlService userAccessControlService) {
 
         this.courseService = courseService;
         this.userService = userService;
         this.userFieldService = userFieldService;
+        this.notificationService = notificationService;
         this.settingService = settingService;
         this.userAccessControlService = userAccessControlService;
     }
@@ -214,5 +219,27 @@ public class CourseStudentManageController {
         model.addAttribute("course", course);
         model.addAttribute("student", student);
         return "/course/manage/student/tr";
+    }
+
+    @RequestMapping("/course/{courseId}/manage/student/{userId}/remove")
+    @ResponseBody
+    public Boolean removeAction(@PathVariable Integer courseId, @PathVariable Integer userId,
+                                HttpServletRequest request) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course;
+        Map<String, Object> courseSetting = this.settingService.get("course");
+        if (EasyStringUtil.isNotBlank(courseSetting.get("teacher_manage_student"))) {
+            course = this.courseService.tryManageCourse(currentUser, courseId);
+        } else {
+            course = this.courseService.tryAdminCourse(currentUser, courseId);
+        }
+
+        this.courseService.removeStudent(currentUser, courseId, userId);
+
+        this.notificationService.notify(userId, "student-remove",
+                new ParamMap().add("courseId", course.get("id")).add("courseTitle", course.get("title")).toMap());
+
+        return Boolean.TRUE;
     }
 }

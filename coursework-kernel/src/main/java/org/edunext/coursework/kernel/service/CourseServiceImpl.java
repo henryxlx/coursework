@@ -1158,6 +1158,27 @@ public class CourseServiceImpl implements CourseService {
         return this.memberDao.getMember(member.get("id"));
     }
 
+    @Override
+    public void removeStudent(AppUser currentUser, Integer courseId, Integer userId) {
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course) || course.get("id") == null) {
+            throw new RuntimeGoingException("课程(#" + courseId + ")不存在，退出课程失败。");
+        }
+
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if (!"student".equals(member.get("role"))) {
+            throw new RuntimeGoingException("用户(" + userId + ")不是课程(" + courseId + ")的学员，退出课程失败。");
+        }
+
+        this.memberDao.deleteMember(member.get("id"));
+
+        this.courseDao.updateCourse(courseId,
+                new ParamMap().add("studentNum", this.getCourseStudentCount(courseId)).toMap());
+
+        this.logService.info(currentUser, "course", "remove_student",
+                String.format("课程《%s》(#%s)，移除学员#%s", course.get("title"), course.get("id"), member.get("id")));
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {
@@ -1219,6 +1240,7 @@ public class CourseServiceImpl implements CourseService {
         return (chapterMaxSeq > lessonMaxSeq ? chapterMaxSeq : lessonMaxSeq) + 1;
     }
 
+    @Override
     public Map<String, Object> tryAdminCourse(AppUser user, Integer courseId) {
         Map<String, Object> course = courseDao.getCourse(courseId);
         if (MapUtil.isEmpty(course)) {

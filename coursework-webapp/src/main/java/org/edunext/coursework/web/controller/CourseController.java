@@ -370,16 +370,14 @@ public class CourseController {
         userInfo.put("approvalStatus", user.getApprovalStatus());
 
         List<Map<String, Object>> userFields = this.userFieldService.getAllFieldsOrderBySeqAndEnabled();
-
         userFields.forEach(e -> {
-            checkFieldNamePutType(e, "textField", "text");
-            checkFieldNamePutType(e, "varcharField", "varchar");
-            checkFieldNamePutType(e, "intField", "int");
-            checkFieldNamePutType(e, "floatField", "float");
-            checkFieldNamePutType(e, "dateField", "date");
-
+            this.userFieldService.checkFieldNameSetType(e, "textField", "text");
+            this.userFieldService.checkFieldNameSetType(e, "varcharField", "varchar");
+            this.userFieldService.checkFieldNameSetType(e, "intField", "int");
+            this.userFieldService.checkFieldNameSetType(e, "floatField", "float");
+            this.userFieldService.checkFieldNameSetType(e, "dateField", "date");
         });
-        model.addAttribute("userFields", null);
+        model.addAttribute("userFields", userFields);
 
         model.addAttribute("course", course);
         model.addAttribute("user", userInfo);
@@ -389,13 +387,6 @@ public class CourseController {
                 user.getVerifiedMobile() : "");
         model.addAttribute("avatarAlert", alertJoinCourse(user));
         return "/course/join-modal";
-    }
-
-    private void checkFieldNamePutType(Map<String, Object> field, String fieldNameContain, String type) {
-        String fieldName = String.valueOf(field.get("fieldName"));
-        if (fieldName.contains(fieldNameContain)) {
-            field.put("type", type);
-        }
     }
 
     private boolean alertJoinCourse(AppUser user) {

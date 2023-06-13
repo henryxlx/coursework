@@ -23,4 +23,19 @@ public class FavoriteDaoImpl extends FastJdbcDaoSupport implements FavoriteDao {
     public List<Map<String, Object>> findCourseFavoritesByUserId(Integer userId, Integer start, Integer limit) {
         return new ArrayList<>(0);
     }
+
+    @Override
+    public Map<String, Object> getFavoriteByUserIdAndCourseId(Integer userId, Integer courseId) {
+        return null;
+    }
+
+    @Override
+    public void addFavorite(Map<String, Object> fields) {
+
+    }
+
+    @Override
+    public void deleteFavorite(Object id) {
+
+    }
 }

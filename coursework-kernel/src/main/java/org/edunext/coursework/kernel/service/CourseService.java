@@ -134,4 +134,8 @@ public interface CourseService {
     List<Map<String, Object>> findUserLearnedCourses(Integer userId, Integer start, Integer limit, Map<String, Object> filters);
 
     void mergeTeacherIds(Set<Object> userIds, Object teacherIds);
+
+    void favoriteCourse(AppUser user, Integer courseId);
+
+    void unfavoriteCourse(AppUser user, Integer courseId);
 }

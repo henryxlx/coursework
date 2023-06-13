@@ -20,6 +20,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -432,5 +433,19 @@ public class CourseController {
             throw new RuntimeGoingException("加入课程学习发生错误：" + e.getMessage());
         }
         return "redirect:/course/" + id;
+    }
+
+    @RequestMapping("/course/{id}/favorite")
+    @ResponseBody
+    public Boolean favoriteAction(@PathVariable Integer id, HttpServletRequest request) {
+        this.courseService.favoriteCourse(AppUser.getCurrentUser(request), id);
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{id}/unfavorite")
+    @ResponseBody
+    public Boolean unfavoriteAction(@PathVariable Integer id, HttpServletRequest request) {
+        this.courseService.unfavoriteCourse(AppUser.getCurrentUser(request), id);
+        return Boolean.TRUE;
     }
 }

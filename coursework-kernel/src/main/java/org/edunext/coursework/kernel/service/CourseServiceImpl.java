@@ -1071,6 +1071,53 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    public void favoriteCourse(AppUser user, Integer courseId) {
+        if (user == null || user.getId() == null) {
+            throw new RuntimeGoingException("用户不存在，不能访问！");
+        }
+
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("该课程不存在,收藏失败!");
+        }
+
+        if (!"published".equals(course.get("status"))) {
+            throw new RuntimeGoingException("不能收藏未发布课程");
+        }
+
+        Map<String, Object> favorite = this.favoriteDao.getFavoriteByUserIdAndCourseId(user.getId(), courseId);
+        if (MapUtil.isNotEmpty(favorite)) {
+            throw new RuntimeGoingException("该收藏已经存在，请不要重复收藏!");
+        }
+        //添加动态
+        // this.dispatchEvent("course.favorite", new ServiceEvent(course));
+
+        this.favoriteDao.addFavorite(new ParamMap()
+                .add("courseId", courseId)
+                .add("userId", user.getId())
+                .add("createdTime", System.currentTimeMillis()).toMap());
+    }
+
+    @Override
+    public void unfavoriteCourse(AppUser user, Integer courseId) {
+        if (user == null || user.getId() == null) {
+            throw new RuntimeGoingException("用户不存在，不能访问！");
+        }
+
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("该课程不存在,收藏失败!");
+        }
+
+        Map<String, Object> favorite = this.favoriteDao.getFavoriteByUserIdAndCourseId(user.getId(), courseId);
+        if (MapUtil.isEmpty(favorite)) {
+            throw new RuntimeGoingException("你未收藏本课程，取消收藏失败!");
+        }
+
+        this.favoriteDao.deleteFavorite(favorite.get("id"));
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

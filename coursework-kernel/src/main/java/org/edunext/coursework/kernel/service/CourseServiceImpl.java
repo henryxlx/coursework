@@ -313,6 +313,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<Map<String, Object>> searchMembers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit) {
+        this.prepareCourseConditions(conditions);
+        return this.memberDao.searchMembers(conditions, orderBy, start, limit);
+    }
+
+    @Override
     public Integer searchLearnTime(Map<String, Object> conditions) {
         return null;
     }
@@ -999,7 +1005,7 @@ public class CourseServiceImpl implements CourseService {
                 .add("deadline", deadline)
                 .add("levelId", 0)
                 .add("role", "student")
-                .add("remark", "")
+                .add("remark", "无")
                 .add("createdTime", System.currentTimeMillis()).toMap();
 
         if (info != null && EasyStringUtil.isNotBlank(info.get("note"))) {
@@ -1116,6 +1122,29 @@ public class CourseServiceImpl implements CourseService {
         }
 
         this.favoriteDao.deleteFavorite(favorite.get("id"));
+    }
+
+    @Override
+    public Boolean canManageCourse(Integer courseId, Integer userId) {
+        if (!this.userAccessControlService.isLoggedIn()) {
+            return false;
+        }
+        boolean isAdmin = this.userAccessControlService.hasAnyRole("ROLE_ADMIN", "ROLE_SUPER_ADMIN");
+        if (isAdmin) {
+            return true;
+        }
+
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            return isAdmin;
+        }
+
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if ("teacher".equals(member.get("role"))) {
+            return true;
+        }
+
+        return false;
     }
 
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {

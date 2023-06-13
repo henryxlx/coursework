@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.dao;
 
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,8 @@ public interface CourseMemberDao {
     List<Map<String, Object>> findMembersByCourseIdAndRole(Integer courseId, String roleName, Integer start, Integer limit);
 
     Integer searchMemberCount(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchMembers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
     List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit);
 

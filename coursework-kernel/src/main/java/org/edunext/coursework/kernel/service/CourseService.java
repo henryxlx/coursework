@@ -36,6 +36,8 @@ public interface CourseService {
 
     Integer searchMemberCount(Map<String, Object> conditions);
 
+    List<Map<String, Object>> searchMembers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
+
     Integer searchLearnTime(Map<String, Object> conditions);
 
     Integer searchLessonCount(Map<String, Object> conditions);
@@ -138,4 +140,6 @@ public interface CourseService {
     void favoriteCourse(AppUser user, Integer courseId);
 
     void unfavoriteCourse(AppUser user, Integer courseId);
+
+    Boolean canManageCourse(Integer courseId, Integer userId);
 }

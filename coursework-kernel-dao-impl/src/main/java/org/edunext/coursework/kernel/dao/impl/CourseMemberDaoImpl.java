@@ -71,6 +71,18 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
     }
 
     @Override
+    public List<Map<String, Object>> searchMembers(Map<String, Object> conditions, OrderBy orderBy,
+                                                   Integer start, Integer limit) {
+
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions)
+                .select("*")
+                .orderBy(orderBy)
+                .setFirstResult(start)
+                .setMaxResults(limit);
+        return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
+    }
+
+    @Override
     public List<Map<String, Object>> searchMember(Map<String, Object> conditions, Integer start, Integer limit) {
         DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions)
                 .select("*")

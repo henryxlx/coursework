@@ -41,9 +41,9 @@
             <tbody>
             <#list students! as student>
                 <#assign user = users[''+student.userId]! />
-                <#assign progress = progress[''+student.userId]! />
+                <#assign progress = progresses[''+student.userId]! />
                 <#assign isFollowing = followingIds?seq_contains(user.id)/>
-                
+
                 <#include '/course/manage/student/tr.ftl'/>
             <#else>
             <tr class="empty"><td colspan="20">无${setting('default.user_name', '学员')}记录</td></tr>

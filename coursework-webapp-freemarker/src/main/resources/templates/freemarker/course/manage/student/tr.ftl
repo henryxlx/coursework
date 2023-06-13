@@ -1,9 +1,9 @@
 <tr id="student-${user.id}-tr">
     <td class="media">
-        <@web_macro.user_avatar(user, 'pull-left')/>
+        <@web_macro.user_avatar user 'pull-left' />
         <a target="_blank" href="${ctx}/user/${user.id}">${user.username}</a>
         <#if student.remark??>
-        <span class="text-muted text-sm" title="${student.remark}">(${student.remark[0..15]})</span>
+            <span class="text-muted text-sm" title="${student.remark}">(${student.remark})</span>
         </#if>
         <div class="text-muted text-sm">加入时间：${student.createdTime?number_to_date?string('yyyy-MM-dd HH:mm')}</div>
         <#if course.expiryDay gt 0 && student.deadline gt 0 >
@@ -46,7 +46,9 @@
                 </#if>
 
                 <#if userAcl.hasRole('ROLE_ADMIN') ||  userAcl.hasRole('ROLE_TEACHER') &&  isTeacherAuthManageStudent == 1 >
-                <li><a class="student-remove" href="javascript:;" data-url="${ctx}/course/${course.id}/manage/student/${user.id}/remove" data-user="{default.user_name!'学员'}">移除</a></li>
+                    <li><a class="student-remove" href="javascript:;"
+                           data-url="${ctx}/course/${course.id}/manage/student/${user.id}/remove"
+                           data-user="${default.user_name!'学员'}">移除</a></li>
                 </#if>
             </ul>
         </div>

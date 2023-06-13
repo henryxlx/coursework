@@ -6,7 +6,7 @@
 
 <#macro blockMain>
 	<div class="panel panel-default panel-col">
-		<div class="panel-heading">我的课程</span></div>
+		<div class="panel-heading"><span>我的课程</span></div>
 		<div class="panel-body">
 			<#include '/my/course/nav-pill.ftl'/>
 			<#if courses?? && courses?size gt 0>

@@ -1147,6 +1147,17 @@ public class CourseServiceImpl implements CourseService {
         return false;
     }
 
+    @Override
+    public Map<String, Object> remarkStudent(Integer courseId, Integer userId, String remark) {
+        Map<String, Object> member = this.getCourseMember(courseId, userId);
+        if (MapUtil.isEmpty(member)) {
+            throw new RuntimeGoingException("课程学员不存在，备注失败!");
+        }
+        Map<String, Object> fields = new ParamMap().add("remark", EasyStringUtil.isBlank(remark) ? "" : remark).toMap();
+        this.memberDao.updateMember(member.get("id"), fields);
+        return this.memberDao.getMember(member.get("id"));
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

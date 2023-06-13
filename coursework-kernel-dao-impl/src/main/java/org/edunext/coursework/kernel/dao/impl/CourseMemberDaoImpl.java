@@ -23,6 +23,12 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
     private static final String TABLE_NAME = "cw_course_member";
 
     @Override
+    public Map<String, Object> getMember(Object id) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
+        return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
+    }
+
+    @Override
     public void batchDeleteMember(List<Object> ids) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
         getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {

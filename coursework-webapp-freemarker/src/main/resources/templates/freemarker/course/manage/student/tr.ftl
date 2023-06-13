@@ -26,9 +26,13 @@
             <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal" data-url="${ctx}/message/create/${user.id}">发私信</button>
             </#if>
             <#if userAcl.hasRole('ROLE_ADMIN')>
-            <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal" data-url="${ctx}/course/${course.id}/manage/students/${user.id}">查看资料</button>
+                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal"
+                        data-url="${ctx}/course/${course.id}/manage/student/${user.id}/show">查看资料
+                </button>
             <#elseif setting("course.buy_fill_userinfo")??>
-            <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal" data-url="${ctx}/course/${course.id}/manage/students/${user.id}/defined_show">查看资料</button>
+                <button class="btn btn-default btn-sm" data-toggle="modal" data-target="#modal"
+                        data-url="${ctx}/course/${course.id}/manage/student/${user.id}/defined_show">查看资料
+                </button>
             </#if>
             <a href="#" type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">管理
                 <span class="caret"></span>

@@ -142,4 +142,6 @@ public interface CourseService {
     void unfavoriteCourse(AppUser user, Integer courseId);
 
     Boolean canManageCourse(Integer courseId, Integer userId);
+
+    Map<String, Object> remarkStudent(Integer courseId, Integer userId, String remark);
 }

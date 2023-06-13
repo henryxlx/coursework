@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public interface CourseMemberDao {
 
+    Map<String, Object> getMember(Object id);
+
     void batchDeleteMember(List<Object> ids);
 
     Map<String, Object> getMemberByCourseIdAndUserId(Integer courseId, Object userId);

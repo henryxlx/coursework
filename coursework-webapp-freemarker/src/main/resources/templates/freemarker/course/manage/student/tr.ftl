@@ -5,9 +5,11 @@
         <#if student.remark??>
             <span class="text-muted text-sm" title="${student.remark}">(${student.remark})</span>
         </#if>
-        <div class="text-muted text-sm">加入时间：${student.createdTime?number_to_date?string('yyyy-MM-dd HH:mm')}</div>
+        <div class="text-muted text-sm">加入时间：${student.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm')}</div>
         <#if course.expiryDay gt 0 && student.deadline gt 0 >
-        <div class="text-muted text-sm">有效期至：${student.deadline?number_to_date?string('yyyy-MM-dd HH:mm')} ({student.deadline||remain_time })</div>
+            <div class="text-muted text-sm">有效期至：${student.deadline?number_to_datetime?string('yyyy-MM-dd HH:mm')}
+                (${fastLib.remainTime(student.deadline)})
+            </div>
         </#if>
     </td>
 

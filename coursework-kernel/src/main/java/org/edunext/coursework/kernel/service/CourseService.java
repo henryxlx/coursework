@@ -150,4 +150,8 @@ public interface CourseService {
     void removeStudent(AppUser currentUser, Integer courseId, Integer userId);
 
     void addMemberExpiryDays(Integer courseId, Integer userId, Integer day);
+
+    boolean isCourseStudent(Integer courseId, Integer userId);
+
+    boolean isCourseTeacher(Integer courseId, Integer userId);
 }

@@ -45,10 +45,12 @@ define(function(require, exports, module) {
             rule: 'maxlength{max:80}'
         });
 
+/*
         validator.addItem({
             element: '#buy-price',
             rule: 'currency'
         });
+*/
 
     };
 

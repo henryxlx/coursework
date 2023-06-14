@@ -13,7 +13,7 @@
                     <label for="student-nickname">${setting('default.user_name', '学员')}昵称</label>
                 </div>
                 <div class="col-md-7 controls">
-                    <input type="text" id="student-nickname" name="nickname" class="form-control"
+                    <input type="text" id="student-nickname" name="username" class="form-control"
                            data-url="${ctx}/course/${course.id}/manage/username_check">
                     <div class="help-block">只能添加系统中已注册的用户</div>
                 </div>

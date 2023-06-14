@@ -8,17 +8,16 @@ import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
-import com.jetwinner.webfast.kernel.service.AppNotificationService;
-import com.jetwinner.webfast.kernel.service.AppSettingService;
-import com.jetwinner.webfast.kernel.service.AppUserFieldService;
-import com.jetwinner.webfast.kernel.service.AppUserService;
+import com.jetwinner.webfast.kernel.service.*;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -40,13 +39,15 @@ public class CourseStudentManageController {
     private final AppNotificationService notificationService;
     private final AppSettingService settingService;
     private final UserAccessControlService userAccessControlService;
+    private final AppLogService logService;
 
     public CourseStudentManageController(CourseService courseService,
                                          AppUserService userService,
                                          AppUserFieldService userFieldService,
                                          AppNotificationService notificationService,
                                          AppSettingService settingService,
-                                         UserAccessControlService userAccessControlService) {
+                                         UserAccessControlService userAccessControlService,
+                                         AppLogService logService) {
 
         this.courseService = courseService;
         this.userService = userService;
@@ -54,6 +55,7 @@ public class CourseStudentManageController {
         this.notificationService = notificationService;
         this.settingService = settingService;
         this.userAccessControlService = userAccessControlService;
+        this.logService = logService;
     }
 
     @RequestMapping("/course/{id}/manage/student")
@@ -118,9 +120,76 @@ public class CourseStudentManageController {
 
     @RequestMapping("/course/{id}/manage/student/create")
     public String createAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course;
+
+        Map<String, Object> courseSetting = this.settingService.get("course");
+        if (EasyStringUtil.isNotBlank(courseSetting.get("teacher_manage_student"))) {
+            course = this.courseService.tryManageCourse(currentUser, id);
+        } else {
+            course = this.courseService.tryAdminCourse(currentUser, id);
+        }
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> data = ParamMap.toQueryAllMap(request);
+            AppUser user = this.userService.getUserByUsername(String.valueOf(data.get("username")));
+            if (user == null) {
+                throw new RuntimeGoingException("用户" + data.get("username") + "不存在");
+            }
+
+            if (this.courseService.isCourseStudent(ValueParser.toInteger(course.get("id")), user.getId())) {
+                throw new RuntimeGoingException("用户已经是学员，不能添加！");
+            }
+
+            Map<String, Object> info = new ParamMap().add("orderId", 0).add("note", data.get("remark")).toMap();
+
+            try {
+                this.courseService.becomeStudent(course, id, user.getId(), info);
+            } catch (ActionGraspException e) {
+                throw new RuntimeGoingException(e.getMessage());
+            }
+
+            Map<String, Object> member = this.courseService.getCourseMember(id, user.getId());
+
+            this.notificationService.notify(ValueParser.toInteger(member.get("userId")), "student-create",
+                    new ParamMap().add("courseId", course.get("id")).add("courseTitle", course.get("title")).toMap());
+
+            this.logService.info(currentUser, "course", "add_student",
+                    String.format("课程《%s》(#%s)，添加学员%s(#%s)，备注：%s", course.get("title"), course.get("id"),
+                            user.getUsername(), user.getId(), data.get("remark")));
+
+            return this.createStudentTrResponse(course, member, currentUser, model);
+        }
+
+        model.addAttribute("default", this.settingService.get("default"));
         model.addAttribute("course", course);
         return "/course/manage/student/create-modal";
+    }
+
+    @RequestMapping("/course/{id}/manage/username_check")
+    @ResponseBody
+    public Map<String, Object> checkUsernameAction(@PathVariable Integer id,
+                                                   @RequestParam(name = "value") String username) {
+
+        boolean result = this.userService.isUsernameAvailable(username);
+        ParamMap response;
+        if (!result) {
+            response = new ParamMap().add("success", false).add("message", "该用户不存在");
+        } else {
+            AppUser user = this.userService.getUserByUsername(username);
+            boolean isCourseStudent = this.courseService.isCourseStudent(id, user.getId());
+            if (isCourseStudent) {
+                response = new ParamMap().add("success", false).add("message", "该用户已是本课程的学员了");
+            } else {
+                response = new ParamMap().add("success", true).add("message", "");
+            }
+
+            boolean isCourseTeacher = this.courseService.isCourseTeacher(id, user.getId());
+            if (isCourseTeacher) {
+                response = new ParamMap().add("success", false).add("message", "该用户是本课程的教师，不能添加");
+            }
+        }
+        return response.toMap();
     }
 
     @RequestMapping("/course/{id}/manage/student/export")

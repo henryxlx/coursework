@@ -1194,6 +1194,26 @@ public class CourseServiceImpl implements CourseService {
                 new ParamMap().add("deadline", deadline).toMap());
     }
 
+    @Override
+    public boolean isCourseStudent(Integer courseId, Integer userId) {
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if (MapUtil.isEmpty(member)) {
+            return false;
+        } else {
+            return "student".equals(member.get("role")) ? true : false;
+        }
+    }
+
+    @Override
+    public boolean isCourseTeacher(Integer courseId, Integer userId) {
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+        if (MapUtil.isEmpty(member)) {
+            return false;
+        } else {
+            return "teacher".equals(member.get("role")) ? true : false;
+        }
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

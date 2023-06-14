@@ -26,10 +26,12 @@
         <tr>
             <th>性别</th>
             <td>
-                <#if profile.gender == 'mail'>
-                    男
-                <#elseif profile.gender == 'femail'>
-                    女
+                <#if profile.gender??>
+                    <#if profile.gender == 'male'>
+                        男
+                    <#elseif profile.gender == 'female'>
+                        女
+                    </#if>
                 </#if>
             </td>
         </tr>

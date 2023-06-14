@@ -995,7 +995,7 @@ public class CourseServiceImpl implements CourseService {
         long deadline = 0;
         long expiryDay = ValueParser.parseLong(course.get("expiryDay"));
         if (expiryDay > 0) {
-            deadline = expiryDay * 24 * 60 * 60 + System.currentTimeMillis();
+            deadline = expiryDay * 24 * 60 * 60 * 1000 + System.currentTimeMillis();
         }
 
         Map<String, Object> fields = new ParamMap()

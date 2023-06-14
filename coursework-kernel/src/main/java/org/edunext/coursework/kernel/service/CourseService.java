@@ -148,4 +148,6 @@ public interface CourseService {
     Map<String, Object> remarkStudent(Integer courseId, Integer userId, String remark);
 
     void removeStudent(AppUser currentUser, Integer courseId, Integer userId);
+
+    void addMemberExpiryDays(Integer courseId, Integer userId, Integer day);
 }

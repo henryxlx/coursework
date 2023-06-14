@@ -18,9 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -437,6 +435,24 @@ public class CourseController {
     @ResponseBody
     public Boolean unfavoriteAction(@PathVariable Integer id, HttpServletRequest request) {
         this.courseService.unfavoriteCourse(AppUser.getCurrentUser(request), id);
+        return Boolean.TRUE;
+    }
+
+    @GetMapping("/course/{courseId}/set_expiryday/{userId}")
+    public String addMemberExpiryDaysPage(@PathVariable Integer courseId, @PathVariable Integer userId, Model model) {
+        model.addAttribute("user", this.userService.getUser(userId));
+        model.addAttribute("course", this.courseService.getCourse(courseId));
+        model.addAttribute("default", this.settingService.get("default"));
+        return "/course/manage/student/set-expiryday-modal";
+    }
+
+    @PostMapping("/course/{courseId}/set_expiryday/{userId}")
+    @ResponseBody
+    public Boolean addMemberExpiryDaysAction(@PathVariable Integer courseId, @PathVariable Integer userId,
+                                             HttpServletRequest request) {
+
+        String expiryDay = request.getParameter("expiryDay");
+        this.courseService.addMemberExpiryDays(courseId, userId, ValueParser.toInteger(expiryDay));
         return Boolean.TRUE;
     }
 }

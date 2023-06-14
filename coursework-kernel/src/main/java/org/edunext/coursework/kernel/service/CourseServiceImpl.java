@@ -1179,6 +1179,21 @@ public class CourseServiceImpl implements CourseService {
                 String.format("课程《%s》(#%s)，移除学员#%s", course.get("title"), course.get("id"), member.get("id")));
     }
 
+    @Override
+    public void addMemberExpiryDays(Integer courseId, Integer userId, Integer day) {
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, userId);
+
+        long deadline = ValueParser.parseLong(member.get("deadline"));
+        if (deadline > 0) {
+            deadline = day * 24 * 60 * 60 * 1000 + deadline;
+        } else {
+            deadline = day * 24 * 60 * 60 * 1000 + System.currentTimeMillis();
+        }
+
+        this.memberDao.updateMember(member.get("id"),
+                new ParamMap().add("deadline", deadline).toMap());
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

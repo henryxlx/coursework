@@ -136,7 +136,7 @@ CREATE TABLE `cw_course_member`
     `joinedType`         ENUM('course','classroom') NOT NULL DEFAULT 'course' COMMENT '购买班级或者课程加入学习',
     `userId`             int(10) unsigned NOT NULL COMMENT '学员ID',
     `orderId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学员购买课程时的订单ID',
-    `deadline`           int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学习最后期限',
+    `deadline`           bigint unsigned NOT NULL DEFAULT '0' COMMENT '学习最后期限',
     `levelId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户以会员的方式加入课程学员时的会员ID',
     `learnedNum`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '已学课时数',
     `credit`             int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学员已获得的学分',

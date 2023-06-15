@@ -1,5 +1,16 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.4.0: @2023-06-14
+* 完成前台课程管理中学员管理中增加有效期功能
+* 完成前台课程管理中学员管理中添加学员按钮功能
+* 完成前台课程管理中课时管理的课时编辑与保存功能
+* 发现一个奇怪的问题在使用自定义的函数Java对象转换为JSON字符串后，
+  <#assign  mediaJsonText = json_encode(lesson.media) />
+  ${mediaJsonText}在HTML的一般位置显示是正确的JSON字符串（其中包含双引号），但在HTML的属性中则出现错误，如下所示
+  <input id="lesson-media-field" type="hidden" name="media" value="${mediaJsonText}">，在此处理的value属性内显示不正确的JSON
+  内容为"{" name"="none", "id"=0, "url"=""}"=">，实在无法解释FreeMarker这个行为，改正的方法也非常的奇怪，将value属性的双引号变为单引号
+  <input id="lesson-media-field" type="hidden" name="media" value='${mediaJsonText}'>
+
 0.3.9: @2023-06-13
 * 完成网站前台顶部菜单我的功能中的我的学习中我的课程的内容显示
 * 完成我的学习我的课程右侧课程已完成、收藏标签对应页面内容正确显示

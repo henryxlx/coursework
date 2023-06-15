@@ -1,5 +1,10 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.4.1: @2023-06-15
+* 完成前台课程管理中课时管理的课时删除功能
+* 完成前台课程管理中课时管理的课时发布和取消发布功能
+* 完成前台课程管理中课时管理的课时预览功能，实现预览中目录的显示及完成与取消完成的功能
+
 0.4.0: @2023-06-14
 * 完成前台课程管理中学员管理中增加有效期功能
 * 完成前台课程管理中学员管理中添加学员按钮功能
@@ -27,7 +32,9 @@ ChangeLog for CourseWork Development
 * 实现网站前台课程显示中加入课程学习功能
 
 0.3.7: @2023-06-11
-* 在FreeMarker页面中使用哈希类型处理星期显示
+* 在FreeMarker页面中使用哈希类型处理星期显示(course/lesson/item-list-multi.ftl)
+  <#assign weeks = {'Mon':'一','Tus':'二','Wed':'三','Thu':'四','Fri':'五','Sat':'六','Sun':'日'}/>
+  								星期${weeks[item.startTime?number_to_date?string('E')]}
 * queryForObject查询结果为null时类型转换错误，使用Lambda方式自定义的RowMap进行转换
 * 课程显示中课时显示条目的页面item-list-multi.ftl处理使用FreeMarker指令完成
 * 前台课程管理中课时管理条目的页面/course/manage/lesson/list-item.ftl处理使用FreeMarker指令完成

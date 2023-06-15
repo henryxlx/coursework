@@ -86,7 +86,7 @@
                 <#if (lesson.media)??>
                     <#assign  mediaJsonText = json_encode(lesson.media) />
                 </#if>
-                <input id="lesson-media-field" type="hidden" name="media" value="${mediaJsonText}">
+                <input id="lesson-media-field" type="hidden" name="media" value='${mediaJsonText}'>
             </div>
         </div>
 

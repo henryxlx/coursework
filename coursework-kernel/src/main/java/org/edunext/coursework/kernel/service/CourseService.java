@@ -154,4 +154,6 @@ public interface CourseService {
     boolean isCourseStudent(Integer courseId, Integer userId);
 
     boolean isCourseTeacher(Integer courseId, Integer userId);
+
+    Map<String, Object> updateLesson(Integer courseId, Integer lessonId, Map<String, Object> fields, AppUser currentUser);
 }

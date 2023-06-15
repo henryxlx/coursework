@@ -1214,6 +1214,71 @@ public class CourseServiceImpl implements CourseService {
         }
     }
 
+    @Override
+    public Map<String, Object> updateLesson(Integer courseId, Integer lessonId, Map<String, Object> fields,
+                                            AppUser currentUser) {
+
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程(#" + courseId + ")不存在！");
+        }
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时(#" + lessonId + ")不存在！");
+        }
+
+        ArrayToolkit.filter(fields, new ParamMap()
+                .add("title", "")
+                .add("summary", "")
+                .add("content", "")
+                .add("media", new ArrayList<>(0))
+                .add("mediaId", 0)
+                .add("free", 0)
+                .add("length", 0)
+                .add("startTime", 0)
+                .add("giveCredit", 0)
+                .add("requireCredit", 0).toMap());
+
+        if (EasyStringUtil.isNotBlank(fields.get("title"))) {
+            fields.put("title", EasyStringUtil.purifyHtml(String.valueOf(fields.get("title"))));
+        }
+
+        fields.put("type", lesson.get("type"));
+        if ("live".equals(fields.get("type"))) {
+            fields.put("endTime",
+                    ValueParser.parseLong(fields.get("startTime")) +
+                            ValueParser.parseLong(fields.get("length")) * 60);
+        }
+
+        this.fillLessonMediaFields(fields);
+
+        this.lessonDao.updateLesson(lessonId, fields);
+        Map<String, Object> updatedLesson = this.lessonDao.getLesson(lessonId);
+
+
+        this.updateCourseCounter(course.get("id"),
+                new ParamMap().add("giveCredit", this.lessonDao.sumLessonGiveCreditByCourseId(course.get("id"))).toMap());
+
+        // Update link count of the course lesson file, if the lesson file is changed
+        if (fields.get("mediaId") != lesson.get("mediaId")) {
+            // Incease the link count of the new selected lesson file
+            if (EasyStringUtil.isNotBlank(fields.get("mediaId"))) {
+                // this.uploadFileService.increaseFileUsedCount(fields.get("mediaId"));
+            }
+
+            // Decrease the link count of the original lesson file
+            if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
+                // this.uploadFileService.decreaseFileUsedCount(lesson.get("mediaId"));
+            }
+        }
+
+        this.logService.info(currentUser, "course", "update_lesson",
+                String.format("更新课时《%s》(%s)", updatedLesson.get("title"), updatedLesson.get("id")), updatedLesson);
+
+        return updatedLesson;
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

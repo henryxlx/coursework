@@ -3,6 +3,7 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
@@ -154,6 +155,94 @@ public class CourseLessonManageController {
         int seconds = value - minutes * 60;
         lesson.put("minute", minutes);
         lesson.put("second", seconds);
+    }
+
+    @RequestMapping("/course/{courseId}/manage/lesson/{lessonId}/edit")
+    public String editAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                             HttpServletRequest request, Model model) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course = this.courseService.tryManageCourse(currentUser, courseId);
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时(#" + lessonId + ")不存在！");
+        }
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> fields = ParamMap.toQueryAllMap(request);
+            if (EasyStringUtil.isNotBlank(fields.get("media"))) {
+                fields.put("media", JsonUtil.jsonDecode(fields.get("media"), true));
+            }
+
+            if (EasyStringUtil.isNotBlank(fields.get("second"))) {
+                fields.put("length", this.textToSeconds(fields.get("minute"), fields.get("second")));
+                fields.remove("minute");
+                fields.remove("second");
+            }
+
+            fields.put("free", EasyStringUtil.isBlank(fields.get("free")) ? 0 : 1);
+            lesson = this.courseService.updateLesson(courseId, lessonId, fields, currentUser);
+            this.courseService.deleteCourseDrafts(courseId, lessonId, currentUser.getId());
+
+            Map<String, Object> file = null;
+            if (ValueParser.parseInt(lesson.get("mediaId")) > 0 && !"testpaper".equals(lesson.get("type"))) {
+//                file = this.uploadFileService.getFile(lesson.get("mediaId"));
+                lesson.put("mediaStatus", file.get("convertStatus"));
+                if ("document".equals(file.get("type")) && "none".equals(file.get("convertStatus"))) {
+//                    this.uploadFileService.reconvertFile(file.get("id"),
+//                            this.generateUrl("uploadfile_cloud_convert_callback2", new HashMap<>(0), true));
+                }
+            }
+
+            model.addAttribute("course", course);
+            model.addAttribute("lesson", lesson);
+            model.addAttribute("file", file);
+            return "/course/manage/lesson/list-item";
+        }
+
+        Map<String, Object> file = null;
+        if (lesson.get("mediaId") != null) {
+//            file = this.uploadFileService.getFile(lesson.get("mediaId"));
+            if (MapUtil.isNotEmpty(file)) {
+                lesson.put("media", new ParamMap()
+                        .add("id", file.get("id"))
+                        .add("status", file.get("convertStatus"))
+                        .add("source", "self")
+                        .add("name", file.get("filename")).add("uri", "").toMap());
+            } else {
+                lesson.put("media", new ParamMap().add("id", 0).add("status", "none").add("source", "")
+                        .add("name", "文件已删除").add("uri", "").toMap());
+            }
+        } else {
+            lesson.put("media", new ParamMap().add("id", 0).add("status", "none").add("source", lesson.get("mediaSource"))
+                    .add("name", lesson.get("mediaName")).add("uri", lesson.get("mediaUri")).toMap());
+        }
+
+        this.secondsToText(lesson);
+        String lessonTitle = lesson.get("title") == null ? null : String.valueOf(lesson.get("title"));
+        if (EasyStringUtil.isNotBlank(lessonTitle)) {
+            lessonTitle = lessonTitle.replaceAll("\"", "'");
+            lessonTitle = lessonTitle.replaceAll("&#34;", "&#39;");
+            lesson.put("title", lessonTitle);
+        }
+
+        String randString = FastEncryptionUtil.sha1(String.valueOf(new Random().nextInt())).substring(0, 12);
+        String filePath = "courselesson/" + courseId;
+        model.addAttribute("filePath", filePath);
+        model.addAttribute("fileKey", filePath + randString);
+        model.addAttribute("convertKey", randString);
+
+        Map<String, Object> features = this.settingService.get("enabled_features");
+        model.addAttribute("features", MapUtil.isEmpty(features) ? new ArrayList<>(0) : features.values());
+
+        model.addAttribute("draft", this.courseService.findCourseDraft(courseId, lessonId, currentUser.getId()));
+        model.addAttribute("storageSetting", this.settingService.get("storage"));
+        model.addAttribute("course", course);
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("file", file);
+        model.addAttribute("targetType", "courselesson");
+        model.addAttribute("targetId", courseId);
+        return "/course/manage/lesson/lesson-modal";
     }
 
     @RequestMapping("/course/{id}/manage/lesson/create/testpaper")

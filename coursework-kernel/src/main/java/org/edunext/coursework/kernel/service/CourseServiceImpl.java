@@ -38,6 +38,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseDao courseDao;
     private final LessonDao lessonDao;
     private final LessonLearnDao lessonLearnDao;
+    private final LessonViewDao lessonViewDao;
     private final CourseChapterDao chapterDao;
     private final CourseDraftDao courseDraftDao;
     private final CourseMemberDao memberDao;
@@ -53,7 +54,7 @@ public class CourseServiceImpl implements CourseService {
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
                              CourseDao courseDao, LessonDao lessonDao, LessonLearnDao lessonLearnDao,
-                             CourseChapterDao chapterDao,
+                             LessonViewDao lessonViewDao, CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
                              CourseNoteDao noteDao, FavoriteDao favoriteDao,
                              AppMessageService messageService, AppTagService tagService,
@@ -66,6 +67,7 @@ public class CourseServiceImpl implements CourseService {
         this.courseDao = courseDao;
         this.lessonDao = lessonDao;
         this.lessonLearnDao = lessonLearnDao;
+        this.lessonViewDao = lessonViewDao;
         this.chapterDao = chapterDao;
         this.courseDraftDao = courseDraftDao;
         this.memberDao = memberDao;
@@ -1347,6 +1349,271 @@ public class CourseServiceImpl implements CourseService {
 
         this.lessonDao.updateLesson(ValueParser.toInteger(lesson.get("id")),
                 new ParamMap().add("status", "published").toMap());
+    }
+
+    @Override
+    public boolean canTakeCourse(Integer id, Integer userId) {
+        if (userAccessControlService.hasAnyRole("ROLE_ADMIN", "ROLE_SUPER_ADMIN")) {
+            return true;
+        }
+
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(id, userId);
+        if (MapUtil.isNotEmpty(member) && ArrayUtil.inArray(member.get("role"), "teacher", "student")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean checkUserRole(String userRole, String... roles) {
+        if (roles != null) {
+            for (String role : roles) {
+                if (userRole.contains(role)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Map<String, Object> tryTakeCourse(Integer id, AppUser currentUser) {
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(id, currentUser.getId());
+        if (checkUserRole(currentUser.getRoles(), "ROLE_ADMIN", "ROLE_SUPER_ADMIN")) {
+            return member;
+        }
+        if (MapUtil.isNotEmpty(member) || !ArrayUtil.inArray(member.get("role"), "teacher", "student")) {
+            throw new RuntimeGoingException("您不是课程学员，不能查看课程内容，请先购买课程！");
+        }
+
+        return member;
+    }
+
+    @Override
+    public List<Map<String, Object>> getCourseLessonReplayByLessonId(Object lessonId) {
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public Map<String, Object> canLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> member = this.tryTakeCourse(courseId, currentUser);
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson) || ValueParser.parseInt(lesson.get("courseId")) != courseId) {
+            throw new RuntimeGoingException("Lesson not found!");
+        }
+
+        if (EasyStringUtil.isBlank(lesson.get("requireCredit"))) {
+            return new ParamMap().add("status", "yes").toMap();
+        }
+
+        if (ValueParser.parseInt(member.get("credit")) >= ValueParser.parseInt(lesson.get("requireCredit"))) {
+            return new ParamMap().add("status", "yes").toMap();
+        }
+
+        return new ParamMap().add("status", "no").add("message",
+                String.format("本课时需要%s学分才能学习，您当前学分为%s分。",
+                        lesson.get("requireCredit"), member.get("credit"))).toMap();
+    }
+
+    @Override
+    public Object getUserLearnLessonStatus(Integer userId, Integer courseId, Integer lessonId) {
+        Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(userId, lessonId);
+        if (MapUtil.isEmpty(learn)) {
+            return null;
+        }
+
+        return learn.get("status");
+    }
+
+    @Override
+    public Boolean startLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+
+        Map<String, Object> member = this.tryTakeCourse(courseId, currentUser);
+        Map<String, Object> course = this.getCourse(courseId);
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        // this.dispatchEvent("course.lesson_start", new ServiceEvent(lesson, new ParamMap().add("course", course).toMap()));
+
+        if (MapUtil.isNotEmpty(lesson) && !"video".equals(lesson.get("type"))) {
+            Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(currentUser.getId(), lessonId);
+            if (MapUtil.isNotEmpty(learn)) {
+                return false;
+            }
+
+            this.lessonLearnDao.addLearn(new ParamMap().add("userId", currentUser.getId())
+                    .add("courseId", courseId)
+                    .add("lessonId", lessonId)
+                    .add("status", "learning")
+                    .add("startTime", System.currentTimeMillis())
+                    .add("finishedTime", 0).toMap());
+
+            return true;
+        }
+
+        Map<String, Object> createLessonView = new HashMap<>();
+        createLessonView.put("courseId", courseId);
+        createLessonView.put("lessonId", lessonId);
+        createLessonView.put("fileId", lesson.get("mediaId"));
+
+        Map<String, Object> file = null;
+        if (EasyStringUtil.isNotBlank(createLessonView.get("fileId"))) {
+            // file = this.uploadFileService.getFile(createLessonView.get("fileId"));
+        }
+
+        createLessonView.put("fileStorage", file == null ? "net" : file.get("storage"));
+        createLessonView.put("fileType", lesson.get("type"));
+        createLessonView.put("fileSource", lesson.get("mediaSource"));
+
+        this.createLessonView(createLessonView, currentUser);
+
+        Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(currentUser.getId(), lessonId);
+        if (MapUtil.isNotEmpty(learn)) {
+            return false;
+        }
+
+        this.lessonLearnDao.addLearn(new ParamMap().add("userId", currentUser.getId())
+                .add("courseId", courseId)
+                .add("lessonId", lessonId)
+                .add("status", "learning")
+                .add("startTime", System.currentTimeMillis())
+                .add("finishedTime", 0).toMap());
+
+        return true;
+    }
+
+    @Override
+    public void waveLearningTime(Integer userId, Integer lessonId, Integer time) {
+        Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(userId, lessonId);
+        if (MapUtil.isNotEmpty(learn) && time <= 200) {
+            this.lessonLearnDao.updateLearn(learn.get("id"),
+                    new ParamMap().add("learnTime", ValueParser.parseInt(learn.get("learnTime")) + time).toMap());
+        }
+    }
+
+    @Override
+    public void finishLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> member = this.tryLearnCourse(courseId, currentUser);
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时#" + lessonId + "不存在！");
+        }
+
+        Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(ValueParser.toInteger(member.get("userId")), lessonId);
+        if (MapUtil.isNotEmpty(learn)) {
+            this.lessonLearnDao.updateLearn(learn.get("id"),
+                    new ParamMap().add("status", "finished").add("finishedTime", System.currentTimeMillis()).toMap());
+        } else {
+            this.lessonLearnDao.addLearn(new ParamMap()
+                    .add("userId", member.get("userId"))
+                    .add("courseId", courseId)
+                    .add("lessonId", lessonId)
+                    .add("status", "finished").add("startTime", System.currentTimeMillis())
+                    .add("finishedTime", System.currentTimeMillis()).toMap());
+        }
+
+        List<Map<String, Object>> learns =
+                this.lessonLearnDao.findLearnsByUserIdAndCourseIdAndStatus(member.get("userId"), courseId, "finished");
+        Integer totalCredits = this.lessonDao.sumLessonGiveCreditByLessonIds(ArrayToolkit.column(learns, "lessonId"));
+
+        Map<String, Object> memberFields = new HashMap<>();
+        memberFields.put("learnedNum", learns.size());
+        Map<String, Object> course = this.courseDao.getCourse(courseId);
+        if (!"serialize".equals(course.get("serializeMode"))) {
+            memberFields.put("isLearned",
+                    ValueParser.parseInt(memberFields.get("learnedNum")) >= ValueParser.parseInt(course.get("lessonNum")) ? 1 : 0);
+        }
+        memberFields.put("credit", totalCredits);
+        // this.dispatchEvent("course.lesson_finish", new ServiceEvent(lesson, new ParamMap().add("course", course)));
+
+        this.memberDao.updateMember(member.get("id"), memberFields);
+    }
+
+    @Override
+    public void cancelLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> member = this.tryLearnCourse(courseId, currentUser);
+
+        Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(ValueParser.toInteger(member.get("userId")), lessonId);
+        if (MapUtil.isEmpty(learn)) {
+            throw new RuntimeGoingException("课时#" + lessonId + "尚未学习，取消学习失败。");
+        }
+
+        if (!"finished".equals(learn.get("status"))) {
+            throw new RuntimeGoingException("课时#" + lessonId + "尚未学完，取消学习失败。");
+        }
+
+        this.lessonLearnDao.updateLearn(learn.get("id"),
+                new ParamMap().add("status", "learning").add("finishedTime", 0).toMap());
+
+        List<Map<String, Object>> learns = this.lessonLearnDao.findLearnsByUserIdAndCourseIdAndStatus(member.get("userId"), courseId, "finished");
+        Integer totalCredits = this.lessonDao.sumLessonGiveCreditByLessonIds(ArrayToolkit.column(learns, "lessonId"));
+
+        Map<String, Object> course = this.courseDao.getCourse(courseId);
+        Map<String, Object> memberFields = new HashMap<>(3);
+        memberFields.put("learnedNum", learns.size());
+        memberFields.put("isLearned",
+                ValueParser.parseInt(memberFields.get("learnedNum")) >= ValueParser.parseInt(course.get("lessonNum")) ? 1 : 0);
+        memberFields.put("credit", totalCredits);
+
+        this.memberDao.updateMember(member.get("id"), memberFields);
+    }
+
+    public Map<String, Object> tryLearnCourse(Integer courseId, AppUser user) {
+        if (user == null) {
+            throw new RuntimeGoingException("未登录用户，无权操作！");
+        }
+
+        Map<String, Object> course = this.courseDao.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("course not found.");
+        }
+
+        Map<String, Object> member = this.memberDao.getMemberByCourseIdAndUserId(courseId, user.getId());
+        if (MapUtil.isEmpty(member) || !ArrayUtil.inArray(member.get("role"), "admin", "teacher", "student")) {
+            throw new RuntimeGoingException("您不是课程学员，不能学习！");
+        }
+
+        return member;
+    }
+
+    private Map<String, Object> createLessonView(Map<String, Object> createLessonView, AppUser currentUser) {
+        createLessonView = ArrayToolkit.part(createLessonView,
+                "courseId", "lessonId", "fileId", "fileType", "fileStorage", "fileSource");
+        createLessonView.put("userId", currentUser.getId());
+        createLessonView.put("createdTime", System.currentTimeMillis());
+
+        Map<String, Object> lessonView = this.lessonViewDao.addLessonView(createLessonView);
+
+        Map<String, Object> lesson = this.getCourseLesson(ValueParser.toInteger(createLessonView.get("courseId")),
+                ValueParser.toInteger(createLessonView.get("lessonId")));
+
+        this.logService.info(currentUser, "course", "create",
+                String.format("%s观看课时《%s》", currentUser.getUsername(), lesson.get("title")));
+
+        return lessonView;
+    }
+
+    @Override
+    public boolean isMemberNonExpired(Map<String, Object> course, Map<String, Object> member) {
+        if (MapUtil.isEmpty(course) || MapUtil.isEmpty(member)) {
+            throw new RuntimeGoingException("course, member参数不能为空");
+        }
+
+		/*
+		如果课程设置了限免时间，那么即使expiryDay为0，学员到了deadline也不能参加学习
+		if ($course['expiryDay'] == 0) {
+			return true;
+		}
+		*/
+        if (ValueParser.parseLong(member.get("deadline")) == 0) {
+            return true;
+        }
+
+        if (ValueParser.parseLong(member.get("deadline")) > System.currentTimeMillis()) {
+            return true;
+        }
+
+        return false;
     }
 
     @Override

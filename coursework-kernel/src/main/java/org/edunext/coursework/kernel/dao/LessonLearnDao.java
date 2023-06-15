@@ -15,4 +15,12 @@ public interface LessonLearnDao {
     Integer getLearnCountByUserIdAndCourseIdAndStatus(Object userId, Object courseId, String status);
 
     void deleteLearnsByLessonId(Integer lessonId);
+
+    Map<String, Object> getLearnByUserIdAndLessonId(Integer userId, Integer lessonId);
+
+    void addLearn(Map<String, Object> fields);
+
+    void updateLearn(Object id, Map<String, Object> fields);
+
+    List<Map<String, Object>> findLearnsByUserIdAndCourseIdAndStatus(Object userId, Integer courseId, String status);
 }

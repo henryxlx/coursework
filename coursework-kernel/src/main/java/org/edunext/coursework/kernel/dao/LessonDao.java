@@ -36,4 +36,6 @@ public interface LessonDao {
     List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
     int deleteLesson(Integer lessonId);
+
+    Integer sumLessonGiveCreditByLessonIds(Set<Object> lessonIds);
 }

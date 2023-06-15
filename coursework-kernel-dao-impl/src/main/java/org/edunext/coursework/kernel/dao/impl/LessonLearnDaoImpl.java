@@ -34,4 +34,24 @@ public class LessonLearnDaoImpl extends FastJdbcDaoSupport implements LessonLear
     public void deleteLearnsByLessonId(Integer lessonId) {
 
     }
+
+    @Override
+    public Map<String, Object> getLearnByUserIdAndLessonId(Integer userId, Integer lessonId) {
+        return null;
+    }
+
+    @Override
+    public void addLearn(Map<String, Object> fields) {
+
+    }
+
+    @Override
+    public void updateLearn(Object id, Map<String, Object> fields) {
+
+    }
+
+    @Override
+    public List<Map<String, Object>> findLearnsByUserIdAndCourseIdAndStatus(Object userId, Integer courseId, String status) {
+        return new ArrayList<>(0);
+    }
 }

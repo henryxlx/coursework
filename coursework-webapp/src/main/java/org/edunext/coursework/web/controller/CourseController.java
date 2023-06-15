@@ -13,12 +13,14 @@ import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
+import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -453,6 +455,53 @@ public class CourseController {
 
         String expiryDay = request.getParameter("expiryDay");
         this.courseService.addMemberExpiryDays(courseId, userId, ValueParser.toInteger(expiryDay));
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{id}/learn")
+    public ModelAndView learnAction(@PathVariable Integer id, HttpServletRequest request) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
+
+        if (!userAccessControlService.isLoggedIn()) {
+            request.getSession().setAttribute("_target_path", request.getContextPath() + "/course/" + id);
+            return BaseControllerHelper.createMessageResponse("info", "你好像忘了登录哦？", null, 3000, "/login");
+        }
+
+        Map<String, Object> course = this.courseService.getCourse(id);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在，或已删除。");
+        }
+
+        if (!this.courseService.canTakeCourse(id, currentUser.getId())) {
+            return BaseControllerHelper.createMessageResponse("info",
+                    "您还不是课程《" + course.get("title") + "》的学员，请先购买或加入学习。",
+                    null, 3000, "course/" + id);
+        }
+
+        try {
+            Map<String, Object> member = this.courseService.tryTakeCourse(id, currentUser);
+            if (MapUtil.isNotEmpty(member) && !this.courseService.isMemberNonExpired(course, member)) {
+                return new ModelAndView("redirect:/course/" + id);
+            }
+        } catch (Exception e) {
+            throw new RuntimeGoingException("抱歉，未发布课程不能学习！");
+        }
+
+        ModelAndView mav = new ModelAndView("/course/learn");
+        mav.addObject("course", course);
+        return mav;
+    }
+
+    @RequestMapping("/course/{lessonId}/learn/time/{time}")
+    @ResponseBody
+    public Boolean recordLearningTimeAction(@PathVariable Integer lessonId, @PathVariable Integer time,
+                                            HttpServletRequest request) {
+
+        AppUser user = AppUser.getCurrentUser(request);
+        if (!userAccessControlService.isLoggedIn()) {
+            throw new RuntimeGoingException("用户未登录，访问被拒绝！");
+        }
+        this.courseService.waveLearningTime(user.getId(), lessonId, time);
         return Boolean.TRUE;
     }
 }

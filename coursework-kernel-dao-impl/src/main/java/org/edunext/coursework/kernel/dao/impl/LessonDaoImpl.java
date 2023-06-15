@@ -123,6 +123,17 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
         return getJdbcTemplate().update(sql, lessonId);
     }
 
+    @Override
+    public Integer sumLessonGiveCreditByLessonIds(Set<Object> lessonIds) {
+        String marks = repeatQuestionMark(lessonIds.size());
+        String sql = "SELECT SUM(giveCredit) FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
+        try {
+            return getJdbcTemplate().queryForObject(sql, Integer.class, lessonIds.toArray());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME)

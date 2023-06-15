@@ -162,4 +162,24 @@ public interface CourseService {
     void publishLesson(Integer courseId, Integer lessonId, AppUser currentUser);
 
     void unpublishLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    boolean canTakeCourse(Integer id, Integer userId);
+
+    Map<String, Object> tryTakeCourse(Integer id, AppUser currentUser);
+
+    boolean isMemberNonExpired(Map<String, Object> course, Map<String, Object> member);
+
+    List<Map<String, Object>> getCourseLessonReplayByLessonId(Object lessonId);
+
+    Map<String, Object> canLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    Object getUserLearnLessonStatus(Integer userId, Integer courseId, Integer lessonId);
+
+    Boolean startLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    void waveLearningTime(Integer userId, Integer lessonId, Integer time);
+
+    void finishLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    void cancelLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
 }

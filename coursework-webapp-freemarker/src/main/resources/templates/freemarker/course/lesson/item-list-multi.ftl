@@ -39,7 +39,7 @@
                                 <#elseif item.type == 'testpaper'>
                                     试卷
                                 <#elseif item.type == 'live'>
-                                    {{ item.length | duration }}
+                                    ${fastLib.duration(item.length)}
                                 <#elseif item.type == 'ppt'>
                                     PPT
                                 <#elseif item.type == 'document'>
@@ -47,7 +47,7 @@
                                 <#elseif item.type == 'flash'>
                                     Flash
                                 <#else>
-                                    {{ item.length | duration }}
+                                    ${fastLib.duration(item.length)}
                                 </#if>
 							</span>
                             <#else>

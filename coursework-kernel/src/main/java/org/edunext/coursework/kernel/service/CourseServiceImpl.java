@@ -37,6 +37,7 @@ public class CourseServiceImpl implements CourseService {
     private final AppCategoryService categoryService;
     private final CourseDao courseDao;
     private final LessonDao lessonDao;
+    private final LessonLearnDao lessonLearnDao;
     private final CourseChapterDao chapterDao;
     private final CourseDraftDao courseDraftDao;
     private final CourseMemberDao memberDao;
@@ -51,7 +52,8 @@ public class CourseServiceImpl implements CourseService {
                              FastAppConst appConst,
                              UserAccessControlService userAccessControlService,
                              AppCategoryService categoryService,
-                             CourseDao courseDao, LessonDao lessonDao, CourseChapterDao chapterDao,
+                             CourseDao courseDao, LessonDao lessonDao, LessonLearnDao lessonLearnDao,
+                             CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
                              CourseNoteDao noteDao, FavoriteDao favoriteDao,
                              AppMessageService messageService, AppTagService tagService,
@@ -63,6 +65,7 @@ public class CourseServiceImpl implements CourseService {
         this.categoryService = categoryService;
         this.courseDao = courseDao;
         this.lessonDao = lessonDao;
+        this.lessonLearnDao = lessonLearnDao;
         this.chapterDao = chapterDao;
         this.courseDraftDao = courseDraftDao;
         this.memberDao = memberDao;
@@ -1277,6 +1280,60 @@ public class CourseServiceImpl implements CourseService {
                 String.format("更新课时《%s》(%s)", updatedLesson.get("title"), updatedLesson.get("id")), updatedLesson);
 
         return updatedLesson;
+    }
+
+    @Override
+    public int deleteLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程(#" + courseId + ")不存在！");
+        }
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时(#" + lessonId + ")不存在！");
+        }
+
+        // 更新已学该课时学员的计数器
+        int learnCount = this.lessonLearnDao.findLearnsCountByLessonId(lessonId);
+        if (learnCount > 0) {
+            List<Map<String, Object>> learns = this.lessonLearnDao.findLearnsByLessonId(lessonId, 0, learnCount);
+            for (Map<String, Object> learn : learns) {
+                if ("finished".equals(learn.get("status"))) {
+                    Map<String, Object> member = this.getCourseMember(ValueParser.toInteger(learn.get("courseId")),
+                            ValueParser.toInteger(learn.get("userId")));
+                    if (MapUtil.isNotEmpty(member)) {
+                        Map<String, Object> memberFields = new HashMap<>(2);
+                        memberFields.put("learnedNum", this.lessonLearnDao.getLearnCountByUserIdAndCourseIdAndStatus(learn.get("userId"), learn.get("courseId"), "finished") - 1);
+                        memberFields.put("isLearned", ValueParser.parseInt(memberFields.get("learnedNum")) >= ValueParser.parseInt(course.get("lessonNum")) ? 1 : 0);
+                        this.memberDao.updateMember(member.get("id"), memberFields);
+                    }
+                }
+            }
+        }
+        this.lessonLearnDao.deleteLearnsByLessonId(lessonId);
+
+        this.lessonDao.deleteLesson(lessonId);
+
+        // 更新课时序号
+        this.updateCourseCounter(course.get("id"), new ParamMap().add("lessonNum",
+                this.lessonDao.getLessonCountByCourseId(courseId)).toMap());
+        // [END] 更新课时序号
+
+        // Decrease the course lesson file usage count, if there's a linked file used by this lesson.
+        if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
+            // this.uploadFileService.decreaseFileUsedCount(lesson.get("mediaId"));
+        }
+
+        // Delete all linked course materials (the UsedCount of each material file will also be decreaased.)
+        // this.courseMaterialService.deleteMaterialsByLessonId(lessonId);
+
+        this.logService.info(currentUser, "lesson", "delete",
+                String.format("删除课程《%s》(#%s)的课时 %s",
+                        course.get("title"), course.get("id"), lesson.get("title")));
+
+//        this.dispatchEvent("course.lesson.delete", new ParamMap().add("courseId", courseId).add("lessonId", lessonId).toMap());
+        return 0;
     }
 
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {

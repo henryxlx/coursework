@@ -296,4 +296,20 @@ public class CourseLessonManageController {
         return Boolean.TRUE;
     }
 
+    @RequestMapping("/course/{courseId}/manage/lesson/{lessonId}/delete")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                                HttpServletRequest request) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course = this.courseService.tryManageCourse(currentUser, courseId);
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+        if ("live".equals(course.get("type"))) {
+//            this.courseService.deleteCourseLessonReplayByLessonId(lessonId);
+        }
+        this.courseService.deleteLesson(courseId, lessonId, currentUser);
+//        this.courseMaterialService.deleteMaterialsByLessonId(lessonId);
+
+        return Boolean.TRUE;
+    }
 }

@@ -34,4 +34,6 @@ public interface LessonDao {
     Integer searchLessonCount(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchLessons(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
+
+    int deleteLesson(Integer lessonId);
 }

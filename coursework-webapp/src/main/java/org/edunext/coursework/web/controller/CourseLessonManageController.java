@@ -312,4 +312,42 @@ public class CourseLessonManageController {
 
         return Boolean.TRUE;
     }
+
+    @RequestMapping("/course/{courseId}/manage/lesson/{lessonId}/publish")
+    public String publishAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                                HttpServletRequest request, Model model) {
+
+        this.courseService.publishLesson(courseId, lessonId, AppUser.getCurrentUser(request));
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+
+        Map<String, Object> file = null;
+        if (ValueParser.parseInt(lesson.get("mediaId")) > 0 && (!"testpaper".equals(lesson.get("type")))) {
+//            file = this.uploadFileService.getFile(lesson.get("mediaId"));
+//            lesson.put("mediaStatus", file.get("convertStatus"));
+        }
+
+        model.addAttribute("course", this.courseService.getCourse(courseId));
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("file", file);
+        return "/course/manage/lesson/list-item";
+    }
+
+    @RequestMapping("/course/{courseId}/manage/lesson/{lessonId}/unpublish")
+    public String unpublishAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                                  HttpServletRequest request, Model model) {
+
+        this.courseService.unpublishLesson(courseId, lessonId, AppUser.getCurrentUser(request));
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+
+        Map<String, Object> file = null;
+        if (ValueParser.parseInt(lesson.get("mediaId")) > 0 && (!"testpaper".equals(lesson.get("type")))) {
+//            file = this.uploadFileService.getFile(lesson.get("mediaId"));
+//            lesson.put("mediaStatus", file.get("convertStatus"));
+        }
+
+        model.addAttribute("course", this.courseService.getCourse(courseId));
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("file", file);
+        return "/course/manage/lesson/list-item";
+    }
 }

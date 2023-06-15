@@ -1336,6 +1336,32 @@ public class CourseServiceImpl implements CourseService {
         return 0;
     }
 
+    @Override
+    public void publishLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时#" + lessonId + "不存在");
+        }
+
+        this.lessonDao.updateLesson(ValueParser.toInteger(lesson.get("id")),
+                new ParamMap().add("status", "published").toMap());
+    }
+
+    @Override
+    public void unpublishLesson(Integer courseId, Integer lessonId, AppUser currentUser) {
+        Map<String, Object> course = this.tryManageCourse(currentUser, courseId);
+
+        Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时#" + lessonId + "不存在");
+        }
+
+        this.lessonDao.updateLesson(ValueParser.toInteger(lesson.get("id")),
+                new ParamMap().add("status", "unpublished").toMap());
+    }
+
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

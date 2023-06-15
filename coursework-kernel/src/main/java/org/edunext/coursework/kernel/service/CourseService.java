@@ -158,4 +158,8 @@ public interface CourseService {
     Map<String, Object> updateLesson(Integer courseId, Integer lessonId, Map<String, Object> fields, AppUser currentUser);
 
     int deleteLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    void publishLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    void unpublishLesson(Integer courseId, Integer lessonId, AppUser currentUser);
 }

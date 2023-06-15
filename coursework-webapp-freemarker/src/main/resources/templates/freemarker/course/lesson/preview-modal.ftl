@@ -36,7 +36,7 @@
                  class="lesson-preview-ppt"></div>
 
         <#else>
-            <div <#if setting('course.copy_enabled') != '0'> oncopy="return false;" oncut="return false;" onselectstart="return false" oncontextmenu="return false;"</#if>>
+            <div <#if setting('course.copy_enabled', '') != '0'> oncopy="return false;" oncut="return false;" onselectstart="return false" oncontextmenu="return false;"</#if>>
                 ${lesson.content}
             </div>
         </#if>

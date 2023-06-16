@@ -1573,6 +1573,11 @@ public class CourseServiceImpl implements CourseService {
         return this.lessonDao.getLesson(nextLearnLessonId);
     }
 
+    @Override
+    public List<Map<String, Object>> getCourseLessons(Integer courseId) {
+        return this.lessonDao.findLessonsByCourseId(courseId);
+    }
+
     public Map<String, Object> tryLearnCourse(Integer courseId, AppUser user) {
         if (user == null) {
             throw new RuntimeGoingException("未登录用户，无权操作！");

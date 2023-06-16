@@ -232,8 +232,6 @@ public interface CourseService {
 
     Map<String, Object> tryTakeCourse(Integer id, AppUser currentUser);
 
-    Map<String, Object> getUserNextLearnLesson(Integer userId, Integer courseId);
-
     boolean isMemberNonExpired(Map<String, Object> course, Map<String, Object> member);
 
     List<Map<String, Object>> getCourseLessonReplayByLessonId(Object lessonId);
@@ -249,4 +247,8 @@ public interface CourseService {
     void finishLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
 
     void cancelLearnLesson(Integer courseId, Integer lessonId, AppUser currentUser);
+
+    Map<String, Object> getUserNextLearnLesson(Integer userId, Integer courseId);
+
+    List<Map<String, Object>> getCourseLessons(Integer courseId);
 }

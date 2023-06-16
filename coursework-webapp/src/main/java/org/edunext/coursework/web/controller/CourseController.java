@@ -518,4 +518,17 @@ public class CourseController {
         model.addAttribute("course", course);
         return "/course/info";
     }
+
+    @RequestMapping("/course/{courseId}/teacher/{id}")
+    public String teacherInfoAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                                    HttpServletRequest request, Model model) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+
+        AppUser user = this.userService.getUser(id);
+        model.addAttribute("profile", this.userService.getUserProfile(id));
+        model.addAttribute("isFollowing", this.userService.isFollowed(currentUser.getId(), user.getId()));
+        model.addAttribute("user", user);
+        return "/course/teacher-info-modal";
+    }
 }

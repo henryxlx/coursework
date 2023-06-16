@@ -1,6 +1,6 @@
 <#assign bodyClass = 'course-dashboard-page'/>
 
-<#assign script_arguments = '{course_uri: ${ctx}/course/${course.id}}'/>
+<#assign script_arguments>{"course_uri": "${ctx}/course/${course.id}"}</#assign>
 
 <#include '/layout.ftl'>
 

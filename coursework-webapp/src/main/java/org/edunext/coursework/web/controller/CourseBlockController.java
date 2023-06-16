@@ -153,7 +153,7 @@ public class CourseBlockController implements BlockRenderController {
         return "/course/latest-members-block";
     }
 
-    @RequestMapping("/courseThread/latestBlock")
+    @RequestMapping("/course/thread/latestBlock")
     @BlockRenderMethod
     public String latestThreadBlockAction(Integer courseId, Model model) {
         model.addAttribute("threads",
@@ -163,12 +163,46 @@ public class CourseBlockController implements BlockRenderController {
         return "course/thread/latest-block";
     }
 
-    @RequestMapping("/courseAnnouncement/block")
+    @RequestMapping("/course/announcementBlock")
     @BlockRenderMethod
-    public String blockAction(Integer courseId, Model model) {
+    public String announcementBlockAction(Integer courseId, Model model) {
 //        model.addAttribute("announcements", this.courseService.findAnnouncements(courseId, 0, 10));
 //        model.addAttribute("canManage", this.courseService.canManageCourse(courseId));
 //        model.addAttribute("canTake", this.courseService.canTakeCourse(course));
         return "/course/announcement-block";
+    }
+
+    @RequestMapping("/course/progressBlock")
+    @BlockRenderMethod
+    @SuppressWarnings("unchecked")
+    public String progressBlockAction(Map<String, Object> course, Integer courseId, Integer userId,
+                                      HttpServletRequest request,
+                                      Model model) {
+
+        course = (Map<String, Object>) request.getAttribute("course");
+        Map<String, Object> member = this.courseService.getCourseMember(courseId, userId);
+        model.addAttribute("nextLearnLesson", this.courseService.getUserNextLearnLesson(userId, courseId));
+
+        model.addAttribute("progress", this.calculateUserLearnProgress(course, member));
+        model.addAttribute("member", member);
+        return "/course/progress-block";
+    }
+
+    private Map<String, Object> calculateUserLearnProgress(Map<String, Object> course, Map<String, Object> member) {
+        Map<String, Object> map = new HashMap<>(3);
+        if (ValueParser.parseInt(course.get("lessonNum")) == 0) {
+            map.put("percent", "0%");
+            map.put("number", 0);
+            map.put("total", 0);
+            return map;
+        }
+
+        int learnedNum = ValueParser.parseInt(member.get("learnedNum"));
+        int lessonNum = ValueParser.parseInt(course.get("lessonNum"));
+        int percent = (int) (1.0 * learnedNum / lessonNum * 100);
+        map.put("percent", percent + "%");
+        map.put("number", member.get("learnedNum"));
+        map.put("total", course.get("lessonNum"));
+        return map;
     }
 }

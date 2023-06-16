@@ -134,6 +134,12 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
         }
     }
 
+    @Override
+    public List<Integer> findLessonIdsByCourseId(Integer courseId) {
+        String sql = "SELECT id FROM " + TABLE_NAME + " WHERE  courseId = ? ORDER BY number ASC";
+        return getJdbcTemplate().queryForList(sql, Integer.class, courseId);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME)

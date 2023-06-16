@@ -38,4 +38,6 @@ public interface LessonDao {
     int deleteLesson(Integer lessonId);
 
     Integer sumLessonGiveCreditByLessonIds(Set<Object> lessonIds);
+
+    List<Integer> findLessonIdsByCourseId(Integer courseId);
 }

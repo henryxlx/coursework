@@ -167,6 +167,8 @@ public interface CourseService {
 
     Map<String, Object> tryTakeCourse(Integer id, AppUser currentUser);
 
+    Map<String, Object> getUserNextLearnLesson(Integer userId, Integer courseId);
+
     boolean isMemberNonExpired(Map<String, Object> course, Map<String, Object> member);
 
     List<Map<String, Object>> getCourseLessonReplayByLessonId(Object lessonId);

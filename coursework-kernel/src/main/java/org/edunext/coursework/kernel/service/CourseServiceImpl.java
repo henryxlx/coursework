@@ -1558,6 +1558,21 @@ public class CourseServiceImpl implements CourseService {
         this.memberDao.updateMember(member.get("id"), memberFields);
     }
 
+    @Override
+    public Map<String, Object> getUserNextLearnLesson(Integer userId, Integer courseId) {
+        List<Integer> lessonIds = this.lessonDao.findLessonIdsByCourseId(courseId);
+
+        List<Map<String, Object>> learns = this.lessonLearnDao.findLearnsByUserIdAndCourseIdAndStatus(userId, courseId, "finished");
+        Set<Object> learnedLessonIds = ArrayToolkit.column(learns, "lessonId");
+
+        List<Integer> unlearnedLessonIds = lessonIds.stream().filter(e -> !learnedLessonIds.contains(e)).collect(Collectors.toList());
+        Integer nextLearnLessonId = unlearnedLessonIds != null && unlearnedLessonIds.size() > 0 ? unlearnedLessonIds.get(0) : null;
+        if (nextLearnLessonId == null || nextLearnLessonId == 0) {
+            return null;
+        }
+        return this.lessonDao.getLesson(nextLearnLessonId);
+    }
+
     public Map<String, Object> tryLearnCourse(Integer courseId, AppUser user) {
         if (user == null) {
             throw new RuntimeGoingException("未登录用户，无权操作！");

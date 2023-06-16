@@ -12,7 +12,7 @@ import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.block.BlockRenderController;
 import com.jetwinner.webfast.mvc.block.BlockRenderMethod;
 import org.edunext.coursework.kernel.service.CourseService;
-import org.edunext.coursework.kernel.service.ThreadService;
+import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +28,13 @@ import java.util.*;
 public class CourseBlockController implements BlockRenderController {
 
     private final CourseService courseService;
-    private final ThreadService threadService;
+    private final CourseThreadService threadService;
     private final UserAccessControlService userAccessControlService;
     private final AppSettingService settingService;
     private final AppUserService userService;
 
     public CourseBlockController(CourseService courseService,
-                                 ThreadService threadService,
+                                 CourseThreadService threadService,
                                  UserAccessControlService userAccessControlService,
                                  AppSettingService settingService,
                                  AppUserService userService) {

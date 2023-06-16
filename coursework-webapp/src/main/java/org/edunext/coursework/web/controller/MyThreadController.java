@@ -6,7 +6,7 @@ import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
-import org.edunext.coursework.kernel.service.ThreadService;
+import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +21,11 @@ import java.util.Map;
 @Controller
 public class MyThreadController {
 
-    private final ThreadService threadService;
+    private final CourseThreadService threadService;
     private final CourseService courseService;
     private final AppUserService userService;
 
-    public MyThreadController(ThreadService threadService,
+    public MyThreadController(CourseThreadService threadService,
                               CourseService courseService,
                               AppUserService userService) {
 

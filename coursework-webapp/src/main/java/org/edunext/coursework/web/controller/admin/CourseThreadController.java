@@ -7,7 +7,7 @@ import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
-import org.edunext.coursework.kernel.service.ThreadService;
+import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +24,11 @@ import java.util.Set;
 public class CourseThreadController {
 
     private final CourseService courseService;
-    private final ThreadService threadService;
+    private final CourseThreadService threadService;
     private final AppUserService userService;
 
-    public CourseThreadController(CourseService courseService, ThreadService threadService,
+    public CourseThreadController(CourseService courseService,
+                                  CourseThreadService threadService,
                                   AppUserService userService) {
 
         this.courseService = courseService;
@@ -36,7 +37,7 @@ public class CourseThreadController {
     }
 
     @RequestMapping("/admin/course/thread")
-    public String indexAction (HttpServletRequest request, Model model) {
+    public String indexAction(HttpServletRequest request, Model model) {
         Map<String, Object> conditions = ParamMap.toConditionMap(request);
 
         if ("courseTitle".equals(conditions.get("keywordType"))) {

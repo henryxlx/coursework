@@ -503,4 +503,19 @@ public class CourseController {
         this.courseService.waveLearningTime(user.getId(), lessonId, time);
         return Boolean.TRUE;
     }
+
+    @RequestMapping("/course/{id}/info")
+    public String infoAction(@PathVariable Integer id, Model model) {
+        Map<String, Object> course = this.courseService.getCourse(id);
+        model.addAttribute("category", this.categoryService.getCategory(ValueParser.toInteger(course.get("categoryId"))));
+        Object objForTags = course.get("tags");
+        if (objForTags != null) {
+            String[] arrayForTags = objForTags instanceof String[] ? (String[]) objForTags :
+                    CourseService.CourseSerialize.objectToArray(objForTags);
+
+            model.addAttribute("tags", this.tagService.findTagsByIds(arrayForTags));
+        }
+        model.addAttribute("course", course);
+        return "/course/info";
+    }
 }

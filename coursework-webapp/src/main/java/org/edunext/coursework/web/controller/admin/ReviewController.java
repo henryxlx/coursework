@@ -5,8 +5,8 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
+import org.edunext.coursework.kernel.service.CourseReviewService;
 import org.edunext.coursework.kernel.service.CourseService;
-import org.edunext.coursework.kernel.service.ReviewService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +25,11 @@ public class ReviewController {
 
     private static final String VIEW_PREFIX = "/admin/course/review/";
 
-    private final ReviewService reviewService;
+    private final CourseReviewService reviewService;
     private final CourseService courseService;
     private final AppUserService userService;
 
-    public ReviewController(ReviewService reviewService,
+    public ReviewController(CourseReviewService reviewService,
                             CourseService courseService,
                             AppUserService userService) {
 

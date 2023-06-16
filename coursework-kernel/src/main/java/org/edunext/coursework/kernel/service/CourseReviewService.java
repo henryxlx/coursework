@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * @author xulixin
  */
-public interface ReviewService {
+public interface CourseReviewService {
 
     Integer getCourseReviewCount(Integer courseId);
 

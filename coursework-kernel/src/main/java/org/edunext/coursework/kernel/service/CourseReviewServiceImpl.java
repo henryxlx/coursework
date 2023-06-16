@@ -20,15 +20,15 @@ import java.util.Set;
  * @author xulixin
  */
 @Service
-public class ReviewServiceImpl implements ReviewService {
+public class CourseReviewServiceImpl implements CourseReviewService {
 
     private final CourseReviewDao reviewDao;
     private final CourseService courseService;
     private final AppUserService userService;
 
-    public ReviewServiceImpl(CourseReviewDao reviewDao,
-                             CourseService courseService,
-                             AppUserService userService) {
+    public CourseReviewServiceImpl(CourseReviewDao reviewDao,
+                                   CourseService courseService,
+                                   AppUserService userService) {
 
         this.reviewDao = reviewDao;
         this.courseService = courseService;

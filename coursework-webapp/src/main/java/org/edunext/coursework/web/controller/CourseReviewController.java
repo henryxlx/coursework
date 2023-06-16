@@ -6,8 +6,8 @@ import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
+import org.edunext.coursework.kernel.service.CourseReviewService;
 import org.edunext.coursework.kernel.service.CourseService;
-import org.edunext.coursework.kernel.service.ReviewService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +23,11 @@ import java.util.Map;
 public class CourseReviewController {
 
     private final CourseService courseService;
-    private final ReviewService reviewService;
+    private final CourseReviewService reviewService;
     private final AppUserService userService;
 
     public CourseReviewController(CourseService courseService,
-                                  ReviewService reviewService,
+                                  CourseReviewService reviewService,
                                   AppUserService userService) {
 
         this.courseService = courseService;

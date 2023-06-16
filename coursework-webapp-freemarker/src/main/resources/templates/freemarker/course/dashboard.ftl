@@ -1,5 +1,4 @@
 <#assign script_controller = 'course/dashboard' />
-<#assign script_arguments = '{course_uri: ${ctx}/course/${course.id}}'/>
 
 <#include '/course/dashboard-layout.ftl' />
 

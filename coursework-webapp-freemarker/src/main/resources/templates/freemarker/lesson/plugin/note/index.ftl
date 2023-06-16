@@ -1,0 +1,1 @@
+<#include '/lesson/plugin/note/form.ftl' />

@@ -76,17 +76,25 @@
             <div class="btn-group">
               <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">预览 <span class="caret"></span></button>
               <ul class="dropdown-menu pull-right">
-                  <li><a href="${ctx}/course/${course.id}?previewAs=member" target="_blank">作为 已购买用户</a></li>
-                  <li><a href="${ctx}/course/${course.id}?previewAs=guest" target="_blank">作为 未购买用户</a></li>
+                <li><a href="${ctx}/course/${course.id}?previewAs=member" target="_blank">作为 已购买用户</a></li>
+                <li><a href="${ctx}/course/${course.id}?previewAs=guest" target="_blank">作为 未购买用户</a></li>
               </ul>
             </div>
 
             <#if course.status != 'published'>
               <div class="btn-group">
-                <button class="btn btn-success btn-sm course-publish-btn" data-url="${ctx}/course/${course.id}/manage/publish">发布课程</button>
+                <button class="btn btn-success btn-sm course-publish-btn"
+                        data-url="${ctx}/course/${course.id}/manage/publish">发布课程
+                </button>
               </div>
             </#if>
-
+            <#if canManage??>
+              <div class="btn-group">
+                <a class="btn btn-default btn-sm " type="button" href="${ctx}/course/${course.id}/manage" title="课程管理">
+                  <i class="esicon esicon-setting"></i>
+                </a>
+              </div>
+            </#if>
           </#if>
         </div>
       </div>

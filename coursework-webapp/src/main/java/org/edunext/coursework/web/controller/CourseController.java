@@ -17,7 +17,6 @@ import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -215,7 +214,7 @@ public class CourseController {
         }
 */
 
-        if (MapUtil.isNotEmpty(member) && ObjectUtils.isEmpty(member.get("locked"))) {
+        if (MapUtil.isNotEmpty(member) && member.get("locked") != null) {
             model.addAttribute("learnStatuses", courseService.getUserLearnLessonStatuses(user.getId(), course.get("id")));
 
             if (coursesPrice == 1) {

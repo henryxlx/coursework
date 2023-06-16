@@ -4,14 +4,18 @@ import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.MapUtil;
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
+import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -120,5 +124,34 @@ public class CourseThreadController {
                 break;
         }
         return conditions;
+    }
+
+    @RequestMapping("/course/{id}/thread/create")
+    public String createAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = this.courseService.getCourse(id);
+        Map<String, Object> member = this.courseService.tryTakeCourse(id, AppUser.getCurrentUser(request));
+
+        if (MapUtil.isNotEmpty(member) && !this.courseService.isMemberNonExpired(course, member)) {
+            return "redirect:/course/" + id + "/thread";
+        }
+
+        if (MapUtil.isNotEmpty(member) && ValueParser.parseInt(member.get("levelId")) > 0) {
+//            if ( !"ok".equals(this.vipService.checkUserInMemberLevel(member.get("userId"), course.get("vipLevelId")))) {
+//                return "redirect:/course/" + id;
+//            }
+        }
+
+
+        String type = ServletRequestUtils.getStringParameter(request, "type", "discussion");
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> data = ParamMap.toFormDataMap(request);
+            Map<String, Object> thread = this.threadService.createThread(data);
+            return "redirect:/course/" + id + "/thread/" + thread.get("id");
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("courseId", id);
+        model.addAttribute("type", type);
+        return "/course/thread/form";
     }
 }

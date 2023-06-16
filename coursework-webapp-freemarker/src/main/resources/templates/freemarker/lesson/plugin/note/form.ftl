@@ -14,6 +14,9 @@
         </div>
     </div>
 
+    <input type="hidden" name="id" value="${id!}"/>
+    <input type="hidden" name="courseId" value="${courseId!}"/>
+    <input type="hidden" name="lessonId" value="${lessonId!}"/>
     <input type="hidden" name="_csrf_token" value="${csrf_token('site')}">
 
 </form>

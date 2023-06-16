@@ -1,16 +1,81 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.util.ArrayUtil;
+import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.SetUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xulixin
  */
 public interface CourseService {
+
+    class CourseSerialize {
+
+        private static final String UNSERIALIZE_KEY = "unserialize";
+
+        public static String[] objectToArray(Object obj) {
+            String[] arr = null;
+            if (EasyStringUtil.isNotBlank(obj)) {
+                String s = String.valueOf(obj);
+                if (s.startsWith("|")) {
+                    s = s.substring(1);
+                }
+                arr = s.split("\\|");
+            }
+            return arr;
+        }
+
+        public static void objectToArray(Map<String, Object> map, String key) {
+            Object obj = map.get(key);
+            String[] arr = objectToArray(obj);
+            if (arr != null) {
+                map.put(key, arr);
+            }
+        }
+
+        public static void unserialize(Map<String, Object> course) {
+            if (course == null || course.isEmpty() || course.containsKey(UNSERIALIZE_KEY)) {
+                return;
+            }
+
+            objectToArray(course, "goals");
+            objectToArray(course, "audiences");
+            objectToArray(course, "teacherIds");
+            course.put(UNSERIALIZE_KEY, Boolean.TRUE);
+        }
+
+        public static String listToString(List<?> list) {
+            List<String> strList = list.stream().map(String::valueOf).collect(Collectors.toList());
+            return strList.stream().collect(Collectors.joining("|", "|", "|"));
+        }
+
+        public static void arrayToString(Map<String, Object> model, String key) {
+            Object objTarget = model.get(key);
+            boolean needSerialize = true;
+            if (ArrayUtil.isNotArray(objTarget)) {
+                if (EasyStringUtil.isNotBlank(objTarget)) {
+                    objTarget = new Object[]{objTarget};
+                } else {
+                    needSerialize = false;
+                }
+            }
+            if (needSerialize) {
+                model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
+            }
+        }
+
+        public static void serialize(Map<String, Object> course) {
+            arrayToString(course, "goals");
+            arrayToString(course, "audiences");
+            arrayToString(course, "teacherIds");
+        }
+    }
 
     /**
      * 每个课程可添加的最大的教师人数

@@ -19,9 +19,9 @@ import java.util.Set;
 /**
  * @author jingjianxin
  */
-@Controller("adminReviewController")
+@Controller("courseReviewAdminController")
 @RequestMapping("/admin/course/review")
-public class ReviewController {
+public class CouseReviewAdminController {
 
     private static final String VIEW_PREFIX = "/admin/course/review/";
 
@@ -29,9 +29,9 @@ public class ReviewController {
     private final CourseService courseService;
     private final AppUserService userService;
 
-    public ReviewController(CourseReviewService reviewService,
-                            CourseService courseService,
-                            AppUserService userService) {
+    public CouseReviewAdminController(CourseReviewService reviewService,
+                                      CourseService courseService,
+                                      AppUserService userService) {
 
         this.reviewService = reviewService;
         this.courseService = courseService;

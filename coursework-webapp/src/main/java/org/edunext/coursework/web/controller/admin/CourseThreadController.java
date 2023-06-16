@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * @author xulixin
  */
-@Controller
+@Controller("adminCourseThreadController")
 public class CourseThreadController {
 
     private final CourseService courseService;

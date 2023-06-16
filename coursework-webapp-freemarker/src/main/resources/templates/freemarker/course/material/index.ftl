@@ -9,40 +9,40 @@
 
     <ul class="media-list">
         <#list materials! as material>
-            {% set lesson = lessons[material.lessonId]|default(null) %}
+            <#assign lesson = lessons['' + material.lessonId]/>
             <li class="media">
                 <div class="media-body">
                     <div class="mbs">
-                        {% if lesson and lesson.status != 'published' %}
-                        {{ material.title }} <span class="text-muted text-sm">(课时未发布，不能下载该资料)</span>
-                        {% else %}
-                        {% if material.link %}
-                        <a href="{{ material.link }}" target="_blank">{{ material.title }}</a>
-                        <span class="glyphicon glyphicon-new-window text-muted text-sm" title="网络链接资料"></span>
-                        {% else %}
-                        <a href="{{ path('course_material_download', {courseId:course.id, materialId:material.id}) }}"
-                           target="_blank">{{ material.title }}</a>
-                        {% endif %}
-                        {% endif %}
+                        <#if lesson?? && lesson.status != 'published'>
+                            ${material.title} <span class="text-muted text-sm">(课时未发布，不能下载该资料)</span>
+                        <#else>
+                            <#if material.link??>
+                                <a href="${material.link}" target="_blank">${material.title}</a>
+                                <span class="glyphicon glyphicon-new-window text-muted text-sm" title="网络链接资料"></span>
+                            <#else>
+                                <a href="${ctx}/course/${course.id}/material/${material.id}/download"
+                                   target="_blank">${material.title}</a>
+                            </#if>
+                        </#if>
                     </div>
 
-                    {% if material.description and not material.link %}
-                    <div class="text-muted text-sm mbs">
-                        {{ material.description | plain_text
-                        (100) }}
-                    </div>
-                    {% endif %}
+                    <#if material.description?? && !material.link??>
+                        <div class="text-muted text-sm mbs">
+                            {{ material.description | plain_text
+                            (100) }}
+                        </div>
+                    </#if>
 
                     <div class="text-sm">
-                        {% if material.fileId > 0 %}
-                        <span class="text-muted">{{ material.fileSize | file_size }}</span>
-                        <span class="bullet">•</span>
-                        {% endif %}
-                        {% if lesson %}
-                        <a class="link-muted" href="{{ path('course_learn', {id:course.id}) }}#lesson/{{lesson.id}}"
-                           title="{{ lesson.title }}">课时{{ lesson.number }}</a>
-                        <span class="bullet">•</span>
-                        {% endif %}
+                        <#if material.fileId gt 0>
+                            <span class="text-muted">{material.fileSize | file_size}</span>
+                            <span class="bullet">•</span>
+                        </#if>
+                        <#if lesson??>
+                            <a class="link-muted" href="${ctx}/course/${course.id}/learn#lesson/{{lesson.id}}"
+                               title="${lesson.title}">课时${lesson.number}</a>
+                            <span class="bullet">•</span>
+                        </#if>
                         <span class="text-muted">上传于{{ material.createdTime | smart_time }}</span>
                     </div>
 

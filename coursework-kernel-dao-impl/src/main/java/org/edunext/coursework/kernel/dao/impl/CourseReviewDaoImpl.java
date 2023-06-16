@@ -4,7 +4,7 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
-import org.edunext.coursework.kernel.dao.ReviewDao;
+import org.edunext.coursework.kernel.dao.CourseReviewDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Map;
  * @author xulixin
  */
 @Repository
-public class ReviewDaoImpl extends FastJdbcDaoSupport implements ReviewDao {
+public class CourseReviewDaoImpl extends FastJdbcDaoSupport implements CourseReviewDao {
 
     static final String TABLE_NAME = "cw_course_review";
 

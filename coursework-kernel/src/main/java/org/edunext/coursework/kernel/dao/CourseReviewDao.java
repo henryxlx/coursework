@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author xulixin
  */
-public interface ReviewDao {
+public interface CourseReviewDao {
 
     Integer getReviewCountByCourseId(Integer courseId);
 

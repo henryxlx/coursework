@@ -9,7 +9,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
-import org.edunext.coursework.kernel.dao.ReviewDao;
+import org.edunext.coursework.kernel.dao.CourseReviewDao;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,11 +22,11 @@ import java.util.Set;
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
-    private final ReviewDao reviewDao;
+    private final CourseReviewDao reviewDao;
     private final CourseService courseService;
     private final AppUserService userService;
 
-    public ReviewServiceImpl(ReviewDao reviewDao,
+    public ReviewServiceImpl(CourseReviewDao reviewDao,
                              CourseService courseService,
                              AppUserService userService) {
 

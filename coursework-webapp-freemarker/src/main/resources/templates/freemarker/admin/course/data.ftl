@@ -8,14 +8,16 @@
     <div class="page-header clearfix">
         <h1 class="pull-left">数据管理</h1>
     </div>
-    <form id="message-search-form" class="form-inline well well-sm" action="${ctx}/admin/course_data" method="get" novalidate>
+    <form id="message-search-form" class="form-inline well well-sm" action="${ctx}/admin/course/data" method="get"
+          novalidate>
         <div class="form-group">
             <select class="form-control" name="categoryId">
                 <@select_options categoryChoiceCourse!{} RequestParameters['categoryId']!'' '课程分类'/>
             </select>
         </div>
         <div class="form-group">
-            <input class="form-control" type="text" placeholder="标题" name="title" value="${RequestParameters['title']!}">
+            <input class="form-control" type="text" placeholder="标题" name="title"
+                   value="${RequestParameters['title']!}">
         </div>
         <div class="form-group">
             <input class="form-control" type="text" placeholder="创建者" name="creator"

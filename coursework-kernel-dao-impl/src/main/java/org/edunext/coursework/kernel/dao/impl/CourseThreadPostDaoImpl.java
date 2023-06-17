@@ -35,4 +35,10 @@ public class CourseThreadPostDaoImpl extends FastJdbcDaoSupport implements Cours
                 TABLE_NAME, start, limit);
         return getJdbcTemplate().queryForList(sql, threadId, isElite).stream().findFirst().orElse(null);
     }
+
+    @Override
+    public Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId) {
+        String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE userId = ? AND threadId = ?";
+        return getJdbcTemplate().queryForObject(sql, Integer.class, userId, threadId);
+    }
 }

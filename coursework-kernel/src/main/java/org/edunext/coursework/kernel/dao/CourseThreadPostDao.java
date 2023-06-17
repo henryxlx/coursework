@@ -15,4 +15,6 @@ public interface CourseThreadPostDao {
     List<Map<String, Object>> findPostsByThreadId(Integer threadId, OrderBy orderBy, Integer start, Integer limit);
 
     Map<String, Object> findPostsByThreadIdAndIsElite(Integer threadId, Integer isElite, Integer start, Integer limit);
+
+    Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId);
 }

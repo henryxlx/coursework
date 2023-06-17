@@ -30,4 +30,8 @@ public interface CourseThreadService {
     Map<String, Object> findThreadElitePosts(Integer courseId, Integer threadId, int start, int limit);
 
     void hitThread(Integer courseId, Integer threadId);
+
+    Integer getThreadPostCountByThreadId(Integer threadId);
+
+    Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId);
 }

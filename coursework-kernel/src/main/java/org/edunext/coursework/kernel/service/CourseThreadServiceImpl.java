@@ -161,6 +161,16 @@ public class CourseThreadServiceImpl implements CourseThreadService {
         this.threadDao.waveThread(threadId, "hitNum", +1);
     }
 
+    @Override
+    public Integer getThreadPostCountByThreadId(Integer threadId) {
+        return this.threadPostDao.getPostCountByThreadId(threadId);
+    }
+
+    @Override
+    public Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId) {
+        return this.threadPostDao.getPostCountByUserIdAndThreadId(userId, threadId);
+    }
+
     private OrderBy filterSort(String sort) {
         OrderBy orderBy;
         switch (sort) {

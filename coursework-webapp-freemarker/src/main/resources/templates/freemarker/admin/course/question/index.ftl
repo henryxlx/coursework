@@ -55,59 +55,70 @@
         <tbody class="tbody">
         <#list questions! as question>
 
-        {% set author = users[question.userId]|default(null) %}
-        {% set course = courses[question.courseId]|default(null) %}
-        {% set lesson = lessons[question.lessonId]|default(null) %}
-        <tr data-role="item">
-            <td><input value="{{question.id}}" type="checkbox" data-role="batch-item"> </td>
-            <td>
-                <a href="{{ path('course_thread_show', {courseId:question.courseId, id:question.id}) }}" target="_blank"><strong>{{ question.title }}</strong></a>
+            <#assign author = users[''+question.userId]! />
+            <#assign course = courses[''+question.courseId]! />
+            <#assign lesson = lessons[''+question.lessonId]! />
+            <tr data-role="item">
+                <td><input value="${question.id}" type="checkbox" data-role="batch-item"></td>
+                <td>
+                    <a href="${ctx}/course/${question.courseId}/thread/${question.id}"
+                       target="_blank"><strong>${question.title}</strong></a>
 
-                <div class="short-long-text">
-                    <div class="short-text text-sm text-muted">{{ question.content||plain_text(60) }} <span class="trigger">(展开)</span></div>
-                    <div class="long-text">{{ question.content|raw }} <span class="trigger">(收起)</span></div>
-                </div>
+                    <div class="short-long-text">
+                        <div class="short-text text-sm text-muted">${fastLib.plainText(question.content, 60)} <span
+                                    class="trigger">(展开)</span></div>
+                        <div class="long-text">${question.content} <span class="trigger">(收起)</span></div>
+                    </div>
 
-                <div class="text-sm mts">
-                    {% if course %}
-                    <a href="{{ path('course_show', {id:course.id}) }}" class="text-success" target="_blank">{{ course.title }}</a>
-                    {% if lesson %}
-                    <span class="text-muted mhs">&raquo;</span>
-                    <a class="text-success"  href="{{ path('course_learn', {id:lesson.courseId}) }}#lesson/{{lesson.id}}" target="_blank">课时{{lesson.number}}：{{ lesson.title }}</a>
-                    {% endif %}
-                    {% endif %}
-                </div>
-            </td>
-            <td>
+                    <div class="text-sm mts">
+                        <#if course?? && course?size gt 0>
+                            <a href="${ctx}/course/${course.id}" class="text-success"
+                               target="_blank">${course.title}</a>
+                            <#if lesson?? && lesson?size gt 0>
+                                <span class="text-muted mhs">&raquo;</span>
+                                <a class="text-success"
+                                   href="${ctx}/course/${lesson.courseId}/learn#lesson/${lesson.id}"
+                                   target="_blank">课时${lesson.number}：${lesson.title}</a>
+                            </#if>
+                        </#if>
+                    </div>
+                </td>
+                <td>
             <span class="text-sm">
-              {% if type == 'unPosted' %}
-               {{ question.hitNum }}
-               {% elseif type == 'all' %}
-              {{ question.postNum }} / {{ question.hitNum }}
-                {% endif %}
+              <#if type == 'unPosted'>
+                  ${question.hitNum}
+              <#elseif type == 'all'>
+                  ${question.postNum} / ${question.hitNum}
+              </#if>
             </span>
-            </td>
-            <td>
-                {{ admin_macro.user_link(author) }} <br />
-            </td>
-            <td>
-                {{ question.createdTime||date('Y-n-d H:i:s') }}
-            </td>
-            <td>
-                {% include 'TopxiaAdminBundle:CourseQuestion:td-operations.html.twig' %}
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="20"><div class="empty">暂无问答记录</div></td></tr>
+                </td>
+                <td>
+                    <@admin_macro.user_link author /> <br/>
+                </td>
+                <td>
+                    ${question.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm:ss')}
+                </td>
+                <td>
+                    <#include '/admin/course/question/td-operations.ftl' />
+                </td>
+            </tr>
+        <#else>
+            <tr>
+                <td colspan="20">
+                    <div class="empty">暂无问答记录</div>
+                </td>
+            </tr>
         </#list>
         </tbody>
     </table>
 
     <div class="mbm">
         <label class="checkbox-inline"><input type="checkbox" data-role="batch-select"> 全选</label>
-        <button class="btn btn-default btn-sm mlm" data-role="batch-delete" data-name="问答" data-url="{{ path('admin_thread_batch_delete') }}">删除</button>
+        <button class="btn btn-default btn-sm mlm" data-role="batch-delete" data-name="问答"
+                data-url="${ctx}/admin/course/thread/batch_delete') }}">删除
+        </button>
     </div>
 </div>
 
-<@web_macro.paginator paginator!/>
+    <@web_macro.paginator paginator!/>
 </#macro>

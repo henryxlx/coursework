@@ -128,8 +128,9 @@ public class CourseThreadController {
 
     @RequestMapping("/course/{id}/thread/create")
     public String createAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
         Map<String, Object> course = this.courseService.getCourse(id);
-        Map<String, Object> member = this.courseService.tryTakeCourse(id, AppUser.getCurrentUser(request));
+        Map<String, Object> member = this.courseService.tryTakeCourse(id, currentUser);
 
         if (MapUtil.isNotEmpty(member) && !this.courseService.isMemberNonExpired(course, member)) {
             return "redirect:/course/" + id + "/thread";
@@ -145,7 +146,11 @@ public class CourseThreadController {
         String type = ServletRequestUtils.getStringParameter(request, "type", "discussion");
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> data = ParamMap.toFormDataMap(request);
-            Map<String, Object> thread = this.threadService.createThread(data);
+            data.put("title", data.get("thread[title]"));
+            data.put("content", data.get("thread[content]"));
+            data.remove("thread[title]");
+            data.remove("thread[content]");
+            Map<String, Object> thread = this.threadService.createThread(data, currentUser);
             return "redirect:/course/" + id + "/thread/" + thread.get("id");
         }
 
@@ -153,5 +158,67 @@ public class CourseThreadController {
         model.addAttribute("courseId", id);
         model.addAttribute("type", type);
         return "/course/thread/form";
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}")
+    public ModelAndView showAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                                   HttpServletRequest request) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        if (!userAccessControlService.isLoggedIn()) {
+            return BaseControllerHelper.createMessageResponse("info", "你好像忘了登录哦？",
+                    null, 3000, request.getContextPath() + "/login");
+        }
+
+        Map<String, Object> course = this.courseService.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程不存在，或已删除。");
+        }
+
+        if (!this.courseService.canTakeCourse(id, currentUser.getId())) {
+            return BaseControllerHelper.createMessageResponse("info",
+                    String.format("您还不是课程《%s》的学员，请先购买或加入学习。", course.get("title")),
+                    null, 3000, request.getContextPath() + "/course/" + id);
+        }
+
+        ModelAndView mav = new ModelAndView("/course/thread/show");
+
+        Map<String, Object> member = this.courseService.tryTakeCourse(courseId, currentUser);
+        boolean isMemberNonExpired = true;
+        if (MapUtil.isNotEmpty(member) && !this.courseService.isMemberNonExpired(course, member)) {
+            // return $this->redirect($this->generateUrl('course_threads',array('id' => $courseId)));
+            isMemberNonExpired = false;
+        }
+        mav.addObject("isMemberNonExpired", isMemberNonExpired);
+
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        if (MapUtil.isEmpty(thread)) {
+            throw new RuntimeGoingException("话题不存在，或已删除。");
+        }
+
+        Paginator paginator = new Paginator(request, this.threadService.getThreadPostCount(courseId, id), 30);
+
+        List<Map<String, Object>> posts = this.threadService.findThreadPosts(courseId, id, "default",
+                paginator.getOffsetCount(),
+                paginator.getPerPageCount());
+
+        if ("question".equals(thread.get("type")) && paginator.getCurrentPage() == 1) {
+            mav.addObject("elitePosts", this.threadService.findThreadElitePosts(courseId, id, 0, 10));
+        }
+
+        mav.addObject("users", this.userService.findUsersByIds(ArrayToolkit.column(posts, "userId")));
+
+        this.threadService.hitThread(courseId, id);
+
+        mav.addObject("isManager", this.courseService.canManageCourse(courseId, currentUser.getId()));
+        mav.addObject("course", course);
+
+        mav.addObject("lesson", this.courseService.getCourseLesson(courseId,
+                ValueParser.toInteger(thread.get("lessonId"))));
+        mav.addObject("thread", thread);
+        mav.addObject("author", this.userService.getUser(thread.get("userId")));
+        mav.addObject("posts", posts);
+        mav.addObject("paginator", paginator);
+        return mav;
     }
 }

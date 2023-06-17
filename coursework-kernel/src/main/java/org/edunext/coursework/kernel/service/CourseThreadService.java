@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.webfast.kernel.AppUser;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +14,20 @@ public interface CourseThreadService {
 
     List<Map<String, Object>> searchThreads(Map<String, Object> conditions, String sort, Integer start, Integer limit);
 
-    Map<String, Object> createThread(Map<String, Object> fields);
+    Map<String, Object> createThread(Map<String, Object> thread, AppUser currentUser);
 
     int searchThreadCountInCourseIds(Map<String, Object> conditions);
 
-    List<Map<String, Object>> searchThreadInCourseIds(Map<String, Object> conditions, String order,
+    List<Map<String, Object>> searchThreadInCourseIds(Map<String, Object> conditions, String sort,
                                                       Integer start, Integer limit);
+
+    Map<String, Object> getThread(Integer courseId, Integer threadId);
+
+    Integer getThreadPostCount(Integer courseId, Integer threadId);
+
+    List<Map<String, Object>> findThreadPosts(Integer courseId, Integer threadId, String sort, Integer start, Integer limit);
+
+    Map<String, Object> findThreadElitePosts(Integer courseId, Integer threadId, int start, int limit);
+
+    void hitThread(Integer courseId, Integer threadId);
 }

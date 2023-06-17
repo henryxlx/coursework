@@ -105,9 +105,9 @@ public class MyTeachingController {
         mav.addObject("users",
                 this.userService.findUsersByIds(ArrayToolkit.column(threads, "latestPostUserId")));
         mav.addObject("courses",
-                this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")));
+                ArrayToolkit.index(this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")), "Id"));
         mav.addObject("lessons",
-                this.courseService.findLessonsByIds(ArrayToolkit.column(threads, "lessonId")));
+                ArrayToolkit.index(this.courseService.findLessonsByIds(ArrayToolkit.column(threads, "lessonId")), "id"));
 
         mav.addObject("paginator", paginator);
         mav.addObject("threads", threads);

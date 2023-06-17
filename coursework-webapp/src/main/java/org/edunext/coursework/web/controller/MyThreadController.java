@@ -50,7 +50,7 @@ public class MyThreadController {
                 paginator.getPerPageCount());
 
         model.addAttribute("courses",
-                this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")));
+                ArrayToolkit.index(this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")), "id"));
         model.addAttribute("users",
                 this.userService.findUsersByIds(ArrayToolkit.column(threads, "latestPostUserId")));
 
@@ -65,7 +65,7 @@ public class MyThreadController {
         AppUser user = AppUser.getCurrentUser(request);
 
         Map<String, Object> conditions = new ParamMap()
-                .add("userId", user.getId()).add("type", "'question'").toMap();
+                .add("userId", user.getId()).add("type", "question").toMap();
 
         Paginator paginator = new Paginator(request, this.threadService.searchThreadCount(conditions), 20);
 
@@ -76,7 +76,7 @@ public class MyThreadController {
                 paginator.getPerPageCount());
 
         model.addAttribute("courses",
-                this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")));
+                ArrayToolkit.index(this.courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")), "id"));
         model.addAttribute("users",
                 this.userService.findUsersByIds(ArrayToolkit.column(threads, "latestPostUserId")));
 

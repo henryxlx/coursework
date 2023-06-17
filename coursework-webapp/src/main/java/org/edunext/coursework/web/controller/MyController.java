@@ -29,4 +29,9 @@ public class MyController {
     public String myGroup() {
         return "/my/group/group-member-center";
     }
+
+    @RequestMapping("/my/bill")
+    public String myBill() {
+        return "/coin/cash-bill";
+    }
 }

@@ -49,7 +49,7 @@ public class CourseThreadController {
                 model.addAttribute("users", MapUtil.newHashMap());
                 model.addAttribute("courses", ListUtil.newArrayList());
                 model.addAttribute("lessons", ListUtil.newArrayList());
-                model.addAttribute("paginator", new Paginator(request,0,20));
+                model.addAttribute("paginator", new Paginator(request, 0, 20));
                 return "admin/course/thread/index";
             }
         }
@@ -58,8 +58,10 @@ public class CourseThreadController {
         List<Map<String, Object>> threads = threadService.searchThreads(conditions, "createdNotStick",
                 paginator.getOffsetCount(), paginator.getPerPageCount());
         model.addAttribute("users", userService.findUsersByIds(ArrayToolkit.column(threads, "userId")));
-        model.addAttribute("courses", courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")));
-        model.addAttribute("lessons", courseService.findLessonsByIds(ArrayToolkit.column(threads, "lessonId")));
+        model.addAttribute("courses",
+                ArrayToolkit.index(courseService.findCoursesByIds(ArrayToolkit.column(threads, "courseId")), "id"));
+        model.addAttribute("lessons",
+                ArrayToolkit.index(courseService.findLessonsByIds(ArrayToolkit.column(threads, "lessonId")), "id"));
         model.addAttribute("paginator", paginator);
         model.addAttribute("threads", threads);
 

@@ -115,7 +115,7 @@
     <div class="mbm">
         <label class="checkbox-inline"><input type="checkbox" data-role="batch-select"> 全选</label>
         <button class="btn btn-default btn-sm mlm" data-role="batch-delete" data-name="问答"
-                data-url="${ctx}/admin/course/thread/batch_delete') }}">删除
+                data-url="${ctx}/admin/course/thread/batch_delete">删除
         </button>
     </div>
 </div>

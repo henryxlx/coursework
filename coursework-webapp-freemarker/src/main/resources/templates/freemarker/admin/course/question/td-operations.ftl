@@ -11,7 +11,7 @@
         <ul class="dropdown-menu pull-right">
             <li>
                 <a class="btn" data-role="item-delete" data-name="删除问答"
-                   data-url="${ctx}/course/thread/${question.id}/delete">
+                   data-url="${ctx}/admin/course/thread/${question.id}/delete">
                     <span class="glyphicon glyphicon-trash"></span> 删除问答</a>
             </li>
         </ul>
@@ -21,7 +21,7 @@
 <#elseif type == "all">
 
     <button class="btn btn-default btn-sm" data-role="item-delete" data-name="删除问答"
-            data-url="${ctx}/course/thread/${question.id}/delete">删除
+            data-url="${ctx}/admin/course/thread/${question.id}/delete">删除
     </button>
 
 </#if>

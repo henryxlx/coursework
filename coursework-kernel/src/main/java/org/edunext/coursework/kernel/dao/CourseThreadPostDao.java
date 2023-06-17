@@ -10,6 +10,8 @@ import java.util.Map;
  */
 public interface CourseThreadPostDao {
 
+    Map<String, Object> getPost(Integer id);
+
     Integer getPostCountByThreadId(Integer threadId);
 
     List<Map<String, Object>> findPostsByThreadId(Integer threadId, OrderBy orderBy, Integer start, Integer limit);
@@ -21,4 +23,6 @@ public interface CourseThreadPostDao {
     Map<String, Object> addPost(Map<String, Object> post);
 
     int deletePostsByThreadId(Integer threadId);
+
+    void deletePost(Object id);
 }

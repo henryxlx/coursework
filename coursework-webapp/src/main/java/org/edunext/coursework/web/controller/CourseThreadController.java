@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -309,6 +310,29 @@ public class CourseThreadController {
         postData.put("content", content);
 
         return users;
+    }
 
+    @RequestMapping("/course/{courseId}/thread/{threadId}/post/{id}/delete")
+    @ResponseBody
+    public Boolean deletePostAction(@PathVariable Integer courseId,
+                                    @PathVariable Integer threadId,
+                                    @PathVariable Integer id,
+                                    HttpServletRequest request) {
+
+        Map<String, Object> post = this.threadService.getPost(courseId, id);
+        this.threadService.deletePost(courseId, id, AppUser.getCurrentUser(request));
+        Map<String, Object> thread = this.threadService.getThread(courseId, threadId);
+
+        if (this.userAccessControlService.hasAnyRole("ROLE_ADMIN", "ROLE_SUPER_ADMIN")) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + threadId;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>有回复被管理员删除。",
+                            threadUrl, thread.get("title")));
+            this.notificationService.notify(ValueParser.toInteger(post.get("userId")), "default",
+                    String.format("您在话题<a href='%s' target='_blank'><strong>“%s”</strong></a>有回复被管理员删除。",
+                            threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
     }
 }

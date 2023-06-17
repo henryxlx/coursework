@@ -38,4 +38,8 @@ public interface CourseThreadService {
     Map<String, Object> createPost(Map<String, Object> post, AppUser currentUser);
 
     void deleteThread(Integer threadId, AppUser currentUser);
+
+    Map<String, Object> getPost(Integer courseId, Integer id);
+
+    void deletePost(Integer courseId, Integer id, AppUser currentUser);
 }

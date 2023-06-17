@@ -16,7 +16,8 @@ public class CourseThreadPostDaoImpl extends FastJdbcDaoSupport implements Cours
 
     static final String TABLE_NAME = "cw_course_thread_post";
 
-    public Map<String, Object> getPost(Object id) {
+    @Override
+    public Map<String, Object> getPost(Integer id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
         return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
     }
@@ -57,5 +58,11 @@ public class CourseThreadPostDaoImpl extends FastJdbcDaoSupport implements Cours
     public int deletePostsByThreadId(Integer threadId) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE threadId = ?";
         return getJdbcTemplate().update(sql, threadId);
+    }
+
+    @Override
+    public void deletePost(Object id) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        getJdbcTemplate().update(sql, id);
     }
 }

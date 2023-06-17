@@ -230,6 +230,32 @@ public class CourseThreadServiceImpl implements CourseThreadService {
                 String.format("删除话题 %s(%s)", thread.get("title"), thread.get("id")));
     }
 
+    @Override
+    public Map<String, Object> getPost(Integer courseId, Integer id) {
+        Map<String, Object> post = this.threadPostDao.getPost(id);
+        if (MapUtil.isEmpty(post) || ValueParser.parseInt(post.get("courseId")) != courseId) {
+            return null;
+        }
+        return post;
+    }
+
+    @Override
+    public void deletePost(Integer courseId, Integer id, AppUser currentUser) {
+        Map<String, Object> course = this.courseService.tryManageCourse(currentUser, courseId);
+
+        Map<String, Object> post = this.threadPostDao.getPost(id);
+        if (MapUtil.isEmpty(post)) {
+            throw new RuntimeGoingException("帖子(#" + id + ")不存在，删除失败。");
+        }
+
+        if (ValueParser.parseInt(post.get("courseId")) != courseId) {
+            throw new RuntimeGoingException(String.format("帖子#%s不属于课程#%s，删除失败。", id, courseId));
+        }
+
+        this.threadPostDao.deletePost(post.get("id"));
+        this.threadDao.waveThread(ValueParser.toInteger(post.get("threadId")), "postNum", -1);
+    }
+
     private OrderBy filterSort(String sort) {
         OrderBy orderBy;
         switch (sort) {

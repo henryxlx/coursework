@@ -69,6 +69,23 @@ CREATE TABLE `cw_course_chapter`
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ------------------------------------------------------------
+-- Table structure for `cw_course_draft`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_draft`;
+CREATE TABLE `cw_course_draft`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `title`       varchar(255) NOT NULL COMMENT '标题',
+    `summary`     text COMMENT '摘要',
+    `courseId`    int(10) unsigned NOT NULL COMMENT '课程ID',
+    `content`     text COMMENT '内容',
+    `userId`      int(10) unsigned NOT NULL COMMENT '用户ID',
+    `lessonId`    int(10) unsigned NOT NULL COMMENT '课时ID',
+    `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+
+-- ------------------------------------------------------------
 -- Table structure for `cw_course_lesson`
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `cw_course_lesson`;
@@ -108,23 +125,6 @@ CREATE TABLE `cw_course_lesson`
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ------------------------------------------------------------
--- Table structure for `cw_course_draft`
--- ------------------------------------------------------------
-DROP TABLE IF EXISTS `cw_course_draft`;
-CREATE TABLE `cw_course_draft`
-(
-    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `title`       varchar(255) NOT NULL COMMENT '标题',
-    `summary`     text COMMENT '摘要',
-    `courseId`    int(10) unsigned NOT NULL COMMENT '课程ID',
-    `content`     text COMMENT '内容',
-    `userId`      int(10) unsigned NOT NULL COMMENT '用户ID',
-    `lessonId`    int(10) unsigned NOT NULL COMMENT '课时ID',
-    `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
-
--- ------------------------------------------------------------
 -- Table structure for `cw_course_member`
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `cw_course_member`;
@@ -153,6 +153,25 @@ CREATE TABLE `cw_course_member`
     PRIMARY KEY (`id`),
     UNIQUE KEY `courseId` (`courseId`,`userId`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_note`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_note`;
+CREATE TABLE `cw_course_note`
+(
+    `id`          int(10) NOT NULL AUTO_INCREMENT COMMENT '笔记ID',
+    `userId`      int(10) NOT NULL COMMENT '笔记作者ID',
+    `courseId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '课程ID',
+    `lessonId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '课时ID',
+    `content`     text NOT NULL COMMENT '笔记内容',
+    `length`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '笔记内容的字数',
+    `status`      tinyint(1) NOT NULL DEFAULT '1' COMMENT '笔记状态：0:私有, 1:公开',
+    `createdTime` bigint unsigned NOT NULL COMMENT '笔记创建时间',
+    `updatedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '笔记更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 -- ------------------------------------------------------------
 -- Table structure for `cw_course_review`
 -- ------------------------------------------------------------

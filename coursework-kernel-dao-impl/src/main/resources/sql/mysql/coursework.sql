@@ -188,3 +188,46 @@ CREATE TABLE `cw_course_review`
     `createdTime` bigint unsigned NOT NULL COMMENT '评价创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_thread`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_thread`;
+CREATE TABLE `cw_course_thread`
+(
+    `id`               int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '课程话题ID',
+    `courseId`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '话题所属课程ID',
+    `lessonId`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '话题所属课时ID',
+    `userId`           int(10) unsigned NOT NULL DEFAULT '0' COMMENT '话题发布人ID',
+    `type`             enum('discussion','question') NOT NULL DEFAULT 'discussion' COMMENT '话题类型',
+    `isStick`          tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否置顶',
+    `isElite`          tinyint(10) unsigned NOT NULL DEFAULT '0' COMMENT '是否精华',
+    `isClosed`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '是否关闭',
+    `private`          tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否隐藏',
+    `title`            varchar(255) NOT NULL COMMENT '话题标题',
+    `content`          text COMMENT '话题内容',
+    `postNum`          int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复数',
+    `hitNum`           int(10) unsigned NOT NULL DEFAULT '0' COMMENT '查看数',
+    `followNum`        int(10) unsigned NOT NULL DEFAULT '0' COMMENT '关注数',
+    `latestPostUserId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '最后回复人ID',
+    `latestPostTime`   bigint unsigned NOT NULL DEFAULT '0' COMMENT '最后回复时间',
+    `createdTime`      bigint unsigned NOT NULL DEFAULT '0' COMMENT '话题创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_thread_post`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_thread_post`;
+CREATE TABLE `cw_course_thread_post`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '课程话题回复ID',
+    `courseId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复所属课程ID',
+    `lessonId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复所属课时ID',
+    `threadId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复所属话题ID',
+    `userId`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '回复人',
+    `isElite`     tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否精华',
+    `content`     text NOT NULL COMMENT '正文',
+    `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

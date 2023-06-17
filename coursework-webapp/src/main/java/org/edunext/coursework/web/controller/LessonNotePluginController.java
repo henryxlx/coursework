@@ -52,7 +52,8 @@ public class LessonNotePluginController {
     public Boolean saveAction(HttpServletRequest request) {
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> note = ParamMap.toQueryAllMap(request);
-            this.courseNoteService.saveNote(note);
+            note.put("content", note.get("note[content]"));
+            this.courseNoteService.saveNote(note, AppUser.getCurrentUser(request));
         }
         return Boolean.FALSE;
     }

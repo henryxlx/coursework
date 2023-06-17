@@ -251,4 +251,6 @@ public interface CourseService {
     Map<String, Object> getUserNextLearnLesson(Integer userId, Integer courseId);
 
     List<Map<String, Object>> getCourseLessons(Integer courseId);
+
+    boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number);
 }

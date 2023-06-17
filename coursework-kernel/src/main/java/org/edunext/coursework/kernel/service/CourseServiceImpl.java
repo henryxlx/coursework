@@ -1649,6 +1649,7 @@ public class CourseServiceImpl implements CourseService {
                 new ParamMap().add("status", "unpublished").toMap());
     }
 
+    @Override
     public boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number) {
         Map<String, Object> member = this.getCourseMember(courseId, userId);
         if (MapUtil.isEmpty(member)) {

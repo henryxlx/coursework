@@ -11,7 +11,7 @@
         <div class="panel-body">
             <ul class="media-list notebook-list" id="notebook-list">
                 <#list courseMembers! as member>
-                    <#assign course = courses[member.courseId] />
+                    <#assign course = courses['' + member.courseId]! />
                     <div class="media">
                         <img class="pull-left media-object"
                              src="${default_path('coursePicture', course.largePicture, 'large')}">

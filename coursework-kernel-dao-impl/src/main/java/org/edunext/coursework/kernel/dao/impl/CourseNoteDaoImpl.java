@@ -71,6 +71,12 @@ public class CourseNoteDaoImpl extends FastJdbcDaoSupport implements CourseNoteD
         return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
     }
 
+    @Override
+    public List<Map<String, Object>> findNotesByUserIdAndCourseId(Integer userId, Integer courseId) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE userId = ? AND courseId = ? ORDER BY createdTime DESC";
+        return getJdbcTemplate().queryForList(sql, userId, courseId);
+    }
+
     private DynamicQueryBuilder createSearchNoteQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("content"))) {
             conditions.put("content", "%" + conditions.get("content") + "%");

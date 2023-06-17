@@ -147,6 +147,11 @@ public class CourseNoteServiceImpl implements CourseNoteService {
         return this.noteDao.getNote(id);
     }
 
+    @Override
+    public List<Map<String, Object>> findUserCourseNotes(Integer userId, Integer courseId) {
+        return this.noteDao.findNotesByUserIdAndCourseId(userId, courseId);
+    }
+
     private Integer calculateContentLength(Object objContent) {
         return objContent == null ? 0 : String.valueOf(objContent).length();
     }

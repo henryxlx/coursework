@@ -25,4 +25,6 @@ public interface CourseNoteDao {
     void deleteNote(Integer id);
 
     Map<String, Object> getNote(Object id);
+
+    List<Map<String, Object>> findNotesByUserIdAndCourseId(Integer userId, Integer courseId);
 }

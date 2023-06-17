@@ -23,4 +23,6 @@ public interface CourseNoteService {
     void deleteNotes(String[] ids, AppUser currentUser);
 
     Map<String, Object> getNote(Object id);
+
+    List<Map<String, Object>> findUserCourseNotes(Integer userId, Integer courseId);
 }

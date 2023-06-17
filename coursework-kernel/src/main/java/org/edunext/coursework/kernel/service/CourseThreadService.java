@@ -36,4 +36,6 @@ public interface CourseThreadService {
     Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId);
 
     Map<String, Object> createPost(Map<String, Object> post, AppUser currentUser);
+
+    void deleteThread(Integer threadId, AppUser currentUser);
 }

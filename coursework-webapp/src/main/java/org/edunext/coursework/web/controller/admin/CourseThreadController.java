@@ -3,6 +3,8 @@ package org.edunext.coursework.web.controller.admin;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.ListUtil;
 import com.jetwinner.util.MapUtil;
+import com.jetwinner.util.ValueParser;
+import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -10,7 +12,9 @@ import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -66,5 +70,25 @@ public class CourseThreadController {
         model.addAttribute("threads", threads);
 
         return "admin/course/thread/index";
+    }
+
+    @RequestMapping("/admin/course/thread/{id}/delete")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer id, HttpServletRequest request) {
+        this.threadService.deleteThread(id, AppUser.getCurrentUser(request));
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/admin/course/thread/batch_delete")
+    @ResponseBody
+    public Boolean batchDeleteAction(HttpServletRequest request) {
+        String[] ids = request.getParameterValues("ids[]");
+        if (ids != null && ids.length > 0) {
+            AppUser currentUser = AppUser.getCurrentUser(request);
+            for (String id : ids) {
+                this.threadService.deleteThread(ValueParser.toInteger(id), currentUser);
+            }
+        }
+        return Boolean.TRUE;
     }
 }

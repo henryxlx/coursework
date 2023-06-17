@@ -52,4 +52,10 @@ public class CourseThreadPostDaoImpl extends FastJdbcDaoSupport implements Cours
         Integer id = insertMapReturnKey(TABLE_NAME, post).intValue();
         return getPost(id);
     }
+
+    @Override
+    public int deletePostsByThreadId(Integer threadId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE threadId = ?";
+        return getJdbcTemplate().update(sql, threadId);
+    }
 }

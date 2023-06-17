@@ -82,6 +82,12 @@ public class CourseThreadDaoImpl extends FastJdbcDaoSupport implements CourseThr
         updateMap(TABLE_NAME, fields, "id", id);
     }
 
+    @Override
+    public int deleteThread(Integer threadId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        return getJdbcTemplate().update(sql, threadId);
+    }
+
     private DynamicQueryBuilder createThreadSearchQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("title"))) {
             conditions.put("title", "%" + conditions.get("title") + "%");

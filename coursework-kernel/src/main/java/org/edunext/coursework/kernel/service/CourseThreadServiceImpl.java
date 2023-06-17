@@ -8,6 +8,7 @@ import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppLogService;
 import com.jetwinner.webfast.kernel.service.AppNotificationService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -30,18 +31,20 @@ public class CourseThreadServiceImpl implements CourseThreadService {
     private final CourseService courseService;
     private final AppNotificationService notificationService;
     private final AppUserService userService;
+    private final AppLogService logService;
 
     public CourseThreadServiceImpl(CourseThreadDao threadDao,
                                    CourseThreadPostDao threadPostDao,
                                    CourseService courseService,
                                    AppNotificationService notificationService,
-                                   AppUserService userService) {
+                                   AppUserService userService, AppLogService logService) {
 
         this.threadDao = threadDao;
         this.threadPostDao = threadPostDao;
         this.courseService = courseService;
         this.notificationService = notificationService;
         this.userService = userService;
+        this.logService = logService;
     }
 
     @Override
@@ -207,6 +210,24 @@ public class CourseThreadServiceImpl implements CourseThreadService {
         this.threadDao.updateThread(thread.get("id"), threadFields);
 
         return post;
+    }
+
+    @Override
+    public void deleteThread(Integer threadId, AppUser currentUser) {
+        Map<String, Object> thread = this.threadDao.getThread(threadId);
+        if (MapUtil.isEmpty(thread)) {
+            throw new RuntimeGoingException("话题(ID: " + threadId + "不存在。");
+        }
+
+        if (!this.courseService.canManageCourse(ValueParser.toInteger(thread.get("courseId")), currentUser.getId())) {
+            throw new RuntimeGoingException("您无权限删除该话题");
+        }
+
+        this.threadPostDao.deletePostsByThreadId(threadId);
+        this.threadDao.deleteThread(threadId);
+
+        this.logService.info(currentUser, "thread", "delete",
+                String.format("删除话题 %s(%s)", thread.get("title"), thread.get("id")));
     }
 
     private OrderBy filterSort(String sort) {

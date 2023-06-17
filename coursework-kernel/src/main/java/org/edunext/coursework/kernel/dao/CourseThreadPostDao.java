@@ -19,4 +19,6 @@ public interface CourseThreadPostDao {
     Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId);
 
     Map<String, Object> addPost(Map<String, Object> post);
+
+    int deletePostsByThreadId(Integer threadId);
 }

@@ -15,7 +15,7 @@
 
         <div class="form-group">
             <select class="form-control" name="keywordType">
-                <@select_options {'content':'内容', 'courseId':'课程编号', 'courseTitle':'课程名' }, RequestParameters['keywordType']/>
+                <@select_options {'content':'内容', 'courseId':'课程编号', 'courseTitle':'课程名' }, RequestParameters['keywordType']!'', ''/>
             </select>
         </div>
 

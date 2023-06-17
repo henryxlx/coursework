@@ -67,7 +67,7 @@
                             <#if lesson??>
                                 <span class="text-muted mhs">&raquo;</span>
                                 <a class="text-success"
-                                   href="${ctx}/course/${lesson.courseId}learn#lesson/${lesson.id}}"
+                                   href="${ctx}/course/${lesson.courseId}/learn#lesson/${lesson.id}"
                                    target="_blank">课时${lesson.number}：${lesson.title}</a>
 
                             </#if>

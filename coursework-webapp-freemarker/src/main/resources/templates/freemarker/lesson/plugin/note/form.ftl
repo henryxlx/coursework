@@ -3,7 +3,7 @@
         <div class="controls">
 			<textarea id="note_content" name="note[content]"
                       required="required" class="form-control" rows="5"
-                      data-image-upload-url="${ctx}/editor/upload?token=upload_token('course')"></textarea>
+                      data-image-upload-url="${ctx}/editor/upload?token=upload_token('course')">${content!}</textarea>
         </div>
     </div>
 

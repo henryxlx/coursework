@@ -47,6 +47,8 @@ public class LessonQuestionPluginController {
         model.addAttribute("threads", threads);
         model.addAttribute("users", this.userService.findUsersByIds(ArrayToolkit.column(threads, "userId")));
         model.addAttribute("lesson", lesson);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("lessonId", lessonId);
 
         return "/lesson/plugin/question/index";
     }
@@ -55,9 +57,15 @@ public class LessonQuestionPluginController {
     public String createAction(HttpServletRequest request, Model model) {
         Map<String, Object> question = ParamMap.toQueryAllMap(request);
         question.put("type", "question");
+        question.put("title", question.get("question[title]"));
+        question.put("content", question.get("question[content]"));
+        question.remove("question[title]");
+        question.remove("question[content]");
+        question.remove("_csrf_token");
 
-        model.addAttribute("thread", this.threadService.createThread(question));
-        model.addAttribute("user", AppUser.getCurrentUser(request));
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        model.addAttribute("thread", this.threadService.createThread(question, currentUser));
+        model.addAttribute("user", currentUser);
         return "/lesson/plugin/question/item";
     }
 

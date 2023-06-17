@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.MapUtil;
@@ -14,6 +15,7 @@ import org.edunext.coursework.kernel.dao.CourseThreadDao;
 import org.edunext.coursework.kernel.dao.CourseThreadPostDao;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -152,7 +154,7 @@ public class CourseThreadServiceImpl implements CourseThreadService {
     }
 
     @Override
-    public Map<String, Object> findThreadElitePosts(Integer courseId, Integer threadId, int start, int limit) {
+    public List<Map<String, Object>> findThreadElitePosts(Integer courseId, Integer threadId, int start, int limit) {
         return this.threadPostDao.findPostsByThreadIdAndIsElite(threadId, 1, start, limit);
     }
 
@@ -169,6 +171,42 @@ public class CourseThreadServiceImpl implements CourseThreadService {
     @Override
     public Integer getPostCountByUserIdAndThreadId(Integer userId, Integer threadId) {
         return this.threadPostDao.getPostCountByUserIdAndThreadId(userId, threadId);
+    }
+
+    @Override
+    public Map<String, Object> createPost(Map<String, Object> post, AppUser currentUser) {
+        String[] requiredKeys = {"courseId", "threadId", "content"};
+        if (!ArrayToolkit.required(post, requiredKeys)) {
+            throw new RuntimeGoingException("参数缺失");
+        }
+
+        Integer postCourseId = ValueParser.toInteger(post.get("courseId"));
+        Map<String, Object> thread = this.getThread(postCourseId,
+                ValueParser.toInteger(post.get("threadId")));
+        if (MapUtil.isEmpty(thread)) {
+            throw new RuntimeGoingException(String.format("课程(ID: %s)话题(ID: %s)不存在。",
+                    post.get("courseId"), post.get("threadId")));
+        }
+
+        Map<String, Object> member = this.courseService.tryTakeCourse(postCourseId, currentUser);
+
+        post.put("userId", currentUser.getId());
+        post.put("isElite", this.courseService.isCourseTeacher(postCourseId,
+                ValueParser.toInteger(post.get("userId"))) ? 1 : 0);
+        post.put("createdTime", System.currentTimeMillis());
+
+        //创建post过滤html
+        post.put("content", EasyStringUtil.purifyHtml(post.get("content")));
+        post = this.threadPostDao.addPost(post);
+
+        // 高并发的时候， 这样更新postNum是有问题的，这里暂时不考虑这个问题。
+        Map<String, Object> threadFields = new HashMap<>(3);
+        threadFields.put("postNum", ValueParser.parseInt(thread.get("postNum")) + 1);
+        threadFields.put("latestPostUserId", post.get("userId"));
+        threadFields.put("latestPostTime", post.get("createdTime"));
+        this.threadDao.updateThread(thread.get("id"), threadFields);
+
+        return post;
     }
 
     private OrderBy filterSort(String sort) {

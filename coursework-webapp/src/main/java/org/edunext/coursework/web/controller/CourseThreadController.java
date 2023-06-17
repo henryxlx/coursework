@@ -8,6 +8,7 @@ import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppNotificationService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
@@ -21,10 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author xulixin
@@ -35,16 +35,19 @@ public class CourseThreadController {
     private final CourseService courseService;
     private final CourseThreadService threadService;
     private final UserAccessControlService userAccessControlService;
+    private final AppNotificationService notificationService;
     private final AppUserService userService;
 
     public CourseThreadController(CourseService courseService,
                                   CourseThreadService threadService,
                                   UserAccessControlService userAccessControlService,
+                                  AppNotificationService notificationService,
                                   AppUserService userService) {
 
         this.courseService = courseService;
         this.threadService = threadService;
         this.userAccessControlService = userAccessControlService;
+        this.notificationService = notificationService;
         this.userService = userService;
     }
 
@@ -220,5 +223,92 @@ public class CourseThreadController {
         mav.addObject("posts", posts);
         mav.addObject("paginator", paginator);
         return mav;
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/post")
+    public String postAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                             HttpServletRequest request, Model model) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> member = this.courseService.tryTakeCourse(courseId, currentUser);
+        Map<String, Object> course = this.courseService.getCourse(courseId);
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        model.addAttribute("courseId", thread.get("courseId"));
+        model.addAttribute("threadId", thread.get("id"));
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> postData = ParamMap.toFormDataMap(request);
+            postData.put("content", postData.get("post[content]"));
+            postData.remove("post[content]");
+            List<AppUser> users = this.replaceMention(postData, currentUser, request);
+
+            Map<String, Object> post = this.threadService.createPost(postData, currentUser);
+
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "thread/" + id;
+            threadUrl = threadUrl + "#post-" + post.get("id");
+
+            if (ValueParser.parseInt(thread.get("userId")) != currentUser.getId()) {
+                String userUrl = request.getContextPath() + "/user/" + currentUser.getId();
+                this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                        String.format("<a href='%s' target='_blank'><strong>%s</strong></a>在话题<a href='%s' target='_blank'><strong>“%s”</strong></a>中回复了您。<a href='%s' target='_blank'>点击查看</a>",
+                                userUrl, currentUser.getUsername(), threadUrl, thread.get("title"), threadUrl));
+            }
+
+            for (AppUser user : users) {
+                if (ValueParser.parseInt(thread.get("userId")) != user.getId()) {
+                    if (!user.getId().equals(currentUser.getId())) {
+                        String userUrl = request.getContextPath() + "/user/" + user.getId();
+                        this.notificationService.notify(user.getId(), "default",
+                                String.format("<a href='%s' target='_blank'><strong>%s</strong></a>在话题<a href='%s' target='_blank'><strong>“%s”</strong></a>中@了您。<a href='%s' target='_blank'>点击查看</a>",
+                                        userUrl, currentUser.getUsername(), threadUrl, thread.get("title"), threadUrl));
+                    }
+                }
+            }
+
+            model.addAttribute("course", course);
+            model.addAttribute("thread", thread);
+            model.addAttribute("post", post);
+            model.addAttribute("author", this.userService.getUser(post.get("userId")));
+            model.addAttribute("isManager", this.courseService.canManageCourse(
+                    ValueParser.toInteger(course.get("id")), currentUser.getId()));
+            return "/course/thread/post-list-item";
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("thread", thread);
+        return "/course/thread/post";
+    }
+
+    private List<AppUser> replaceMention(Map<String, Object> postData, AppUser currentUser,
+                                         HttpServletRequest request) {
+
+        List<AppUser> users = new ArrayList<>();
+        String content = String.valueOf(postData.get("content"));
+
+        String[] mentions = new String[0];
+        final Matcher m = Pattern.compile("/@w+/u").matcher(content);
+        int len = m.groupCount();
+        if (len > 0) {
+            mentions = new String[len];
+            for (int i = 0; i < len; i++) {
+                mentions[i] = m.group(i);
+            }
+        }
+
+        for (String mention : mentions) {
+            AppUser user = this.userService.getUserByUsername(mention);
+            if (user != null) {
+                String path = request.getContextPath() + "user/" + user.getId();
+                String nickname = user.getUsername();
+                String html = String.format("<a href=\"%s\" class=\"show-user\">@%s</a>", path, nickname);
+                content = content.replace("/@" + nickname + "/ui", html);
+                users.add(user);
+            }
+        }
+
+        postData.put("content", content);
+
+        return users;
+
     }
 }

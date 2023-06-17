@@ -77,6 +77,11 @@ public class CourseThreadDaoImpl extends FastJdbcDaoSupport implements CourseThr
         return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
     }
 
+    @Override
+    public void updateThread(Object id, Map<String, Object> fields) {
+        updateMap(TABLE_NAME, fields, "id", id);
+    }
+
     private DynamicQueryBuilder createThreadSearchQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("title"))) {
             conditions.put("title", "%" + conditions.get("title") + "%");

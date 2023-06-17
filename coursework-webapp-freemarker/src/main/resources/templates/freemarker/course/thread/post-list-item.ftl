@@ -19,7 +19,7 @@
 
     <div class="thread-post-body media-body" style="word-break:break-all;">
         <div class="media-heading">
-            <a href="javascript:">${author.nickname}</a>
+            <a href="javascript:">${author.username}</a>
             <span class="bullet">•</span>
             <span class="text-muted">${fastLib.smartTime(post.createdTime)}</span>
 

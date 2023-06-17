@@ -23,4 +23,6 @@ public interface CourseThreadDao {
     Integer searchThreadCountInCourseIds(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchThreadInCourseIds(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
+
+    void updateThread(Object id, Map<String, Object> fields);
 }

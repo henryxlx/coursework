@@ -15,6 +15,7 @@ import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -204,5 +205,15 @@ public class CourseBlockController implements BlockRenderController {
         map.put("number", member.get("learnedNum"));
         map.put("total", course.get("lessonNum"));
         return map;
+    }
+
+    @GetMapping("/course/threadPostBlock")
+    @BlockRenderMethod
+    public String threadPostBlockAction(Integer courseId, Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        model.addAttribute("thread", thread);
+        model.addAttribute("courseId", thread.get("courseId"));
+        model.addAttribute("threadId", id);
+        return "/course/thread/post";
     }
 }

@@ -18,7 +18,7 @@
                             <span class="label" title="课时${thread.lessonId}">L${thread.lessonId}</span>
                         </#if>
 
-                        <#if thread.isElite??>
+                        <#if thread.isElite?? && thread.isElite == 1>
                             <span class="label label-warning" title="精华帖">精</span>
                         </#if>
 

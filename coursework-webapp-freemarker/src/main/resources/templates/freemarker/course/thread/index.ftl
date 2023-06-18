@@ -71,7 +71,7 @@
                         <span class="badge pull-right" style="margin-top:15px;">${thread.postNum}</span>
                     </#if>
                     <div class="mbm">
-                        <#if thread.isStick??>
+                        <#if thread.isStick?? && thread.isStick == 1>
                             <span class="label label-danger" title="置顶帖">置顶</span>
                         </#if>
                         <#if thread.type == 'question'>
@@ -80,7 +80,7 @@
                         <a class="js-nav"
                            href="${ctx}/course/${course.id}/thread/${thread.id}"><strong>${thread.title}</strong></a>
 
-                        <#if thread.isElite??>
+                        <#if thread.isElite?? && thread.isElite == 1>
                             <span class="label label-warning" title="精华帖">精</span>
                         </#if>
 

@@ -270,7 +270,7 @@ public class CourseThreadServiceImpl implements CourseThreadService {
 
     @Override
     public void uneliteThread(Integer courseId, Integer threadId) {
-        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isElite", 1).toMap());
+        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isElite", 0).toMap());
     }
 
     @Override

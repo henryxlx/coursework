@@ -43,7 +43,7 @@
                        data-url="${ctx}/course/${course.id}/thread/${thread.id}/delete"
                        data-after-url="${ctx}/course/${course.id}/thread" data-role="confirm-btn"
                        data-confirm-message="您真的要删除该帖吗？"><span class="glyphicon glyphicon-remove-sign"></span> 删除</a>
-                    <#if thread.isStick??>
+                    <#if thread.isStick?? && thread.isStick == 1>
                         <a href="javascript:" class="btn btn-link"
                            data-url="${ctx}/course/${course.id}/thread/${thread.id}/unstick" data-role="confirm-btn"
                            data-confirm-message="您真的要取消置顶该帖吗？"><span class="glyphicon glyphicon-minus-sign"></span> 取消置顶</a>
@@ -54,7 +54,7 @@
                             置顶</a>
                     </#if>
 
-                    <#if thread.isElite??>
+                    <#if thread.isElite?? && thread.isElite == 1>
                         <a href="javascript:" class="btn btn-link"
                            data-url="${ctx}/course/${course.id}/thread/${thread.id}/unelite" data-role="confirm-btn"
                            data-confirm-message="您真的要取消加精该帖吗？"><span class="glyphicon glyphicon-hand-right"></span> 取消加精</a>

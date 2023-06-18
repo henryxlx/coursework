@@ -2,16 +2,12 @@ package org.edunext.coursework.web.controller;
 
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
-import com.jetwinner.util.ArrayUtil;
-import com.jetwinner.util.FastHashMap;
-import com.jetwinner.util.MapUtil;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppNotificationService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
-import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.CourseThreadService;
@@ -34,6 +30,8 @@ import java.util.regex.Pattern;
 @Controller
 public class CourseThreadController {
 
+    private static final String[] THREAD_POST_FORM_FIELDS = {"content", "courseId", "threadId"};
+    private static final String[] THREAD_FORM_FIELDS = {"title", "content", "type", "courseId"};
     private final CourseService courseService;
     private final CourseThreadService threadService;
     private final UserAccessControlService userAccessControlService;
@@ -150,11 +148,8 @@ public class CourseThreadController {
 
         String type = ServletRequestUtils.getStringParameter(request, "type", "discussion");
         if ("POST".equals(request.getMethod())) {
-            Map<String, Object> data = ParamMap.toFormDataMap(request);
-            data.put("title", data.get("thread[title]"));
-            data.put("content", data.get("thread[content]"));
-            data.remove("thread[title]");
-            data.remove("thread[content]");
+            Map<String, Object> data = EasyWebFormEditor.createNamedFormEditor("thread",
+                    THREAD_FORM_FIELDS).bind(request).getData();
             Map<String, Object> thread = this.threadService.createThread(data, currentUser);
             return "redirect:/course/" + id + "/thread/" + thread.get("id");
         }
@@ -245,7 +240,8 @@ public class CourseThreadController {
         }
 
         if ("POST".equals(request.getMethod())) {
-            Map<String, Object> formData = ParamMap.toFormDataMap(request);
+            Map<String, Object> formData = EasyWebFormEditor.createNamedFormEditor("thread",
+                    THREAD_FORM_FIELDS).bind(request).getData();
             thread = this.threadService.updateThread(thread.get("courseId"), thread.get("id"), formData);
 
             if (userAccessControlService.isAdmin()) {
@@ -354,9 +350,8 @@ public class CourseThreadController {
         model.addAttribute("threadId", thread.get("id"));
 
         if ("POST".equals(request.getMethod())) {
-            Map<String, Object> postData = ParamMap.toFormDataMap(request);
-            postData.put("content", postData.get("post[content]"));
-            postData.remove("post[content]");
+            Map<String, Object> postData = EasyWebFormEditor.createNamedFormEditor("post",
+                    THREAD_POST_FORM_FIELDS).bind(request).getData();
             List<AppUser> users = this.replaceMention(postData, currentUser, request);
 
             Map<String, Object> post = this.threadService.createPost(postData, currentUser);
@@ -474,7 +469,8 @@ public class CourseThreadController {
         Map<String, Object> thread = this.threadService.getThread(courseId, threadId);
 
         if ("POST".equals(request.getMethod())) {
-            Map<String, Object> formData = ParamMap.toFormDataMap(request);
+            Map<String, Object> formData = EasyWebFormEditor.createNamedFormEditor("post",
+                    THREAD_POST_FORM_FIELDS).bind(request).getData();
             post = this.threadService.updatePost(post.get("courseId"), post.get("id"), formData);
             if (userAccessControlService.isAdmin()) {
                 String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + threadId;

@@ -35,7 +35,7 @@
         </#if>
         <input type="text" id="thread_title" name="thread[title]"
                required="required" class="form-control expand-form-trigger" placeholder="我要提问"
-               data-display="标题"/>
+               data-display="标题" value="${thread.title}"/>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
       <textarea id="thread_content" name="thread[content]"
                 required="required" class="form-control" rows="15"
                 data-image-upload-url="${ctx}/editor/upload?token=upload_token('course')"
-                placeholder="详细描述你的问题" data-display="内容"></textarea>
+                placeholder="详细描述你的问题" data-display="内容">${thread.content!}</textarea>
       </div>
     </div>
 

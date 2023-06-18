@@ -1,10 +1,7 @@
 package org.edunext.coursework.kernel.service;
 
 import com.jetwinner.toolbag.ArrayToolkit;
-import com.jetwinner.util.ArrayUtil;
-import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.MapUtil;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
@@ -254,6 +251,61 @@ public class CourseThreadServiceImpl implements CourseThreadService {
 
         this.threadPostDao.deletePost(post.get("id"));
         this.threadDao.waveThread(ValueParser.toInteger(post.get("threadId")), "postNum", -1);
+    }
+
+    @Override
+    public void stickThread(Integer courseId, Integer threadId) {
+        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isStick", 1).toMap());
+    }
+
+    @Override
+    public void unstickThread(Integer courseId, Integer threadId) {
+        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isStick", 0).toMap());
+    }
+
+    @Override
+    public void eliteThread(Integer courseId, Integer threadId) {
+        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isElite", 1).toMap());
+    }
+
+    @Override
+    public void uneliteThread(Integer courseId, Integer threadId) {
+        this.threadDao.updateThread(threadId, FastHashMap.build(1).add("isElite", 1).toMap());
+    }
+
+    @Override
+    public Map<String, Object> updateThread(Object courseId, Object threadId, Map<String, Object> fields) {
+        Map<String, Object> thread = this.getThread(ValueParser.toInteger(courseId), ValueParser.toInteger(threadId));
+        if (MapUtil.isEmpty(thread)) {
+            throw new RuntimeGoingException("话题不存在，更新失败！");
+        }
+
+        fields = ArrayToolkit.part(fields, "title", "content");
+        if (MapUtil.isEmpty(fields)) {
+            throw new RuntimeGoingException("参数缺失，更新失败。");
+        }
+
+        //更新thread过滤html
+        fields.put("content", EasyStringUtil.purifyHtml(fields.get("content")));
+        this.threadDao.updateThread(threadId, fields);
+        return getThread(ValueParser.toInteger(courseId), ValueParser.toInteger(threadId));
+    }
+
+    @Override
+    public Map<String, Object> updatePost(Object courseId, Object postId, Map<String, Object> fields) {
+        Map<String, Object> post = this.getPost(ValueParser.toInteger(courseId), ValueParser.toInteger(postId));
+        if (MapUtil.isEmpty(post)) {
+            throw new RuntimeGoingException("回帖#{$id}不存在。");
+        }
+
+        fields = ArrayToolkit.part(fields, "content");
+        if (MapUtil.isEmpty(fields)) {
+            throw new RuntimeGoingException("参数缺失。");
+        }
+
+        //更新post过滤html
+        fields.put("content", EasyStringUtil.purifyHtml(fields.get("content")));
+        return this.threadPostDao.updatePost(postId, fields);
     }
 
     private OrderBy filterSort(String sort) {

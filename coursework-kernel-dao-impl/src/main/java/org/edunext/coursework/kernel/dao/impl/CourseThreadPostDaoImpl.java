@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.dao.impl;
 
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.CourseThreadPostDao;
@@ -64,5 +65,11 @@ public class CourseThreadPostDaoImpl extends FastJdbcDaoSupport implements Cours
     public void deletePost(Object id) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
         getJdbcTemplate().update(sql, id);
+    }
+
+    @Override
+    public Map<String, Object> updatePost(Object id, Map<String, Object> fields) {
+        updateMap(TABLE_NAME, fields, "id", id);
+        return getPost(ValueParser.toInteger(id));
     }
 }

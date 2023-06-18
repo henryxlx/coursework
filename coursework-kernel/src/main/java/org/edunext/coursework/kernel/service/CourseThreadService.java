@@ -42,4 +42,16 @@ public interface CourseThreadService {
     Map<String, Object> getPost(Integer courseId, Integer id);
 
     void deletePost(Integer courseId, Integer id, AppUser currentUser);
+
+    void stickThread(Integer courseId, Integer threadId);
+
+    void unstickThread(Integer courseId, Integer threadId);
+
+    void eliteThread(Integer courseId, Integer threadId);
+
+    void uneliteThread(Integer courseId, Integer threadId);
+
+    Map<String, Object> updateThread(Object courseId, Object threadId, Map<String, Object> fields);
+
+    Map<String, Object> updatePost(Object courseId, Object postId, Map<String, Object> fields);
 }

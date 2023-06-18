@@ -3,6 +3,7 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.ArrayUtil;
+import com.jetwinner.util.FastHashMap;
 import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
@@ -226,6 +227,121 @@ public class CourseThreadController {
         return mav;
     }
 
+    @RequestMapping("/course/{courseId}/thread/{id}/edit")
+    public String editAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                             HttpServletRequest request, Model model) {
+
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        if (MapUtil.isEmpty(thread)) {
+            throw new RuntimeGoingException(String.format("讨论话题或问题(#%s)不存在！", id));
+        }
+
+        Map<String, Object> course;
+        AppUser user = AppUser.getCurrentUser(request);
+        if (this.userAccessControlService.isLoggedIn() && user.getId() == ValueParser.parseInt(thread.get("userId"))) {
+            course = this.courseService.getCourse(courseId);
+        } else {
+            course = this.courseService.tryManageCourse(user, courseId);
+        }
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> formData = ParamMap.toFormDataMap(request);
+            thread = this.threadService.updateThread(thread.get("courseId"), thread.get("id"), formData);
+
+            if (userAccessControlService.isAdmin()) {
+                String threadUrl = request.getContextPath() + "/course/" + thread.get("courseId") + "/thread/" + thread.get("id");
+                this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                        String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员编辑",
+                                threadUrl, thread.get("title")));
+            }
+
+            return "redirect:/course/" + thread.get("courseId") + "/thread/" + thread.get("id");
+        }
+
+        // createThreadForm
+        model.addAllAttributes(FastHashMap.build(2).add("type", thread.get("type")).add("courseId", courseId).toMap());
+        model.addAttribute("course", course);
+        model.addAttribute("thread", thread);
+        model.addAttribute("type", thread.get("type"));
+        return "/course/thread/form";
+
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/delete")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer courseId, @PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        this.threadService.deleteThread(id, AppUser.getCurrentUser(request));
+
+        if (userAccessControlService.isAdmin()) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + id;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员删除", threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/stick")
+    @ResponseBody
+    public Boolean stickAction(@PathVariable Integer courseId, @PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        this.threadService.stickThread(courseId, id);
+
+        if (userAccessControlService.isAdmin()) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + id;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员设为置顶", threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/unstick")
+    @ResponseBody
+    public Boolean unstickAction(@PathVariable Integer courseId, @PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        this.threadService.unstickThread(courseId, id);
+
+        if (userAccessControlService.isAdmin()) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + id;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员取消置顶", threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/elite")
+    @ResponseBody
+    public Boolean eliteAction(@PathVariable Integer courseId, @PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        this.threadService.eliteThread(courseId, id);
+
+        if (userAccessControlService.isAdmin()) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + id;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员加精", threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/thread/{id}/unelite")
+    @ResponseBody
+    public Boolean uneliteAction(@PathVariable Integer courseId, @PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> thread = this.threadService.getThread(courseId, id);
+        this.threadService.uneliteThread(courseId, id);
+
+        if (userAccessControlService.isAdmin()) {
+            String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + id;
+            this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                    String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员取消加精", threadUrl, thread.get("title")));
+        }
+
+        return Boolean.TRUE;
+    }
+
     @RequestMapping("/course/{courseId}/thread/{id}/post")
     public String postAction(@PathVariable Integer courseId, @PathVariable Integer id,
                              HttpServletRequest request, Model model) {
@@ -335,4 +451,52 @@ public class CourseThreadController {
 
         return Boolean.TRUE;
     }
+
+    @RequestMapping("/course/{courseId}/thread/{threadId}/post/{id}/edit")
+    public String editPostAction(@PathVariable Integer courseId,
+                                 @PathVariable Integer threadId,
+                                 @PathVariable Integer id,
+                                 HttpServletRequest request, Model model) {
+
+        Map<String, Object> post = this.threadService.getPost(courseId, id);
+        if (MapUtil.isEmpty(post)) {
+            throw new RuntimeGoingException(String.format("讨论话题或问题回复(#%s)不存在！", id));
+        }
+
+        Map<String, Object> course;
+        AppUser user = AppUser.getCurrentUser(request);
+        if (this.userAccessControlService.isLoggedIn() && user.getId() == ValueParser.parseInt(post.get("userId"))) {
+            course = this.courseService.getCourse(courseId);
+        } else {
+            course = this.courseService.tryManageCourse(user, courseId);
+        }
+
+        Map<String, Object> thread = this.threadService.getThread(courseId, threadId);
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> formData = ParamMap.toFormDataMap(request);
+            post = this.threadService.updatePost(post.get("courseId"), post.get("id"), formData);
+            if (userAccessControlService.isAdmin()) {
+                String threadUrl = request.getContextPath() + "/course/" + courseId + "/thread/" + threadId;
+                String threadUrlAnchor = threadUrl + "#post-" + id;
+                this.notificationService.notify(ValueParser.toInteger(thread.get("userId")), "default",
+                        String.format("您的话题<a href='%s' target='_blank'><strong>“%s”</strong></a>被管理员编辑。<a href='%s' target='_blank'>点击查看</a>",
+                                threadUrl, thread.get("title"), threadUrlAnchor));
+                this.notificationService.notify(ValueParser.toInteger(post.get("userId")), "default",
+                        String.format("您在话题<a href='%s' target='_blank'><strong>“%s”</strong></a>有回复被管理员编辑。<a href='%s' target='_blank'>点击查看</a>",
+                                threadUrl, thread.get("title"), threadUrlAnchor));
+            }
+            return "redirect:/course/" + post.get("courseId") + "/thread/" + post.get("threadId");
+        }
+
+        // createPostForm
+        model.addAllAttributes(FastHashMap.build(2)
+                .add("courseId", courseId)
+                .add("threadId", threadId).toMap());
+        model.addAttribute("course", course);
+        model.addAttribute("post", post);
+        model.addAttribute("thread", thread);
+        return "/course/thread/post-form";
+    }
+
 }

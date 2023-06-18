@@ -25,4 +25,6 @@ public interface CourseThreadPostDao {
     int deletePostsByThreadId(Integer threadId);
 
     void deletePost(Object id);
+
+    Map<String, Object> updatePost(Object id, Map<String, Object> fields);
 }

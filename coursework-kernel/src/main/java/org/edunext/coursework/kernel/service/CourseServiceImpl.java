@@ -1662,8 +1662,28 @@ public class CourseServiceImpl implements CourseService {
         return true;
     }
 
+    @Override
     public Integer getCourseStudentCount(Integer courseId) {
         return this.memberDao.findMemberCountByCourseIdAndRole(courseId, "student");
+    }
+
+    @Override
+    public Map<String, Object> createAnnouncement(Integer courseId, Map<String, Object> fields, AppUser currentUser) {
+        if (!ArrayToolkit.required(fields, "content")) {
+            throw new RuntimeGoingException("课程公告数据不正确，创建失败。");
+        }
+
+        if (EasyStringUtil.isNotBlank(fields.get("content"))) {
+            fields.put("content", EasyStringUtil.purifyHtml(fields.get("content")));
+        }
+
+        Map<String, Object> announcement = FastHashMap.build(4)
+                .add("courseId", courseId)
+                .add("content", fields.get("content"))
+                .add("userId", currentUser.getId())
+                .add("createdTime", System.currentTimeMillis()).toMap();
+//        return this.announcementDao.addAnnouncement(announcement);
+        return announcement;
     }
 
     private String getWelcomeMessageBody(AppUser user, Map<String, Object> course) {

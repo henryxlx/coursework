@@ -253,4 +253,8 @@ public interface CourseService {
     List<Map<String, Object>> getCourseLessons(Integer courseId);
 
     boolean setMemberNoteNumber(Integer courseId, Integer userId, Integer number);
+
+    Integer getCourseStudentCount(Integer courseId);
+
+    Map<String, Object> createAnnouncement(Integer courseId, Map<String, Object> fields, AppUser currentUser);
 }

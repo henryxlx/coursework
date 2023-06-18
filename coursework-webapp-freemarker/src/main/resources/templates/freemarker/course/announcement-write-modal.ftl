@@ -15,7 +15,7 @@
         <div class="form-group">
             <div class="controls">
                 <textarea class="form-control" id="announcement-content-field" name="content" data-display="公告内容"
-                          data-image-upload-url="${ctx}//editor/upload?token=upload_token('default')">${announcement.content!}</textarea>
+                          data-image-upload-url="${ctx}/editor/upload?token=upload_token('default')">${announcement.content!}</textarea>
             </div>
         </div>
         <#if !announcement.id??>

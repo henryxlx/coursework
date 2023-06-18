@@ -17,7 +17,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
 
     group = 'org.edunext'
-    version = '0.4.3'
+    version = '0.4.4'
     sourceCompatibility = 1.8
 
     [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'

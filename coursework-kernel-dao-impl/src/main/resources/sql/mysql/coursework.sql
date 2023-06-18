@@ -125,6 +125,28 @@ CREATE TABLE `cw_course_lesson`
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ------------------------------------------------------------
+-- Table structure for `cw_course_lesson_learn`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_lesson_learn`;
+CREATE TABLE `cw_course_lesson_learn`
+(
+    `id`           int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '学员课时学习记录ID',
+    `userId`       int(10) unsigned NOT NULL COMMENT '学员ID',
+    `courseId`     int(10) unsigned NOT NULL COMMENT '课程ID',
+    `lessonId`     int(10) unsigned NOT NULL COMMENT '课时ID',
+    `status`       enum('learning','finished') NOT NULL COMMENT '学习状态',
+    `startTime`    bigint unsigned NOT NULL DEFAULT '0' COMMENT '学习开始时间',
+    `finishedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '学习完成时间',
+    `learnTime`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学习时间',
+    `watchTime`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '学习观看时间',
+    `videoStatus`  enum('paused','playing') NOT NULL DEFAULT 'paused' COMMENT '学习观看时间',
+    `updateTime`   bigint UNSIGNED NOT NULL DEFAULT '0' COMMENT '更新时间',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `userId_lessonId` (`userId`,`lessonId`),
+    KEY            `userId_courseId` (`userId`,`courseId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
 -- Table structure for `cw_course_member`
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `cw_course_member`;

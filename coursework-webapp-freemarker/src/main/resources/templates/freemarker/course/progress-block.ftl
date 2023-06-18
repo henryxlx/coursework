@@ -2,7 +2,7 @@
     <div class="panel-heading"><h3 class="panel-title">学习进度</h3></div>
     <div class="panel-body">
         <div class="progress">
-            <div class="progress-bar" style="width: {{ progress.percent }};"></div>
+            <div class="progress-bar" style="width: ${progress.percent};"></div>
         </div>
         <div class="clearfix">
             <#if progress.percent == '100%'>

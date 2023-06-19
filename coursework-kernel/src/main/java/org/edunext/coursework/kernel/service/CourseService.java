@@ -3,6 +3,8 @@ package org.edunext.coursework.kernel.service;
 import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.SetUtil;
+import com.jetwinner.webfast.event.FastEventHandler;
+import com.jetwinner.webfast.event.ServiceEvent;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.ActionGraspException;
@@ -14,6 +16,10 @@ import java.util.stream.Collectors;
  * @author xulixin
  */
 public interface CourseService {
+
+    default void dispatchEvent(String eventName, ServiceEvent serviceEvent) {
+        FastEventHandler.getDefault().dispatchEvent(eventName, serviceEvent);
+    }
 
     class CourseSerialize {
 

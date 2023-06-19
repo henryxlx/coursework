@@ -18,9 +18,8 @@ import org.springframework.context.annotation.ComponentScan;
  * @author xulixin
  */
 @EnableCaching
-@ComponentScan(basePackages = "com.jetwinner.webfast")
-@ComponentScan(basePackages = "org.edunext.coursework")
-@FastDataTagScan(basePackages = {"org.edunext.coursework"})
+@ComponentScan(basePackages = {"com.jetwinner.webfast", "org.edunext.coursework"})
+@FastDataTagScan(basePackages = {"com.jetwinner.webfast", "org.edunext.coursework"})
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, DataSourceAutoConfiguration.class})
 public class CourseWorkApplication extends SpringBootServletInitializer {
 

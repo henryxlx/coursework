@@ -5,6 +5,7 @@ import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.HtmlToolkit;
 import com.jetwinner.toolbag.MapKitOnJava8;
 import com.jetwinner.util.*;
+import com.jetwinner.webfast.event.ServiceEvent;
 import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastAppConst;
@@ -454,14 +455,14 @@ public class CourseServiceImpl implements CourseService {
         Map<String, Object> course = this.tryAdminCourse(currentUser, courseId);
 
         // Decrease the course lesson files usage counts, if there are files used by the course lessons.
-//        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
-
-//        if (ListUtil.isNotEmpty(lessons)) {
-//            Set<Object> fileIds = ArrayToolkit.column(lessons, "mediaId");
-//            if (fileIds != null) {
+        List<Map<String, Object>> lessons = lessonDao.findLessonsByCourseId(courseId);
+//
+        if (ListUtil.isNotEmpty(lessons)) {
+            Set<Object> fileIds = ArrayToolkit.column(lessons, "mediaId");
+            if (fileIds != null) {
 //                uploadFileService.decreaseFileUsedCount(fileIds);
-//            }
-//        }
+            }
+        }
 
         // Delete all linked course materials (the UsedCount of each material file will also be decreaased.)
 //        courseMaterialService.deleteMaterialsByCourseId(courseId);
@@ -476,6 +477,9 @@ public class CourseServiceImpl implements CourseService {
         if ("live".equals(course.get("type"))) {
 //            courseLessonReplayDao.deleteLessonReplayByCourseId(courseId);
         }
+
+        this.dispatchEvent("course.delete",
+                new ServiceEvent(currentUser, FastHashMap.build(1).add("id", courseId).toMap()));
 
         logService.info(currentUser, "course", "delete",
                 String.format("删除课程《%s》(#%s)", course.get("title"), course.get("id")));
@@ -749,8 +753,9 @@ public class CourseServiceImpl implements CourseService {
         this.logService.info(currentUser, "course", "add_lesson",
                 "添加课时《" + lesson.get("title") + "》(" + lesson.get("id") + ")", lesson);
 
-//        this.dispatchEvent("course.lesson.create",
-//                new ParamMap().add("courseId", lesson.get("courseId")).add("lessonId", lesson.get("id")).toMap());
+        this.dispatchEvent("course.lesson.create", new ServiceEvent(currentUser,
+                FastHashMap.build(2).add("courseId", lesson.get("courseId"))
+                        .add("lessonId", lesson.get("id")).toMap()));
 
         return lesson;
     }
@@ -920,7 +925,8 @@ public class CourseServiceImpl implements CourseService {
         Map<String, Object> fields = new ParamMap().add("teacherIds", CourseSerialize.listToString(visibleTeacherIds)).toMap();
         this.courseDao.updateCourse(courseId, fields);
 
-//        this.dispatchEvent("course.teacher.update", new ParamMap().add("courseId", courseId).toMap());
+        this.dispatchEvent("course.teacher.update", new ServiceEvent(currentUser,
+                FastHashMap.build(1).add("courseId", courseId).toMap()));
     }
 
     @Override
@@ -1036,7 +1042,8 @@ public class CourseServiceImpl implements CourseService {
 
         fields = new ParamMap().add("studentNum", this.getCourseStudentCount(courseId)).toMap();
         this.courseDao.updateCourse(courseId, fields);
-        // this.dispatchEvent("course.join", new ServiceEvent(course, new ParamMap().add("userId", member.get("userId"))));
+        this.dispatchEvent("course.join", new ServiceEvent(course,
+                FastHashMap.build(1).add("userId", member.get("userId")).toMap()));
     }
 
     @Override
@@ -1102,7 +1109,7 @@ public class CourseServiceImpl implements CourseService {
             throw new RuntimeGoingException("该收藏已经存在，请不要重复收藏!");
         }
         //添加动态
-        // this.dispatchEvent("course.favorite", new ServiceEvent(course));
+        this.dispatchEvent("course.favorite", new ServiceEvent(user, course));
 
         this.favoriteDao.addFavorite(new ParamMap()
                 .add("courseId", courseId)
@@ -1334,7 +1341,8 @@ public class CourseServiceImpl implements CourseService {
                 String.format("删除课程《%s》(#%s)的课时 %s",
                         course.get("title"), course.get("id"), lesson.get("title")));
 
-//        this.dispatchEvent("course.lesson.delete", new ParamMap().add("courseId", courseId).add("lessonId", lessonId).toMap());
+        this.dispatchEvent("course.lesson.delete", new ServiceEvent(currentUser,
+                FastHashMap.build(2).add("courseId", courseId).add("lessonId", lessonId).toMap()));
         return 0;
     }
 
@@ -1432,7 +1440,8 @@ public class CourseServiceImpl implements CourseService {
         Map<String, Object> course = this.getCourse(courseId);
 
         Map<String, Object> lesson = this.getCourseLesson(courseId, lessonId);
-        // this.dispatchEvent("course.lesson_start", new ServiceEvent(lesson, new ParamMap().add("course", course).toMap()));
+        this.dispatchEvent("course.lesson_start", new ServiceEvent(currentUser, lesson,
+                FastHashMap.build(1).add("course", course).toMap()));
 
         if (MapUtil.isNotEmpty(lesson) && !"video".equals(lesson.get("type"))) {
             Map<String, Object> learn = this.lessonLearnDao.getLearnByUserIdAndLessonId(currentUser.getId(), lessonId);
@@ -1524,7 +1533,8 @@ public class CourseServiceImpl implements CourseService {
                     ValueParser.parseInt(memberFields.get("learnedNum")) >= ValueParser.parseInt(course.get("lessonNum")) ? 1 : 0);
         }
         memberFields.put("credit", totalCredits);
-        // this.dispatchEvent("course.lesson_finish", new ServiceEvent(lesson, new ParamMap().add("course", course)));
+        this.dispatchEvent("course.lesson_finish", new ServiceEvent(currentUser, lesson,
+                FastHashMap.build(1).add("course", course).toMap()));
 
         this.memberDao.updateMember(member.get("id"), memberFields);
     }

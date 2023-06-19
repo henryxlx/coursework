@@ -194,131 +194,127 @@
                         <div class="es-box-body">
                             <ul class="media-list">
                                 <#list learns as learn>
-                                    {% if learn.type == "finished_testpaper" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            完成了考试 {{learn.properties.testpaper.name | plain_text
-                                            (15)}}
-                                        </div>
-                                    </li>
+                                    <#if learn.type == "finished_testpaper">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                完成了考试 ${plain_text(learnPropData.testpaper.name, 15)}
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.type == "finished_homework" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            完成了 课程 {{learn.properties.course.title | default
-                                            ('') | plain_text
-                                            (15)}} 课时 {{learn.properties.lesson.title | default
-                                            ('') | plain_text
-                                            (15)}} 下的作业
-                                        </div>
-                                    </li>
+                                    <#elseif learn.type == "finished_homework">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                完成了 课程 ${plain_text((learnPropData.course.title)!, 15)} 课时
+                                                ${plain_text((learnPropData.lesson.title)!, 15)} 下的作业
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.type == "finished_exercise" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            完成了 课程 {{learn.properties.course.title | default
-                                            ('') | plain_text
-                                            (15)}} 课时 {{learn.properties.lesson.title | default
-                                            ('') | plain_text
-                                            (15)}} 下的练习
-                                        </div>
-                                    </li>
+                                    <#elseif learn.type == "finished_exercise">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                完成了 课程 ${plain_text((learnPropData.course.title)!, 15)} 课时
+                                                ${plain_text((learnPropData.lesson.title)!, 15)} 下的练习
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.objectType == "course" and learn.type == "become_student" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            加入了课程 {{learn.properties.course.title | plain_text
-                                            (15)}}
-                                        </div>
-                                    </li>
+                                    <#elseif learn.objectType == "course" && learn.type == "become_student">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                加入了课程 ${plain_text(learnPropData.course.title, 15)}
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.objectType == "classroom" and learn.type == "become_student" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            成为了{{ setting('classroom.name') | default
-                                            ("班级") }} {{learn.properties.classroom.title | plain_text
-                                            (15)}} 的学员
-                                        </div>
-                                    </li>
+                                    <#elseif learn.objectType == "classroom" && learn.type == "become_student">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                成为了${setting('classroom.name')!"班级"}
+                                                ${plain_text(learnPropData.classroom.title, 15)} 的学员
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.objectType == "classroom" and learn.type == "become_auditor" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            成为了{{ setting('classroom.name') | default
-                                            ("班级") }} {{learn.properties.classroom.title | plain_text
-                                            (15)}} 的旁听生
-                                        </div>
-                                    </li>
+                                    <#elseif learn.objectType == "classroom" && learn.type == "become_auditor">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                成为了${setting('classroom.name')!"班级"}
+                                                ${plain_text(learnPropData.classroom.title, 15)} 的旁听生
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.type == "learned_lesson" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            完成了课时 {{learn.properties.lesson.title | plain_text
-                                            (15)}}
-                                        </div>
-                                    </li>
+                                    <#elseif learn.type == "learned_lesson">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                完成了课时 ${plain_text(learnPropData.lesson.title!, 15)}
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.type == "favorite_course" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            收藏了课程 {{learn.properties.course.title | plain_text
-                                            (15)}}
-                                        </div>
-                                    </li>
+                                    <#elseif learn.type == "favorite_course">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                收藏了课程 ${plain_text(learnPropData.course.title!, 15)}
+                                            </div>
+                                        </li>
 
-                                    {% elseif learn.type == "start_learn_lesson" %}
-                                    <li class="media">
-                                        <a class="pull-left" href="{{ path('user_show', {id:learn.user.id}) }}">
-                                            <img class="media-object"
-                                                 src="{{ default_path('avatar', learn.user.mediumAvatar, '') }}">
-                                        </a>
-                                        <div class="media-body">
-                                            <a href="{{ path('user_show', {id:learn.user.id}) }}">{{learn.user.nickname}}</a>
-                                            开始学习课时 {{learn.properties.lesson.title | plain_text
-                                            (15)}}
-                                        </div>
-                                    </li>
-                                    {% endif %}
+                                    <#elseif learn.type == "start_learn_lesson">
+                                        <li class="media">
+                                            <a class="pull-left" href="${ctx}/user/${learn.user.id}">
+                                                <img class="media-object"
+                                                     src="${default_path('avatar', learn.user.mediumAvatar, '')}">
+                                            </a>
+                                            <div class="media-body">
+                                                <#assign learnPropData = learn.properties?eval />
+                                                <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
+                                                开始学习课时 ${plain_text(learnPropData.lesson.title!, 15)}
+                                            </div>
+                                        </li>
+                                    </#if>
                                 </#list>
                             </ul>
                         </div>
@@ -329,24 +325,24 @@
 
                 <#-- 最热话题 -->
                 <#if setting('group.group_show')??>
-                {% set hotThreads = data('HotThreads', {'count':11}) %}
-                <#if hotThreads??>
-                    <div class="es-box hot-threads">
-                        <div class="es-box-heading"><h2>最热话题</h2></div>
-                        <div class="es-box-body">
-                            <ul class="text-list">
-                                {% for thread in hotThreads %}
-                                {% if thread %}
-                                <li style="border-bottom:none;background:url('${ctx}/assets/img/default/triangle.png') no-repeat
-                0 3px;padding-left:8px;padding-top:0px;margin-bottom:8px;"><a
-                        href="{{path('group_thread_show',{id:thread.groupId,threadId:thread.id})}}">{{thread.title | sub_text
-                    (15)}}</a></li>
-                {% endif %}
-                {% endfor %}
-                </ul>
-            </div>
-        </div>
-        </#if>
+                    <#assign hotThreads = data('HotThreads', 11) />
+                    <#if hotThreads??>
+                        <div class="es-box hot-threads">
+                            <div class="es-box-heading"><h2>最热话题</h2></div>
+                            <div class="es-box-body">
+                                <ul class="text-list">
+                                    <#list hotThreads as thread>
+                                        <#if thread??>
+                                            <li style="border-bottom:none;background:url('${ctx}/assets/img/default/triangle.png') no-repeat
+                                                    0 3px;padding-left:8px;padding-top:0px;margin-bottom:8px;"><a
+                                                        href="${ctx}/group/${thread.groupId}/thread/${thread.id}">{{thread.title | sub_text
+                                                    (15)}}</a></li>
+                                        </#if>
+                                    </#list>
+                                </ul>
+                            </div>
+                        </div>
+                    </#if>
         </#if>
 
     </div>

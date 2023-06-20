@@ -127,7 +127,7 @@ public interface CourseService {
 
     Map<String, Object> getUserLearnLessonStatuses(Integer userId, Object courseId);
 
-    Object hasFavoritedCourse(Object id);
+    Boolean hasFavoritedCourse(Integer courseId, AppUser currentUser);
 
     Map<String, Object> recommendCourse(AppUser currentUser, Integer courseId, String number);
 
@@ -210,9 +210,9 @@ public interface CourseService {
 
     void mergeTeacherIds(Set<Object> userIds, Object teacherIds);
 
-    void favoriteCourse(AppUser user, Integer courseId);
+    void favoriteCourse(AppUser user, Integer courseId) throws ActionGraspException;
 
-    void unfavoriteCourse(AppUser user, Integer courseId);
+    void unfavoriteCourse(AppUser user, Integer courseId) throws ActionGraspException;
 
     Boolean canManageCourse(Integer courseId, Integer userId);
 

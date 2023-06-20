@@ -395,8 +395,19 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Object hasFavoritedCourse(Object id) {
-        return null;
+    public Boolean hasFavoritedCourse(Integer courseId, AppUser currentUser) {
+        if (currentUser == null || currentUser.getId() == null) {
+            return false;
+        }
+
+        Map<String, Object> course = this.getCourse(courseId);
+        if (MapUtil.isEmpty(course)) {
+            throw new RuntimeGoingException("课程" + courseId + "不存在");
+        }
+
+        Map<String, Object> favorite = this.favoriteDao.getFavoriteByUserIdAndCourseId(currentUser.getId(), courseId);
+
+        return MapUtil.isNotEmpty(favorite) ? true : false;
     }
 
     @Override
@@ -1090,23 +1101,23 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void favoriteCourse(AppUser user, Integer courseId) {
+    public void favoriteCourse(AppUser user, Integer courseId) throws ActionGraspException {
         if (user == null || user.getId() == null) {
-            throw new RuntimeGoingException("用户不存在，不能访问！");
+            throw new ActionGraspException("用户未登录，不能访问！");
         }
 
         Map<String, Object> course = this.getCourse(courseId);
         if (MapUtil.isEmpty(course)) {
-            throw new RuntimeGoingException("该课程不存在,收藏失败!");
+            throw new ActionGraspException("该课程不存在,收藏失败!");
         }
 
         if (!"published".equals(course.get("status"))) {
-            throw new RuntimeGoingException("不能收藏未发布课程");
+            throw new ActionGraspException("不能收藏未发布课程");
         }
 
         Map<String, Object> favorite = this.favoriteDao.getFavoriteByUserIdAndCourseId(user.getId(), courseId);
         if (MapUtil.isNotEmpty(favorite)) {
-            throw new RuntimeGoingException("该收藏已经存在，请不要重复收藏!");
+            throw new ActionGraspException("该收藏已经存在，请不要重复收藏!");
         }
         //添加动态
         this.dispatchEvent("course.favorite", new ServiceEvent(user, course));
@@ -1118,19 +1129,19 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void unfavoriteCourse(AppUser user, Integer courseId) {
+    public void unfavoriteCourse(AppUser user, Integer courseId) throws ActionGraspException {
         if (user == null || user.getId() == null) {
-            throw new RuntimeGoingException("用户不存在，不能访问！");
+            throw new ActionGraspException("用户未登录，不能访问！");
         }
 
         Map<String, Object> course = this.getCourse(courseId);
         if (MapUtil.isEmpty(course)) {
-            throw new RuntimeGoingException("该课程不存在,收藏失败!");
+            throw new ActionGraspException("该课程不存在,收藏失败!");
         }
 
         Map<String, Object> favorite = this.favoriteDao.getFavoriteByUserIdAndCourseId(user.getId(), courseId);
         if (MapUtil.isEmpty(favorite)) {
-            throw new RuntimeGoingException("你未收藏本课程，取消收藏失败!");
+            throw new ActionGraspException("你未收藏本课程，取消收藏失败!");
         }
 
         this.favoriteDao.deleteFavorite(favorite.get("id"));

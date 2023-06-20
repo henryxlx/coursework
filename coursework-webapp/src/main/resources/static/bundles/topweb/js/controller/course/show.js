@@ -69,17 +69,29 @@ define(function(require, exports, module) {
 
         $("#favorite-btn").on('click', function() {
             var $btn = $(this);
-            $.post($btn.data('url'), function() {
-                $btn.hide();
-                $("#unfavorite-btn").show();
+            $.post($btn.data('url'), function (result) {
+                if (result.state == true) {
+                    $btn.hide();
+                    $("#unfavorite-btn").show();
+                } else {
+                    alert('收藏失败，' + result.message);
+                }
+            }, 'json').error(function () {
+                alert('收藏失败，请联系管理员！');
             });
         });
 
         $("#unfavorite-btn").on('click', function() {
             var $btn = $(this);
-            $.post($btn.data('url'), function() {
-                $btn.hide();
-                $("#favorite-btn").show();
+            $.post($btn.data('url'), function (result) {
+                if (result.state == true) {
+                    $btn.hide();
+                    $("#favorite-btn").show();
+                } else {
+                    alert('取消收藏失败，' + result.message);
+                }
+            }, 'json').error(function () {
+                alert('取消收藏失败，请联系管理员！');
             });
         });
 

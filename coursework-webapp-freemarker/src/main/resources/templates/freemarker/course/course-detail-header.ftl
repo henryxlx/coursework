@@ -124,7 +124,7 @@
                 </a>
                 <a class="btn btn-link" id="unfavorite-btn" href="javascript:"
                    data-url="${ctx}/course/${course.id}/unfavorite"
-                   <#if hasFavorited??><#else>style="display:none;"</#if>>
+                   <#if !hasFavorited??>style="display:none;"</#if>>
                     <i class="glyphicon glyphicon-bookmark"></i>
                     已收藏
                 </a>

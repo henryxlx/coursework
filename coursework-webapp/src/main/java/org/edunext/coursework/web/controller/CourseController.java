@@ -261,7 +261,8 @@ public class CourseController {
         model.addAttribute("courseMemberLevel", courseMemberLevel);
         model.addAttribute("checkMemberLevelResult", checkMemberLevelResult);
         model.addAttribute("groupedItems", this.groupCourseItems(items));
-        model.addAttribute("hasFavorited", courseService.hasFavoritedCourse(course.get("id")));
+        boolean hasFavorited = courseService.hasFavoritedCourse(ValueParser.toInteger(course.get("id")), user);
+        model.addAttribute("hasFavorited", hasFavorited ? Boolean.TRUE : null);
         model.addAttribute("category", categoryService.getCategory(ValueParser.toInteger(course.get("categoryId"))));
         model.addAttribute("previewAs", previewAs);
         model.addAttribute("tags", tagService.findTagsByIds(EasyStringUtil.explode(",", course.get("tags"))));
@@ -427,16 +428,24 @@ public class CourseController {
 
     @RequestMapping("/course/{id}/favorite")
     @ResponseBody
-    public Boolean favoriteAction(@PathVariable Integer id, HttpServletRequest request) {
-        this.courseService.favoriteCourse(AppUser.getCurrentUser(request), id);
-        return Boolean.TRUE;
+    public Map<String, Object> favoriteAction(@PathVariable Integer id, HttpServletRequest request) {
+        try {
+            this.courseService.favoriteCourse(AppUser.getCurrentUser(request), id);
+            return FastHashMap.build(1).add("state", Boolean.TRUE).toMap();
+        } catch (ActionGraspException e) {
+            return FastHashMap.build(2).add("state", Boolean.FALSE).add("message", e.getMessage()).toMap();
+        }
     }
 
     @RequestMapping("/course/{id}/unfavorite")
     @ResponseBody
-    public Boolean unfavoriteAction(@PathVariable Integer id, HttpServletRequest request) {
-        this.courseService.unfavoriteCourse(AppUser.getCurrentUser(request), id);
-        return Boolean.TRUE;
+    public Map<String, Object> unfavoriteAction(@PathVariable Integer id, HttpServletRequest request) {
+        try {
+            this.courseService.unfavoriteCourse(AppUser.getCurrentUser(request), id);
+            return FastHashMap.build(1).add("state", Boolean.TRUE).toMap();
+        } catch (ActionGraspException e) {
+            return FastHashMap.build(2).add("state", Boolean.FALSE).add("message", e.getMessage()).toMap();
+        }
     }
 
     @GetMapping("/course/{courseId}/set_expiryday/{userId}")

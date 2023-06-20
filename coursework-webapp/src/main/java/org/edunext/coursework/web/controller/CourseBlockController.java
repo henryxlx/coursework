@@ -86,7 +86,7 @@ public class CourseBlockController implements BlockRenderController {
         }
 //        model.addAttribute("course", course);
         model.addAttribute("canManage", this.courseService.canManageCourse(courseId, user.getId()));
-        model.addAttribute("canExit", canExit);
+        model.addAttribute("canExit", canExit ? Boolean.TRUE : null);
         model.addAttribute("member", member);
         model.addAttribute("manage", manage);
 //        model.addAttribute("isNonExpired", this.courseService.isMemberNonExpired(course, member));

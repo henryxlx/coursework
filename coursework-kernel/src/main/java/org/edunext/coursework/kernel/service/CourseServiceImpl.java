@@ -193,7 +193,7 @@ public class CourseServiceImpl implements CourseService {
         course.put("tags", EasyStringUtil.isNotBlank(fields.get("tags")) ? fields.get("tags") : "");
         course.put("userId", currentUser.getId());
         course.put("createdTime", System.currentTimeMillis());
-        course.put("teacherIds", fields.get("userId"));
+        course.put("teacherIds", course.get("userId"));
         course = courseDao.addCourse(course);
 
         Map<String, Object> member = new ParamMap()

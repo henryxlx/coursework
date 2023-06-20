@@ -1406,7 +1406,7 @@ public class CourseServiceImpl implements CourseService {
         if (checkUserRole(currentUser.getRoles(), "ROLE_ADMIN", "ROLE_SUPER_ADMIN")) {
             return member;
         }
-        if (MapUtil.isNotEmpty(member) || !ArrayUtil.inArray(member.get("role"), "teacher", "student")) {
+        if (MapUtil.isEmpty(member) || !ArrayUtil.inArray(member.get("role"), "teacher", "student")) {
             throw new RuntimeGoingException("您不是课程学员，不能查看课程内容，请先购买课程！");
         }
 

@@ -23,4 +23,8 @@ public interface LessonLearnDao {
     void updateLearn(Object id, Map<String, Object> fields);
 
     List<Map<String, Object>> findLearnsByUserIdAndCourseIdAndStatus(Object userId, Integer courseId, String status);
+
+    Integer searchLearnTime(Map<String, Object> conditions);
+
+    List<Map<String, Object>> findLearnsByUserIdAndCourseId(Integer userId, Object courseId);
 }

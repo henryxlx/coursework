@@ -326,7 +326,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Integer searchLearnTime(Map<String, Object> conditions) {
-        return null;
+        return this.lessonLearnDao.searchLearnTime(conditions);
     }
 
     @Override
@@ -391,7 +391,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public Map<String, Object> getUserLearnLessonStatuses(Integer userId, Object courseId) {
-        return null;
+        List<Map<String, Object>> learns = this.lessonLearnDao.findLearnsByUserIdAndCourseId(userId, courseId);
+
+        Map<String, Object> statuses = new HashMap<>(learns.size());
+        learns.forEach(learn -> statuses.put(String.valueOf(learn.get("lessonId")), learn.get("status")));
+        return statuses;
     }
 
     @Override

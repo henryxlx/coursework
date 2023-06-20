@@ -32,17 +32,18 @@
         </div>
 
         <div class="toolbar hidden-xs hidden-lt-ie8">
-          <#if manage??>
-          <div class="btn-group">
-            <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/review/create" data-role="tooltip" title="评价" data-placement="top" href="#modal">
-              <i class="esicon esicon-like"></i> ${course.ratingNum}</a>
-            <#--<#if setting('course.show_student_num_enabled', '1') == 1 || ${member.role('student')} == 'teacher' || isAdmin>
-              <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/members" data-role="tooltip" title="查看${setting('default.user_name')='学员'}的学习进度, 还可以发私信进行联系!" data-placement="bottom"
-              href="#modal"><i class="esicon esicon-user"></i> ${course.studentNum}</a>
-            </#if>-->
+          <#if !manage??>
+            <div class="btn-group">
+              <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/review/create"
+                 data-role="tooltip" title="评价" data-placement="top" href="#modal">
+                <i class="esicon esicon-like"></i> ${course.ratingNum}</a>
+              <#--<#if setting('course.show_student_num_enabled', '1') == 1 || ${member.role('student')} == 'teacher' || isAdmin>
+                <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/members" data-role="tooltip" title="查看${setting('default.user_name')='学员'}的学习进度, 还可以发私信进行联系!" data-placement="bottom"
+                href="#modal"><i class="esicon esicon-user"></i> ${course.studentNum}</a>
+              </#if>-->
 
-            <div class="btn-group" data-role="tooltip" title="分享到" data-placement="left" >
-              <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+              <div class="btn-group" data-role="tooltip" title="分享到" data-placement="left">
+                <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
                 <i class="esicon esicon-share"></i>
               </button>
                 <#assign right=true/>
@@ -81,20 +82,14 @@
               </ul>
             </div>
 
-            <#if course.status != 'published'>
+            <#if course.status?? && course.status != 'published'>
               <div class="btn-group">
                 <button class="btn btn-success btn-sm course-publish-btn"
                         data-url="${ctx}/course/${course.id}/manage/publish">发布课程
                 </button>
               </div>
             </#if>
-            <#if canManage??>
-              <div class="btn-group">
-                <a class="btn btn-default btn-sm " type="button" href="${ctx}/course/${course.id}/manage" title="课程管理">
-                  <i class="esicon esicon-setting"></i>
-                </a>
-              </div>
-            </#if>
+
           </#if>
         </div>
       </div>

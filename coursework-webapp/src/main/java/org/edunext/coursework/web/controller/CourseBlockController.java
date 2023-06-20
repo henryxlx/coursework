@@ -2,7 +2,6 @@ package org.edunext.coursework.web.controller;
 
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
-import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
@@ -109,10 +108,10 @@ public class CourseBlockController implements BlockRenderController {
         Set<Object> courseIds = new HashSet<>();
         Set<Object> userIds = new HashSet<>();
         courses.forEach(x -> {
-            String[] teacherIds = EasyStringUtil.explode(", ", x.get("teacherIds"));
+            String[] teacherIds = CourseService.CourseSerialize.objectToArray(x.get("teacherIds"));
             x.put("teacherIds", teacherIds);
             courseIds.add(x.get("id"));
-            userIds.add(teacherIds);
+            userIds.addAll(Arrays.asList(teacherIds));
         });
 
         if ("true".equals(settingService.getSettingValue("classroom.enabled"))) {

@@ -86,6 +86,19 @@ CREATE TABLE `cw_course_draft`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 -- ------------------------------------------------------------
+-- Table structure for `cw_course_favorite`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_favorite`;
+CREATE TABLE `cw_course_favorite`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '收藏ID',
+    `courseId`    int(10) unsigned NOT NULL COMMENT '收藏课程的ID',
+    `userId`      int(10) unsigned NOT NULL COMMENT '收藏人的ID',
+    `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='用户的收藏数据表';
+
+-- ------------------------------------------------------------
 -- Table structure for `cw_course_lesson`
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `cw_course_lesson`;

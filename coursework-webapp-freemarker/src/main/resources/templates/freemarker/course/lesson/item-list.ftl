@@ -17,7 +17,7 @@
                 </#if>
             <#elseif id?contains('lesson') >
                 <#assign lessonUrl = ctx + '/course/' + course.id + '/learn#lesson/' + item.id />
-                <li class="item lesson-item <#if learnStatuses?? && learnStatuses[item.id]??>lesson-item-${learnStatuses[item.id]}</#if> lesson-item-${item.id} hover-item clearfix "
+                <li class="item lesson-item <#if learnStatuses?? && learnStatuses[''+item.id]??>lesson-item-${learnStatuses[''+item.id]}</#if> lesson-item-${item.id} hover-item clearfix "
                     data-id="${item.id}" data-num="${item?index}">
                     <#if item.status == 'published'>
                         <#if item.type == 'video'>

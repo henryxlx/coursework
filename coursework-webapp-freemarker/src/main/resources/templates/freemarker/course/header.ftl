@@ -37,18 +37,20 @@
               <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/review/create"
                  data-role="tooltip" title="评价" data-placement="top" href="#modal">
                 <i class="esicon esicon-like"></i> ${course.ratingNum}</a>
-              <#--<#if setting('course.show_student_num_enabled', '1') == 1 || ${member.role('student')} == 'teacher' || isAdmin>
-                <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/members" data-role="tooltip" title="查看${setting('default.user_name')='学员'}的学习进度, 还可以发私信进行联系!" data-placement="bottom"
-                href="#modal"><i class="esicon esicon-user"></i> ${course.studentNum}</a>
-              </#if>-->
+              <#if setting('course.show_student_num_enabled', '0') == '1' || (member.role?? && member.role == 'teacher') || userAcl.isAdmin()>
+                <a class="btn btn-default btn-sm" data-toggle="modal" data-url="${ctx}/course/${course.id}/members"
+                   data-role="tooltip" title="查看${setting('default.user_name', '学员')}的学习进度, 还可以发私信进行联系!"
+                   data-placement="bottom"
+                   href="#modal"><i class="esicon esicon-user"></i> ${course.studentNum}</a>
+              </#if>
 
               <div class="btn-group" data-role="tooltip" title="分享到" data-placement="left">
                 <button class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                <i class="esicon esicon-share"></i>
-              </button>
+                  <i class="esicon esicon-share"></i>
+                </button>
                 <#assign right=true/>
 
-              <#--<#include '/course/common/share-dropdown.ftl'>-->
+                <#--<#include '/course/common/share-dropdown.ftl'>-->
             </div>
             <#if canExit??>
               <#if member.joinedType?? && member.joinedType == 'course' && member.orderId??>

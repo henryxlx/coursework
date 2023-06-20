@@ -46,4 +46,6 @@ public interface CourseMemberDao {
     void updateMember(Object id, Map<String, Object> member);
 
     Integer findMemberCountByCourseIdAndRole(Integer courseId, String role);
+
+    void deleteMembersByCourseId(Integer courseId);
 }

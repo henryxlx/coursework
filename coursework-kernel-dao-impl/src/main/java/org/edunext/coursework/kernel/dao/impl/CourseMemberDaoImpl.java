@@ -175,6 +175,12 @@ public class CourseMemberDaoImpl extends FastJdbcDaoSupport implements CourseMem
         return getJdbcTemplate().queryForObject(sql, Integer.class, courseId, role);
     }
 
+    @Override
+    public void deleteMembersByCourseId(Integer courseId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE courseId = ?";
+        getJdbcTemplate().update(sql, courseId);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME, "course_member")

@@ -483,9 +483,9 @@ public class CourseServiceImpl implements CourseService {
 //:TODO        courseMaterialService.deleteMaterialsByCourseId(courseId);
 
         // Delete course related data
-//        memberDao.deleteMembersByCourseId(courseId);
-//        lessonDao.deleteLessonsByCourseId(courseId);
-//        chapterDao.deleteChaptersByCourseId(courseId);
+        memberDao.deleteMembersByCourseId(courseId);
+        lessonDao.deleteLessonsByCourseId(courseId);
+        chapterDao.deleteChaptersByCourseId(courseId);
 
         courseDao.deleteCourse(courseId);
 

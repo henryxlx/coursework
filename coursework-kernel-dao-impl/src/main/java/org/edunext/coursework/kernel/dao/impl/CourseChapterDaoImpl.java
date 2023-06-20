@@ -49,6 +49,12 @@ public class CourseChapterDaoImpl extends FastJdbcDaoSupport implements CourseCh
     }
 
     @Override
+    public void deleteChaptersByCourseId(Integer courseId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE courseId = ?";
+        getJdbcTemplate().update(sql, courseId);
+    }
+
+    @Override
     public Map<String, Object> addChapter(Map<String, Object> chapter) {
         int id = insertMapReturnKey(TABLE_NAME, chapter).intValue();
         return this.getChapter(id);

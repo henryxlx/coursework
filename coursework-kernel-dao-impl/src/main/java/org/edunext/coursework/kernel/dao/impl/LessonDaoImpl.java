@@ -140,6 +140,12 @@ public class LessonDaoImpl extends FastJdbcDaoSupport implements LessonDao {
         return getJdbcTemplate().queryForList(sql, Integer.class, courseId);
     }
 
+    @Override
+    public void deleteLessonsByCourseId(Integer courseId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE courseId = ?";
+        getJdbcTemplate().update(sql, courseId);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         return new DynamicQueryBuilder(conditions)
                 .from(TABLE_NAME)

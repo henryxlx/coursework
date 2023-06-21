@@ -41,7 +41,6 @@
         <th width="30%">名称</th>
         <th>连载状态</th>
         <th>${setting('default.user_name', '学员')}数</th>
-        <th>收入(元)</th>
         <th>状态</th>
         <th>创建者</th>
         <th>操作</th>

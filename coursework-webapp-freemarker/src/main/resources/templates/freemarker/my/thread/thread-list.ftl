@@ -24,7 +24,7 @@
 
                     </div>
                     <div class="text-muted text-normal">
-                        <#if course??>
+                        <#if course?? && course?size gt 0>
                             <span>发表于<a href="${ctx}/course/${course.id}"
                                         class="link-muted">${course.title}</a></span>
                         <#else>

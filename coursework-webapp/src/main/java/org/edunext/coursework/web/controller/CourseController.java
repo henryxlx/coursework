@@ -1,6 +1,7 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.security.UserAccessControlService;
+import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
@@ -539,5 +540,45 @@ public class CourseController {
         model.addAttribute("isFollowing", this.userService.isFollowed(currentUser.getId(), user.getId()));
         model.addAttribute("user", user);
         return "/course/teacher-info-modal";
+    }
+
+    @RequestMapping("/course/{id}/members")
+    public String membersAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> member = this.courseService.tryTakeCourse(id, currentUser);
+
+        Paginator paginator = new Paginator(request, this.courseService.getCourseStudentCount(id), 6);
+
+        List<Map<String, Object>> students = this.courseService.findCourseStudents(id,
+                paginator.getOffsetCount(), paginator.getPerPageCount());
+        Set<Object> studentUserIds = ArrayToolkit.column(students, "userId");
+        model.addAttribute("users", this.userService.findUsersByIds(studentUserIds));
+        model.addAttribute("followingIds", this.userService.filterFollowingIds(currentUser.getId(), studentUserIds));
+
+        Map<String, Object> course = this.courseService.getCourse(id);
+        Map<String, Object> progresses = new HashMap<>(students.size());
+        students.forEach(student -> progresses.put(String.valueOf(student.get("userId")),
+                this.calculateUserLearnProgress(course, student)));
+
+        model.addAttribute("progresses", progresses);
+        model.addAttribute("course", course);
+        model.addAttribute("students", students);
+        model.addAttribute("paginator", paginator);
+        model.addAttribute("canManage", this.courseService.canManageCourse(id, currentUser.getId()));
+        return "/course/members-modal";
+    }
+
+    private Map<String, Object> calculateUserLearnProgress(Map<String, Object> course, Map<String, Object> member) {
+        int courseLessonNum = ValueParser.parseInt(course.get("lessonNum"));
+        if (courseLessonNum == 0) {
+            return FastHashMap.build(3).add("percent", "0%").add("number", 0).add("total", 0).toMap();
+        }
+
+        int memberLearnedNum = ValueParser.parseInt(member.get("learnedNum"));
+        int percent = (int) (1.0 * memberLearnedNum / courseLessonNum * 100);
+
+        return FastHashMap.build(3).add("percent", percent + "%")
+                .add("number", member.get("learnedNum"))
+                .add("total", course.get("lessonNum")).toMap();
     }
 }

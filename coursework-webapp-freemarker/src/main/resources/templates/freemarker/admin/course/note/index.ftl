@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="text-sm mts">
-                        <#if course??>
+                        <#if course?? && course?size gt 0>
                             <a href="${ctx}/course/${course.id}" class="text-success"
                                target="_blank">${course.title}</a>
                             <#if lesson??>

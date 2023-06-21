@@ -273,8 +273,15 @@ public class CourseManageController {
     public String checkAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
+        model.addAttribute("course", course);
         return "/course/manage/myquiz/list_course_test_paper";
+    }
+
+    @RequestMapping("/course/{id}/manage/publish")
+    @ResponseBody
+    public Boolean publishAction(@PathVariable Integer id, HttpServletRequest request) {
+        this.courseService.publishCourse(AppUser.getCurrentUser(request), id);
+        return Boolean.TRUE;
     }
 
 }

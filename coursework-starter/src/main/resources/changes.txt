@@ -1,5 +1,13 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.4.7: @2023-06-21
+* 数据库脚本文件coursework.sql添加课程收藏数据表cw_course_favorite
+* 完成课程收藏的功能，对后台收藏数据库访问全部实现
+* 修复课程服务中删除课程时同时删除课程成员、课时信息和章节内容
+* 前台课程学习和前台课程管理的控制manage标志逻辑判断反了，重新调整为mange不存在为null空指针时是学习状态，manage存在是课程管理状态
+* 使用修复后FreeMarker自定义宏@renderController,块模板的局部数据与当前环境的数据发生冲突时也能正常处理，课程显示顶部信息块模板处理
+  headerBlockAction中使用的变量与header.ftl的使用的用户变量重新恢复为users
+
 0.4.6: @2023-06-20
 * 实现后台管理首页（控制台）数据统计列表各项指标页面的显示
 * 数据库脚本文件coursework.sql添加课时学习情况记录数据表cw_course_lesson_learn
@@ -69,6 +77,8 @@ ChangeLog for CourseWork Development
 * 完成前台课程管理中学员管理信息正确显示功能，完成查看学员资料和、修改备注和删除学员的功能
 * 在课程中删除学员会在网站通知中提示删除学员信息使用自定义的item-student-remove.ftl
   在后台数据如果经过json编码为字符串的内容可在FreeMarker页面中使用?eval函数转换为对象使用
+* 使用自定义的标签renderController渲染FreeMarker时使用与页面上下文同名的变量users造成页面解析数据错误，后面需要深入研究更好的解决方法
+  header.ftl/CourseBlockController.headerBlockAction定义的users数据、学员管理中的用户users发生冲突
 
 0.3.8: @2023-06-12
 * 实现用户我的主页中在教课程、在学课程和收藏功能

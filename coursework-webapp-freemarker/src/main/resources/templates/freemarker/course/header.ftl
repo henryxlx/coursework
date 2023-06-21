@@ -24,7 +24,7 @@
           <#if course.teacherIds?? && course.teacherIds?is_sequence>
             教师：
             <#list course.teacherIds! as id>
-              <#assign user = usersForHeader[''+id]! />
+              <#assign user = users[''+id]! />
               <a href="#modal" data-toggle="modal"
                  data-url="${ctx}/course/${course.id}/teacher/${user.id}">${user.username}</a>
             </#list>

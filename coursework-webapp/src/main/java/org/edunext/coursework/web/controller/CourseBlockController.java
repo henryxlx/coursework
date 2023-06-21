@@ -64,7 +64,7 @@ public class CourseBlockController implements BlockRenderController {
             Set<Object> teacherIds = this.courseService.getTeacherIds(course.get("teacherIds"));
             users = this.userService.findUsersByIds(teacherIds);
         }
-        model.addAttribute("usersForHeader", users);
+        model.addAttribute("users", users);
 
         if (MapUtil.isEmpty(member)) {
             member.put("deadline", 0);

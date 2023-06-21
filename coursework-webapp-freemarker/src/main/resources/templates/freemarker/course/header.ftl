@@ -53,13 +53,16 @@
                 <#--<#include '/course/common/share-dropdown.ftl'>-->
             </div>
             <#if canExit??>
-              <#if member.joinedType?? && member.joinedType == 'course' && member.orderId??>
-              <a class="btn btn-default btn-sm " title="退出学习" type="button" href="#modal" data-toggle="modal" data-url="${ctx}/target/${course.id}/order/refund?targetType=course">
-              <i class="esicon esicon-exit"></i></a>
+              <#if member.joinedType?? && member.joinedType == 'course' && member.orderId?? && member.orderId gt 0>
+                <a class="btn btn-default btn-sm " title="退出学习" type="button" href="#modal" data-toggle="modal"
+                   data-url="${ctx}/target/${course.id}/order/refund?targetType=course">
+                  <i class="esicon esicon-exit"></i></a>
               <#else>
-              <a class="btn btn-default btn-sm course-exit-btn" id="exit-course-learning" title="退出学习" type="button"  href="javascript:;" data-url="${ctx}/course/${course.id}/exit"  data-goto="${ctx}/course/${course.id}">
-              <i class="esicon esicon-exit"></i></a>
-            </#if>
+                <a class="btn btn-default btn-sm course-exit-btn" id="exit-course-learning" title="退出学习" type="button"
+                   href="javascript:;" data-url="${ctx}/course/${course.id}/exit"
+                   data-goto="${ctx}/course/${course.id}">
+                  <i class="esicon esicon-exit"></i></a>
+              </#if>
             </#if>
             <#if canManage??>
             <a class="btn btn-default btn-sm " type="button" href="${ctx}/course/${course.id}/manage"  title="课程管理"  >

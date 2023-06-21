@@ -581,4 +581,21 @@ public class CourseController {
                 .add("number", member.get("learnedNum"))
                 .add("total", course.get("lessonNum")).toMap();
     }
+
+    @RequestMapping("/course/{id}/exit")
+    @ResponseBody
+    public Boolean exitAction(@PathVariable Integer id, HttpServletRequest request) {
+        AppUser user = AppUser.getCurrentUser(request);
+        Map<String, Object> member = this.courseService.tryTakeCourse(id, user);
+        if (MapUtil.isEmpty(member)) {
+            throw new RuntimeGoingException("您不是课程的学员。");
+        }
+
+        if ("course".equals(member.get("joinedType")) && ValueParser.parseInt(member.get("orderId")) > 0) {
+            throw new RuntimeGoingException("有关联的订单，不能直接退出学习。");
+        }
+
+        this.courseService.removeStudent(user, id, user.getId());
+        return Boolean.TRUE;
+    }
 }

@@ -39,7 +39,7 @@
                 </#if>
 
                 <@renderController path='/course/progressBlock' params={'course':course, 'courseId': course.id, 'userId':appUser.id}/>
-                <@renderController path='/course/announcementBlock' params={'course': course}/>
+                <@renderController path='/course/announcementBlock' params={'courseId': course.id, 'userId':appUser.id}/>
                 <@renderController path='/course/thread/questionBlock' params={'course': course}/>
 
 

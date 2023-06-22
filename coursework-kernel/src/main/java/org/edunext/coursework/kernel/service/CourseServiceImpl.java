@@ -44,6 +44,7 @@ public class CourseServiceImpl implements CourseService {
     private final CourseDraftDao courseDraftDao;
     private final CourseMemberDao memberDao;
     private final CourseNoteDao noteDao;
+    private final CourseAnnouncementDao announcementDao;
     private final FavoriteDao favoriteDao;
     private final AppMessageService messageService;
     private final AppTagService tagService;
@@ -57,7 +58,8 @@ public class CourseServiceImpl implements CourseService {
                              CourseDao courseDao, LessonDao lessonDao, LessonLearnDao lessonLearnDao,
                              LessonViewDao lessonViewDao, CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
-                             CourseNoteDao noteDao, FavoriteDao favoriteDao,
+                             CourseNoteDao noteDao, CourseAnnouncementDao announcementDao,
+                             FavoriteDao favoriteDao,
                              AppMessageService messageService, AppTagService tagService,
                              AppSettingService settingService, AppLogService logService) {
 
@@ -73,6 +75,7 @@ public class CourseServiceImpl implements CourseService {
         this.courseDraftDao = courseDraftDao;
         this.memberDao = memberDao;
         this.noteDao = noteDao;
+        this.announcementDao = announcementDao;
         this.favoriteDao = favoriteDao;
         this.messageService = messageService;
         this.tagService = tagService;
@@ -1708,8 +1711,53 @@ public class CourseServiceImpl implements CourseService {
                 .add("content", fields.get("content"))
                 .add("userId", currentUser.getId())
                 .add("createdTime", System.currentTimeMillis()).toMap();
-//:TODO        return this.announcementDao.addAnnouncement(announcement);
+        return this.announcementDao.addAnnouncement(announcement);
+    }
+
+    @Override
+    public List<Map<String, Object>> findAnnouncements(Object courseId, Integer start, Integer limit) {
+        return this.announcementDao.findAnnouncementsByCourseId(courseId, start, limit);
+    }
+
+    @Override
+    public void deleteCourseAnnouncement(Integer courseId, Integer id) {
+        Map<String, Object> announcement = this.getCourseAnnouncement(courseId, id);
+        if (MapUtil.isEmpty(announcement)) {
+            throw new RuntimeGoingException("课程公告#" + id + "不存在。");
+        }
+        this.announcementDao.deleteAnnouncement(id);
+    }
+
+    @Override
+    public Map<String, Object> getCourseAnnouncement(Integer courseId, Integer id) {
+        Map<String, Object> announcement = this.announcementDao.getAnnouncement(id);
+        if (MapUtil.isEmpty(announcement) || ValueParser.parseInt(announcement.get("courseId")) != courseId) {
+            return null;
+        }
         return announcement;
+    }
+
+    @Override
+    public void updateAnnouncement(Integer courseId, Integer id, Map<String, Object> fields) {
+        Map<String, Object> announcement = this.getCourseAnnouncement(courseId, id);
+        if (MapUtil.isEmpty(announcement)) {
+            throw new RuntimeGoingException("课程公告#" + id + "不存在。");
+        }
+
+        if (!ArrayToolkit.required(fields, "content")) {
+            throw new RuntimeGoingException("课程公告数据不正确，更新失败。");
+        }
+
+        if (EasyStringUtil.isNotBlank(fields.get("content"))) {
+            fields.put("content", EasyStringUtil.purifyHtml(fields.get("content")));
+        }
+
+        this.announcementDao.updateAnnouncement(id, FastHashMap.build(1)
+                .add("content", fields.get("content")).toMap());
+    }
+
+    public List<Map<String, Object>> findAnnouncementsByCourseIds(Set<Object> ids, Integer start, Integer limit) {
+        return this.announcementDao.findAnnouncementsByCourseIds(ids, start, limit);
     }
 
     private String getWelcomeMessageBody(AppUser user, Map<String, Object> course) {

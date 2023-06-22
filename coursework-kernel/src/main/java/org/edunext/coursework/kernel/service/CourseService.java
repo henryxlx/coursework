@@ -263,4 +263,12 @@ public interface CourseService {
     Integer getCourseStudentCount(Integer courseId);
 
     Map<String, Object> createAnnouncement(Integer courseId, Map<String, Object> fields, AppUser currentUser);
+
+    List<Map<String, Object>> findAnnouncements(Object courseId, Integer start, Integer limit);
+
+    void deleteCourseAnnouncement(Integer courseId, Integer id);
+
+    Map<String, Object> getCourseAnnouncement(Integer courseId, Integer id);
+
+    void updateAnnouncement(Integer courseId, Integer id, Map<String, Object> fields);
 }

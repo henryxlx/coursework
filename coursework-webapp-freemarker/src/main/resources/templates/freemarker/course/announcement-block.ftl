@@ -14,36 +14,31 @@
                     <li class="media">
                         <div class="media-body">
                             <p>
-                                {% if canTake %}
-                                <a id="course-buy-btn" href="#modal" data-toggle="modal"
-                                   data-url="{{ path('course_announcement_show', {courseId:course.id, id:announcement.id}) }}">{{ announcement.content | plain_text
-                                    (40) | default
-                                    ('<span class="text-warning">(请点击查看)</span>')|raw }}</a>
-                                {% else %}
-                                <a id="course-buy-btn"
-                               {% if setting("course.buy_fill_userinfo")|default(false) %}
-                            href="#modal"
-                            data-toggle="modal"
-                            data-url="{{ path('course_buy', {id: course.id, targetType: 'course'}) }}"
-                            {% else %}
-                            href="{{ path('order_show', {targetId: course.id, targetType: 'course'}) }}"
-                            {% endif %}
-                            >{{ announcement.content | plain_text
-                            (40) | default
-                            ('<span class="text-warning">(请点击查看)</span>')|raw }}</a>
-                            {% endif %}
-                        </p>
-                        <div class="clearfix">
-                            <span class="pull-right text-muted text-sm">{{ announcement.createdTime | date
-                                ('Y-m-d H:i') }}</span>
-                            <a class="text-muted text-sm mrm action" href="javascript:;" data-target="#modal"
-                               data-toggle="modal"
-                               data-url="{{ path('course_announcement_update',{courseId:course.id, id:announcement.id}) }}"><span
-                                        class="glyphicon glyphicon-pencil"></span> 修改</a>
-                            <a class="text-muted text-sm action" href="#" data-role="delete"
-                               data-url="{{ path('course_announcement_delete',{courseId:course.id, id:announcement.id}) }}"><span
-                                        class="glyphicon glyphicon-trash"></span> 删除</a>
-                        </div>
+                                <#if canTake?? && canTake>
+                                    <a id="course-buy-btn" href="#modal" data-toggle="modal"
+                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${plain_text(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                <#else>
+                                    <a id="course-buy-btn"
+                                            <#if setting("course.buy_fill_userinfo", "0") == "1">
+                                                href="#modal"
+                                                data-toggle="modal"
+                                                data-url="${ctx}/course/${course.id}/buy?targetType=course"
+                                            <#else>
+                                                href="${ctx}/order/show?targetId=${course.id}&targetType=course"
+                                            </#if>
+                                    >${plain_text(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                </#if>
+                            </p>
+                            <div class="clearfix">
+                                <span class="pull-right text-muted text-sm">${announcement.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm')}</span>
+                                <a class="text-muted text-sm mrm action" href="javascript:;" data-target="#modal"
+                                   data-toggle="modal"
+                                   data-url="${ctx}/course/${course.id}/announcement/${announcement.id}/update"><span
+                                            class="glyphicon glyphicon-pencil"></span> 修改</a>
+                                <a class="text-muted text-sm action" href="#" data-role="delete"
+                                   data-url="${ctx}/course/${course.id}/announcement/${announcement.id}/delete"><span
+                                            class="glyphicon glyphicon-trash"></span> 删除</a>
+                            </div>
                         </div>
                     </li>
                 <#else>
@@ -65,24 +60,20 @@
                     <li class="media">
                         <div class="media-body">
                             <p>
-                                {% if canTake %}
-                                <a id="course-buy-btn" href="#modal" data-toggle="modal"
-                                   data-url="{{ path('course_announcement_show', {courseId:course.id, id:announcement.id}) }}">{{ announcement.content | plain_text
-                                    (40) | default
-                                    ('<span class="text-warning">(请点击查看)</span>')|raw }}</a>
-                                {% else %}
-                                <a id="course-buy-btn"
-                               {% if setting("course.buy_fill_userinfo")|default(false) %}
-                            href="#modal"
-                            data-toggle="modal"
-                            data-url="{{ path('course_buy', {id: course.id, targetType: 'course'}) }}"
-                                {% else %}
-                                href="{{ path('order_show', {targetId: course.id, targetType: 'course'}) }}"
-                                {% endif %}
-                                >{{ announcement.content | plain_text
-                                (40) | default
-                                ('<span class="text-warning">(请点击查看)</span>')|raw }}</a>
-                                {% endif %}
+                                <#if canTake?? && canTake>
+                                    <a id="course-buy-btn" href="#modal" data-toggle="modal"
+                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${plain_text(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                <#else>
+                                    <a id="course-buy-btn"
+                                            <#if setting("course.buy_fill_userinfo", "0") == "1">
+                                                href="#modal"
+                                                data-toggle="modal"
+                                                data-url="${ctx}/course/${course.id}/buy?targetType=course"
+                                            <#else>
+                                                href="${ctx}/order/show?targetId=${course.id}&targetType=course"
+                                            </#if>
+                                    >${plain_text(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                </#if>
                             </p>
                         </div>
                     </li>

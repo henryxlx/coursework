@@ -165,10 +165,10 @@ public class CourseBlockController implements BlockRenderController {
 
     @RequestMapping("/course/announcementBlock")
     @BlockRenderMethod
-    public String announcementBlockAction(Integer courseId, Model model) {
-//        model.addAttribute("announcements", this.courseService.findAnnouncements(courseId, 0, 10));
-//        model.addAttribute("canManage", this.courseService.canManageCourse(courseId));
-//        model.addAttribute("canTake", this.courseService.canTakeCourse(course));
+    public String announcementBlockAction(Integer courseId, Integer userId, Model model) {
+        model.addAttribute("announcements", this.courseService.findAnnouncements(courseId, 0, 10));
+        model.addAttribute("canManage", this.courseService.canManageCourse(courseId, userId));
+        model.addAttribute("canTake", this.courseService.canTakeCourse(courseId, userId));
         return "/course/announcement-block";
     }
 

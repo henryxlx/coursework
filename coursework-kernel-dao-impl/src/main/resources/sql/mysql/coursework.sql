@@ -46,10 +46,25 @@ CREATE TABLE `cw_course` (
   `useInClassroom` ENUM('single','more') NOT NULL DEFAULT 'single' COMMENT '课程能否用于多个班级' , 
   `singleBuy` INT(10) UNSIGNED NOT NULL DEFAULT '1' COMMENT '加入班级后课程能否单独购买' ,
   `createdTime` bigint unsigned NOT NULL COMMENT '课程创建时间',
-  `freeStartTime` bigint NOT NULL DEFAULT '0',
-  `freeEndTime` bigint NOT NULL DEFAULT '0',
+  `freeStartTime` bigint unsigned NOT NULL DEFAULT '0',
+  `freeEndTime` bigint unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_course_announcement`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_announcement`;
+CREATE TABLE `cw_course_announcement`
+(
+    `id`          int(10) NOT NULL AUTO_INCREMENT COMMENT '课程公告ID',
+    `userId`      int(10) NOT NULL COMMENT '公告发布人ID',
+    `courseId`    int(10) NOT NULL COMMENT '公告所属课程ID',
+    `content`     text NOT NULL COMMENT '公告内容',
+    `createdTime` bigint unsigned NOT NULL COMMENT '公告创建时间',
+    `updatedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '公告最后更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ------------------------------------------------------------
 -- Table structure for `cw_course_chapter`

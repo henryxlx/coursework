@@ -4,4 +4,5 @@ dependencies {
     implementation project(':webfast-module-bigapp')
     implementation('com.fasterxml.jackson.core:jackson-databind')
     implementation("cn.hutool:hutool-all:${jarVersion['hutool']}")
+    implementation('org.springframework.boot:spring-boot-starter-web')
 }

@@ -1,5 +1,14 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.4.8: @2023-06-22
+* 完成课程学习顶部区域的成员学习进度显示
+* 完成课程学习控制台顶部工具栏退出功能
+* 完成前台课程管理顶部的课程发布功能
+* Shiro允许URL路径files/course和files/user下的资源可公开访问
+* 数据库脚本文件coursework.sql添加课程公告数据表cw_course_announcement
+* 完成课程学习控制台中课程公告的显示与管理功能
+* 实现后台管理班级菜单下的页面显示
+
 0.4.7: @2023-06-21
 * 数据库脚本文件coursework.sql添加课程收藏数据表cw_course_favorite
 * 完成课程收藏的功能，对后台收藏数据库访问全部实现
@@ -281,7 +290,7 @@ ChangeLog for CourseWork Development
 0.0.5: @2021-11-20
 * 实现在Freemarker页面调用Controller的方法renderController.execute()，这个方法使用的机制会造成request和session问题，后续需要进一步改进
   renderController方法不允许在Freemarker页面暴露HttpServletRequest，否则会发生错误，因此必须将SpringBoot中有关于Freemarker的配置
-  参数spring.freemarker.expose-request-attributes设置为false，默认不设置的情况下就是false0.0.4: @2021-11-20
+  参数spring.freemarker.expose-request-attributes设置为false，默认不设置的情况下就是false
 
 0.0.4: @2021-11-20
 * 完成前台通知与私信页面，后台小组管理页面的显示功能

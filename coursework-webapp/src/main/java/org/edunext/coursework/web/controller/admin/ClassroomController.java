@@ -13,4 +13,9 @@ public class ClassroomController {
     public String indexAction() {
         return "/admin/classroom/index";
     }
+
+    @RequestMapping("/admin/classroom/setting")
+    public String settingAction() {
+        return "/admin/classroom/set";
+    }
 }

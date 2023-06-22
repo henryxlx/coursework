@@ -20,15 +20,19 @@
 
             <a href="${ctx}/admin/course/note" class="list-group-item <#if menu! == 'note'>active</#if>">笔记管理</a>
 
+            <a href="${ctx}/admin/course/announcement"
+               class="list-group-item <#if menu! == 'announcement'>active</#if>">公告管理</a>
+
             <a href="${ctx}/admin/category?group=course" class="list-group-item <#if menu! == 'category'>active</#if>">分类管理</a>
 
             <a href="${ctx}/admin/tag" class="list-group-item <#if menu! == 'tag'>active</#if>">标签管理</a>
 
-        <a href="${ctx}/admin/course/disk" class="list-group-item <#if menu! == 'course-disk'>active</#if>" style="display:none;">文件管理</a>
+            <a href="${ctx}/admin/course/disk" class="list-group-item <#if menu! == 'course-disk'>active</#if>"
+               style="display:none;">文件管理</a>
 
-        <a href="${ctx}/admin/course/data" class="list-group-item <#if menu! == 'course-data'>active</#if>">数据管理</a>
+            <a href="${ctx}/admin/course/data" class="list-group-item <#if menu! == 'course-data'>active</#if>">数据管理</a>
 
-        <a href="${ctx}/admin/teacher" class="list-group-item <#if menu! == 'teacher'>active</#if>">教师管理</a>
+            <a href="${ctx}/admin/teacher" class="list-group-item <#if menu! == 'teacher'>active</#if>">教师管理</a>
 
     </div>
     </#if>

@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.dao;
 
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,4 +19,8 @@ public interface CourseAnnouncementDao {
     int deleteAnnouncement(Object id);
 
     int updateAnnouncement(Object id, Map<String, Object> fields);
+
+    Integer searchAnnouncementCount(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchAnnouncements(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 }

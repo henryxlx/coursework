@@ -12,6 +12,8 @@
 
                 <#--                <a href="${ctx}/admin/classroom/thread" class="list-group-item <#if menu == 'thread'>active</#if>">班级讨论区</a>-->
 
+                <a href="${ctx}/admin/category?group=classroom&layout=/admin/classroom/layout.ftl"
+                   class="list-group-item <#if menu == 'category'>active</#if>">班级分类</a>
                 <a href="${ctx}/admin/classroom/setting" class="list-group-item <#if menu == 'setting'>active</#if>">班级设置</a>
 
             </div>

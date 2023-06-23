@@ -39,7 +39,7 @@ public class LocalUploadFileHandler implements UploadFileHandlerAware {
     }
 
     @Override
-    public Map<String, Object> addFile(String targetType, Integer targetId, Map fileInfo, MultipartFile originalFile) {
+    public Map<String, Object> addFile(String targetType, Integer targetId, Map<String, Object> fileInfo, MultipartFile originalFile) {
         String fileExtensionName = FileToolkit.getFileExtension(originalFile.getOriginalFilename());
         boolean errors = FileToolkit.validateFileExtension(fileExtensionName);
         if (errors) {
@@ -95,7 +95,7 @@ public class LocalUploadFileHandler implements UploadFileHandlerAware {
     @Override
     public void deleteFile(Map<String, Object> file, boolean deleteSubFile) {
         String filename = this.getFileFullPath(file);
-        FileToolkit.deleteFile(filename);
+        FileToolkit.delete(filename);
     }
 
     private String getFileFullPath(Map<String, Object> file) {

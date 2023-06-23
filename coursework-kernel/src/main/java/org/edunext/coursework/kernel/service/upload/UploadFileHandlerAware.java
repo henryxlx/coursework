@@ -11,7 +11,7 @@ public interface UploadFileHandlerAware {
 
     Map<String, Object> makeUploadParams(Map<String, Object> params);
 
-    Map<String, Object> addFile(String targetType, Integer targetId, Map fileInfo, MultipartFile originalFile);
+    Map<String, Object> addFile(String targetType, Integer targetId, Map<String, Object> fileInfo, MultipartFile originalFile);
 
     Map<String, Object> getFile(Map<String, Object> file);
 

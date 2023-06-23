@@ -110,7 +110,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                 createdUserIds = EasyStringUtil.implode(",", ArrayToolkit.column(myFriends, "sourceUserId"));
             } else {
                 //Browsing shared files, but nobody is sharing with current user.
-                return new ArrayList(0);
+                return new ArrayList<>(0);
             }
 
         } else if (EasyStringUtil.isNotBlank(conditions.get("currentUserId"))) {
@@ -168,7 +168,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         }
 
         if (EasyStringUtil.isNotBlank(file.get("convertParams"))) {
-            Map<String, Object> convertParamsMap = JsonUtil.jsonDecode(file.get("convertParams"), Map.class);
+            Map<String, Object> convertParamsMap = JsonUtil.jsonDecodeMap(file.get("convertParams"));
             if ("HLSEncryptedVideo".equals(convertParamsMap.get("convertor")) ||
                     "ppt".equals(convertParamsMap.get("convertor"))) {
 

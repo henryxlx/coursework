@@ -1,5 +1,17 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.4.9: @2023-06-23
+* 完成后台课程管理中公告管理内容显示与删除及批量删除功能
+* 在coursework-kernel核心模块添加spring-web支持，主要是使用MultipartFile类型在服务中上传文件
+* 初步实现课程管理中课时文件和课程资料的文件上传功能
+  定义文件上传服务的接口UploadFileService，调用包括文件上传多个实现类在Spring上下文环境中定义的Bean名字的文件上传处理（主要是local,cloud和net）
+* 重新定义上传文件时执行的操作接口UploadFileHandlerAware，之后的本地、云和网络实现都基于此接口
+  重命名文件上传操作的伪实现DummyUploadHandler，实现新定义的UploadFileHandlerAware接口，这是一种防御性编程，
+  主要是防止在找不到文件上传服务具体实现类时使用此伪类，防止程序崩溃
+  重命名文件上传操作的本地文件系统实现LocalUploadHandler，同时实现新定义的UploadFileHandlerAware接口
+  重新定义文件上传类型的枚举型为单独的使用的类型UploadFileHandlerTypeEnum
+* 完成前台课程管理中文件管理的文件上传、显示和删除功能
+
 0.4.8: @2023-06-22
 * 完成课程学习顶部区域的成员学习进度显示
 * 完成课程学习控制台顶部工具栏退出功能

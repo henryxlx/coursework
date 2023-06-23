@@ -11,4 +11,6 @@ public interface CourseMaterialService {
     Integer getMaterialCount(Integer courseId);
 
     List<Map<String, Object>> findCourseMaterials(Integer courseId, Integer start, Integer limit);
+
+    Integer getMaterialCountByFileId(Object fileId);
 }

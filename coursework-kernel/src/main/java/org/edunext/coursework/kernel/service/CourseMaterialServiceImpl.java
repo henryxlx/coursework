@@ -11,6 +11,7 @@ import java.util.Map;
  */
 @Service
 public class CourseMaterialServiceImpl implements CourseMaterialService {
+
     @Override
     public Integer getMaterialCount(Integer courseId) {
         return 0;
@@ -19,5 +20,11 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
     @Override
     public List<Map<String, Object>> findCourseMaterials(Integer courseId, Integer start, Integer limit) {
         return new ArrayList<>(0);
+    }
+
+    @Override
+    public Integer getMaterialCountByFileId(Object fileId) {
+//        return this.materialDao.getMaterialCountByFileId(fileId);
+        return 0;
     }
 }

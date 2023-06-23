@@ -1,7 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
-import org.edunext.coursework.kernel.service.upload.UploadFileHandlerAware;
-import org.edunext.coursework.kernel.service.upload.UploadFileHandlerTypeEnum;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -11,11 +10,13 @@ import java.util.Map;
  */
 public interface UploadFileService {
 
-    default UploadFileHandlerAware getImpl() {
-        return getImpl(UploadFileHandlerTypeEnum.LOCAL);
-    }
-
-    UploadFileHandlerAware getImpl(UploadFileHandlerTypeEnum uploadFileHandlerType);
+    int searchFileCount(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchFiles(Map<String, Object> conditions, String sort, Integer start, Integer limit);
+
+
+    Map<String, Object> addFile(String targetType, Integer targetId, Map<String, Object> fileInfo,
+                                String uploadFileHandlerType, MultipartFile originalFile);
+
+    Map<String, Object> makeUploadParams(Map<String, Object> params);
 }

@@ -37,7 +37,9 @@ public class UploadFileController {
 
     @RequestMapping("/uploadfile/upload")
     @ResponseBody
-    public Map<String, Object> uploadAction(MultipartFile file, String[] targetType, Integer targetId, AppUser appUser) {
+    public Map<String, Object> uploadAction(MultipartFile file, String[] targetType, Integer targetId,
+                                            HttpServletRequest request) {
+
 //        $token = $request->request->get('token');
 //        $token = $this->getUserService()->getToken('fileupload', $token);
 //        if (empty($token)) {
@@ -49,8 +51,8 @@ public class UploadFileController {
 //            throw $this->createAccessDeniedException('上传TOKEN非法。');
 //        }
 
-        return this.uploadFileService.getImpl().addFile(targetType[0], targetId,
-                AppUser.putCurrentUser(new HashMap<>(1), appUser), file);
+        return this.uploadFileService.addFile(targetType[0], targetId,
+                AppUser.putCurrentUser(new HashMap<>(1), request), "local", file);
     }
 
     @RequestMapping("/uploadfile/browser")
@@ -89,6 +91,6 @@ public class UploadFileController {
             params.put("convertCallback", null);
         }
 
-        return this.uploadFileService.getImpl().makeUploadParams(params);
+        return this.uploadFileService.makeUploadParams(params);
     }
 }

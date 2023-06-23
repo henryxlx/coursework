@@ -89,8 +89,6 @@ public class UploadFileController {
             params.put("convertCallback", null);
         }
 
-        params.put("storage", "local");
-        params.put("url", params.get("defaultUploadUrl"));
-        return this.uploadFileService.makeUploadParams(params);
+        return this.uploadFileService.getImpl().makeUploadParams(params);
     }
 }

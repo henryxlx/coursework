@@ -197,11 +197,12 @@ define(function(require, exports, module) {
                 btnData = $btn.data();
 
             var uploader = new plupload.Uploader({
-                runtimes : 'flash',
+                runtimes: 'html5',
                 max_file_size: '2gb',
                 multi_selection: false,
-                browse_button : $btn.attr('id'),
-                url : btnData.uploadUrl
+                urlstream_upload: true,
+                browse_button: $btn.attr('id'),
+                url: btnData.uploadUrl
             });
 
             uploader.bind('FilesAdded', function(uploader, files) {
@@ -247,18 +248,18 @@ define(function(require, exports, module) {
                 if (btnData.callback) {
                     $.post(btnData.callback, response, function(response) {
                         var media = self._convertFileToMedia(response);
-                        self.trigger('change',  media);
+                        self.trigger('change', media);
                         Notify.success('文件上传成功！');
                     }, 'json');
                 } else {
                     var media = self._convertFileToMedia(response);
-                    self.trigger('change',  media);
+                    self.trigger('change', media);
                     Notify.success('文件上传成功！');
                 }
             });
 
-            uploader.bind('Error', function(uploader) {
-
+            uploader.bind('Error', function (uploader, errObject) {
+                console.log(errObject);
                 Notify.danger('文件上传失败，请重试！');
             });
 

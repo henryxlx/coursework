@@ -31,7 +31,7 @@
           <p><a target="_blank" href="${ctx}/user/${user.id}">${user.username}</a></p>
 
           <#if student.remark?? && canManage>
-            <p class="text-muted text-sm" title="${student.remark}">(${plain_text(student.remark, 8)})</p>
+            <p class="text-muted text-sm" title="${student.remark}">(${fastLib.plainText(student.remark, 8)})</p>
           </#if>
           <#if canManage??>
             <div class="progress" title="已学${progress.number}课时">

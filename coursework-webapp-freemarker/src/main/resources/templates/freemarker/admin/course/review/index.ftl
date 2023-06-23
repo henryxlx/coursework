@@ -58,7 +58,7 @@
                     <td>
                         <div class="short-long-text">
                             <div class="short-text">
-                                ${plain_text(review.content, 60)} <span class="text-muted trigger">(展开)</span>
+                                ${fastLib.plainText(review.content, 60)} <span class="text-muted trigger">(展开)</span>
                             </div>
                             <div class="long-text">${review.content!''?replace("\\r", "</br>")} <span
                                         class="text-muted trigger">(收起)</span></div>

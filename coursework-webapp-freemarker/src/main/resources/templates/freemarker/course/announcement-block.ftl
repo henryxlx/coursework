@@ -16,7 +16,7 @@
                             <p>
                                 <#if canTake?? && canTake>
                                     <a id="course-buy-btn" href="#modal" data-toggle="modal"
-                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${plain_text(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${fastLib.plainText(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
                                 <#else>
                                     <a id="course-buy-btn"
                                             <#if setting("course.buy_fill_userinfo", "0") == "1">
@@ -26,7 +26,7 @@
                                             <#else>
                                                 href="${ctx}/order/show?targetId=${course.id}&targetType=course"
                                             </#if>
-                                    >${plain_text(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                    >${fastLib.plainText(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
                                 </#if>
                             </p>
                             <div class="clearfix">
@@ -62,7 +62,7 @@
                             <p>
                                 <#if canTake?? && canTake>
                                     <a id="course-buy-btn" href="#modal" data-toggle="modal"
-                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${plain_text(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                       data-url="${ctx}/course/${course.id}/announcement/${announcement.id}">${fastLib.plainText(announcement.content!, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
                                 <#else>
                                     <a id="course-buy-btn"
                                             <#if setting("course.buy_fill_userinfo", "0") == "1">
@@ -72,7 +72,7 @@
                                             <#else>
                                                 href="${ctx}/order/show?targetId=${course.id}&targetType=course"
                                             </#if>
-                                    >${plain_text(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
+                                    >${fastLib.plainText(announcement.content, 40)!'<span class="text-warning">(请点击查看)</span>'}</a>
                                 </#if>
                             </p>
                         </div>

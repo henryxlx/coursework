@@ -175,6 +175,27 @@ CREATE TABLE `cw_course_lesson_learn`
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- ------------------------------------------------------------
+-- Table structure for `cw_course_material`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_course_material`;
+CREATE TABLE `cw_course_material`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '课程资料ID',
+    `courseId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '资料所属课程ID',
+    `lessonId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '资料所属课时ID',
+    `title`       varchar(1024) NOT NULL COMMENT '资料标题',
+    `description` text COMMENT '资料描述',
+    `link`        varchar(1024) NOT NULL DEFAULT '' COMMENT '外部链接地址',
+    `fileId`      int(10) unsigned NOT NULL COMMENT '资料文件ID',
+    `fileUri`     varchar(255)  NOT NULL DEFAULT '' COMMENT '资料文件URI',
+    `fileMime`    varchar(255)  NOT NULL DEFAULT '' COMMENT '资料文件MIME',
+    `fileSize`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '资料文件大小',
+    `userId`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '资料创建人ID',
+    `createdTime` bigint unsigned NOT NULL COMMENT '资料创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
 -- Table structure for `cw_course_member`
 -- ------------------------------------------------------------
 DROP TABLE IF EXISTS `cw_course_member`;

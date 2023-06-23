@@ -5,34 +5,23 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastAppConst;
-import org.edunext.coursework.kernel.service.UploadFileService;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
  * @author xulixin
  */
-@Service("localUploadFileServiceImpl")
-public class LocalUploadFileServiceImpl implements UploadFileService {
+@Service("localUploadFileHandler")
+public class LocalUploadFileHandler implements UploadFileHandlerAware {
 
-    private final ApplicationContext applicationContext;
     private final FastAppConst appConst;
 
-    public LocalUploadFileServiceImpl(ApplicationContext applicationContext, FastAppConst appConst) {
-        this.applicationContext = applicationContext;
+    public LocalUploadFileHandler(FastAppConst appConst) {
         this.appConst = appConst;
-    }
-
-    @Override
-    public ApplicationContext getApplicationContext() {
-        return this.applicationContext;
     }
 
     @Override
@@ -56,7 +45,7 @@ public class LocalUploadFileServiceImpl implements UploadFileService {
             throw new RuntimeException("该文件格式，不允许上传。");
         }
 
-        Map<String, Object> uploadFile = new HashMap<>();
+        Map<String, Object> uploadFile = new HashMap<>(16);
 
         uploadFile.put("storage", "local");
         uploadFile.put("targetId", targetId);
@@ -103,10 +92,5 @@ public class LocalUploadFileServiceImpl implements UploadFileService {
             baseDirectory = appConst.getDiskLocalDirectory();
         }
         return baseDirectory + "/" + targetType + "/" + targetId;
-    }
-
-    @Override
-    public List<Map<String, Object>> searchFiles(Map<String, Object> conditions, String sort, Integer start, Integer limit) {
-        return new ArrayList<>(0);
     }
 }

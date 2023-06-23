@@ -19,4 +19,14 @@ public class DummyUploadHandler implements UploadFileHandlerAware {
     public Map<String, Object> addFile(String targetType, Integer targetId, Map fileInfo, MultipartFile originalFile) {
         return new HashMap<>(0);
     }
+
+    @Override
+    public Map<String, Object> getFile(Map<String, Object> file) {
+        return new HashMap<>(0);
+    }
+
+    @Override
+    public void deleteFile(Map<String, Object> file, boolean deleteSubFile) {
+
+    }
 }

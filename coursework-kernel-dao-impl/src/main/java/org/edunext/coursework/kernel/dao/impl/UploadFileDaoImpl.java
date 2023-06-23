@@ -35,9 +35,26 @@ public class UploadFileDaoImpl extends FastJdbcDaoSupport implements UploadFileD
         return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
     }
 
+    @Override
     public Map<String, Object> getFile(Object id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
         return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public int deleteFile(Object id) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        return getJdbcTemplate().update(sql, id);
+    }
+
+    @Override
+    public int findFilesCountByEtag(Object etag) {
+        if (EasyStringUtil.isBlank(etag)) {
+            return 0;
+        }
+
+        String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE etag = ? ";
+        return getJdbcTemplate().queryForObject(sql, Integer.class, etag);
     }
 
     @Override

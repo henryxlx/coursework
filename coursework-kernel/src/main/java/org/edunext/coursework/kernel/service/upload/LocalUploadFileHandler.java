@@ -8,6 +8,7 @@ import com.jetwinner.webfast.kernel.FastAppConst;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,6 +83,38 @@ public class LocalUploadFileHandler implements UploadFileHandlerAware {
         }
 
         return uploadFile;
+    }
+
+    @Override
+    public Map<String, Object> getFile(Map<String, Object> file) {
+        file.put("fullpath", this.getFileFullPath(file));
+        file.put("webpath", this.getFileWebPath(file));
+        return file;
+    }
+
+    @Override
+    public void deleteFile(Map<String, Object> file, boolean deleteSubFile) {
+        String filename = this.getFileFullPath(file);
+        FileToolkit.deleteFile(filename);
+    }
+
+    private String getFileFullPath(Map<String, Object> file) {
+        String baseDirectory;
+        if (ValueParser.parseInt(file.get("isPublic")) > 0) {
+            baseDirectory = appConst.getUploadPublicDirectory();
+        } else {
+            baseDirectory = appConst.getDiskLocalDirectory();
+        }
+
+        return baseDirectory + File.separator + file.get("hashId");
+    }
+
+    private String getFileWebPath(Map<String, Object> file) {
+        if (EasyStringUtil.isBlank(file.get("isPublic"))) {
+            return "";
+        }
+
+        return appConst.getUploadPublicUrlPath() + "/" + file.get("hashId");
     }
 
     private String getFilePath(String targetType, Integer targetId, Object isPublic) {

@@ -2,6 +2,8 @@ package org.edunext.coursework.kernel.service;
 
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.EasyStringUtil;
+import com.jetwinner.util.JsonUtil;
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.UploadFileDao;
 import org.edunext.coursework.kernel.dao.UploadFileShareDao;
@@ -15,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -134,7 +137,56 @@ public class UploadFileServiceImpl implements UploadFileService {
 
     @Override
     public Map<String, Object> makeUploadParams(Map<String, Object> params) {
-        return getUploadFileHandler("local").makeUploadParams(params);
+        return getUploadFileHandler().makeUploadParams(params);
+    }
+
+    @Override
+    public void deleteFiles(Set<Integer> fileIds) {
+        fileIds.forEach(id -> this.deleteFile(id));
+    }
+
+    public Map<String, Object> getFile(Object id) {
+        Map<String, Object> file = this.uploadFileDao.getFile(id);
+        if (MapUtil.isEmpty(file)) {
+            return null;
+        }
+        return this.getUploadFileHandler().getFile(file);
+    }
+
+    public void deleteFile(Integer id) {
+        Map<String, Object> file = this.getFile(id);
+        if (MapUtil.isEmpty(file)) {
+            throw new RuntimeException("文件(#" + id + ")不存在，删除失败");
+        }
+
+        boolean deleteSubFile = true;
+        if (EasyStringUtil.isNotBlank(file.get("etag"))) {
+            int etagCount = this.uploadFileDao.findFilesCountByEtag(file.get("etag"));
+            if (etagCount > 1) {
+                deleteSubFile = false;
+            }
+        }
+
+        if (EasyStringUtil.isNotBlank(file.get("convertParams"))) {
+            Map<String, Object> convertParamsMap = JsonUtil.jsonDecode(file.get("convertParams"), Map.class);
+            if ("HLSEncryptedVideo".equals(convertParamsMap.get("convertor")) ||
+                    "ppt".equals(convertParamsMap.get("convertor"))) {
+
+                deleteSubFile = true;
+            }
+        }
+
+        this.getFileImplementorByFile(file).deleteFile(file, deleteSubFile);
+
+        this.uploadFileDao.deleteFile(id);
+    }
+
+    private UploadFileHandlerAware getFileImplementorByFile(Map<String, Object> file) {
+        return this.getUploadFileHandler(String.valueOf(file.get("storage")));
+    }
+
+    private UploadFileHandlerAware getUploadFileHandler() {
+        return getUploadFileHandler(UploadFileHandlerTypeEnum.LOCAL);
     }
 
     private UploadFileHandlerAware getUploadFileHandler(String type) {

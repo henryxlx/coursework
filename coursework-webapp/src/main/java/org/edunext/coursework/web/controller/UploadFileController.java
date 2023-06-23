@@ -4,20 +4,22 @@ import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.EasyWebFormEditor;
 import com.jetwinner.util.FastHashMap;
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
+import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.UploadFileService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author xulixin
@@ -27,12 +29,15 @@ public class UploadFileController {
 
     private final UserAccessControlService userAccessControlService;
     private final UploadFileService uploadFileService;
+    private final CourseService courseService;
 
     public UploadFileController(UserAccessControlService userAccessControlService,
-                                UploadFileService uploadFileService) {
+                                UploadFileService uploadFileService,
+                                CourseService courseService) {
 
         this.userAccessControlService = userAccessControlService;
         this.uploadFileService = uploadFileService;
+        this.courseService = courseService;
     }
 
     @RequestMapping("/uploadfile/upload")
@@ -66,8 +71,7 @@ public class UploadFileController {
         Map<String, Object> conditions = ParamMap.toQueryAllMap(request);
         conditions.put("currentUserId", user.getId());
 
-        List<Map<String, Object>> files = this.uploadFileService.searchFiles(conditions, "latestUpdated", 0, 10000);
-        return files;
+        return this.uploadFileService.searchFiles(conditions, "latestUpdated", 0, 10000);
     }
 
     @RequestMapping("/uploadfile/params")
@@ -92,5 +96,21 @@ public class UploadFileController {
         }
 
         return this.uploadFileService.makeUploadParams(params);
+    }
+
+    @RequestMapping("/course/{id}/delete/files/{type}")
+    @ResponseBody
+    public Boolean deleteCourseFilesAction(@PathVariable Integer id, @PathVariable String type,
+                                           HttpServletRequest request) {
+
+        if (id != null) {
+            this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        }
+
+        String[] ids = request.getParameterValues("ids[]");
+        Set<Integer> fileIds = Arrays.stream(ids).map(ValueParser::toInteger).collect(Collectors.toSet());
+        this.uploadFileService.deleteFiles(fileIds);
+
+        return Boolean.TRUE;
     }
 }

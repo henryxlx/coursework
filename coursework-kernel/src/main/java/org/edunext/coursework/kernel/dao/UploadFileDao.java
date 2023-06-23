@@ -15,4 +15,10 @@ public interface UploadFileDao {
     List<Map<String, Object>> searchFiles(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
     Map<String, Object> addFile(Map<String, Object> file);
+
+    Map<String, Object> getFile(Object id);
+
+    int deleteFile(Object id);
+
+    int findFilesCountByEtag(Object etag);
 }

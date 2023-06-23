@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -19,4 +20,6 @@ public interface UploadFileService {
                                 String uploadFileHandlerType, MultipartFile originalFile);
 
     Map<String, Object> makeUploadParams(Map<String, Object> params);
+
+    void deleteFiles(Set<Integer> fileIds);
 }

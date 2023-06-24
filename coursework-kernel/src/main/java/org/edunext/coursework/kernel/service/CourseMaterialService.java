@@ -19,4 +19,6 @@ public interface CourseMaterialService {
     Map<String, Object> uploadMaterial(Map<String, Object> material);
 
     void deleteMaterial(Integer courseId, Integer materialId);
+
+    Map<String, Object> getMaterial(Integer courseId, Integer materialId);
 }

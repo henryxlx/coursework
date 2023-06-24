@@ -122,4 +122,13 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
             this.courseService.resetLessonMaterialCount(materialLessonId, count);
         }
     }
+
+    @Override
+    public Map<String, Object> getMaterial(Integer courseId, Integer materialId) {
+        Map<String, Object> material = this.materialDao.getMaterial(materialId);
+        if (MapUtil.isEmpty(material) || ValueParser.parseInt(material.get("courseId")) != courseId) {
+            return null;
+        }
+        return material;
+    }
 }

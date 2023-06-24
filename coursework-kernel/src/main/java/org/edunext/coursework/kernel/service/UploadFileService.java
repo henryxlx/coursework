@@ -22,4 +22,10 @@ public interface UploadFileService {
     Map<String, Object> makeUploadParams(Map<String, Object> params);
 
     void deleteFiles(Set<Integer> fileIds);
+
+    Map<String, Object> getFile(Object fileId);
+
+    void increaseFileUsedCount(Integer... fileIds);
+
+    void decreaseFileUsedCount(Integer... fileIds);
 }

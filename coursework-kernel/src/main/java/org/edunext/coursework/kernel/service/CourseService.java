@@ -271,4 +271,8 @@ public interface CourseService {
     Map<String, Object> getCourseAnnouncement(Integer courseId, Integer id);
 
     void updateAnnouncement(Integer courseId, Integer id, Map<String, Object> fields);
+
+    void increaseLessonMaterialCount(Object lessonId);
+
+    void resetLessonMaterialCount(Integer lessonId, Integer count);
 }

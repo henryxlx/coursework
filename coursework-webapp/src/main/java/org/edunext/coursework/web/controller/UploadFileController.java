@@ -74,6 +74,17 @@ public class UploadFileController {
         return this.uploadFileService.searchFiles(conditions, "latestUpdated", 0, 10000);
     }
 
+    @RequestMapping("/uploadfile/browsers")
+    @ResponseBody
+    public List<Map<String, Object>> browsersAction(HttpServletRequest request) {
+        if (!userAccessControlService.hasRole("ROLE_TEACHER") && !userAccessControlService.isAdmin()) {
+            throw new RuntimeGoingException("您无权查看此页面！");
+        }
+
+        Map<String, Object> conditions = ParamMap.toQueryAllMap(request);
+        return this.uploadFileService.searchFiles(conditions, "latestUpdated", 0, 10000);
+    }
+
     @RequestMapping("/uploadfile/params")
     @ResponseBody
     public Map<String, Object> paramsAction(HttpServletRequest request) {

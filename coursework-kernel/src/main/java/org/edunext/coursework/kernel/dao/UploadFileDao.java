@@ -21,4 +21,6 @@ public interface UploadFileDao {
     int deleteFile(Object id);
 
     int findFilesCountByEtag(Object etag);
+
+    void updateFileUsedCount(Integer[] fileIds, Integer offset);
 }

@@ -1756,6 +1756,21 @@ public class CourseServiceImpl implements CourseService {
                 .add("content", fields.get("content")).toMap());
     }
 
+    @Override
+    public void increaseLessonMaterialCount(Object lessonId) {
+        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
+        int materialNum = ValueParser.parseInt(lesson.get("materialNum")) + 1;
+        lesson.put("materialNum", materialNum);
+        this.lessonDao.updateLesson(ValueParser.toInteger(lessonId), lesson);
+    }
+
+    @Override
+    public void resetLessonMaterialCount(Integer lessonId, Integer count) {
+        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
+        lesson.put("materialNum", count);
+        this.lessonDao.updateLesson(lessonId, lesson);
+    }
+
     public List<Map<String, Object>> findAnnouncementsByCourseIds(Set<Object> ids, Integer start, Integer limit) {
         return this.announcementDao.findAnnouncementsByCourseIds(ids, start, limit);
     }

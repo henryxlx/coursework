@@ -58,6 +58,18 @@ public class UploadFileDaoImpl extends FastJdbcDaoSupport implements UploadFileD
     }
 
     @Override
+    public void updateFileUsedCount(Integer[] fileIds, Integer offset) {
+        String marks = repeatQuestionMark(fileIds.length);
+        String sql = "UPDATE " + TABLE_NAME + " SET usedCount = usedCount + ? where id in (" + marks + ")";
+        Integer[] params = new Integer[fileIds.length + 1];
+        params[0] = offset;
+        for (int i = 0, len = fileIds.length; i < len; i++) {
+            params[1 + i] = fileIds[i];
+        }
+        getJdbcTemplate().update(sql, params);
+    }
+
+    @Override
     public Map<String, Object> addFile(Map<String, Object> file) {
         file.put("createdTime", System.currentTimeMillis());
         Integer id = insertMapReturnKey(TABLE_NAME, file).intValue();

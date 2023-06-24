@@ -145,12 +145,23 @@ public class UploadFileServiceImpl implements UploadFileService {
         fileIds.forEach(id -> this.deleteFile(id));
     }
 
-    public Map<String, Object> getFile(Object id) {
-        Map<String, Object> file = this.uploadFileDao.getFile(id);
+    @Override
+    public Map<String, Object> getFile(Object fileId) {
+        Map<String, Object> file = this.uploadFileDao.getFile(fileId);
         if (MapUtil.isEmpty(file)) {
             return null;
         }
-        return this.getUploadFileHandler().getFile(file);
+        return this.getFileImplementorByFile(file).getFile(file);
+    }
+
+    @Override
+    public void increaseFileUsedCount(Integer... fileIds) {
+        this.uploadFileDao.updateFileUsedCount(fileIds, 1);
+    }
+
+    @Override
+    public void decreaseFileUsedCount(Integer... fileIds) {
+        this.uploadFileDao.updateFileUsedCount(fileIds, -1);
     }
 
     public void deleteFile(Integer id) {

@@ -1,5 +1,13 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.5.0: @2023-06-24
+* 网页JQuery使用的上传组件plupload使用flash机制由于现在的浏览器都不支持改为html5的机制
+* 数据库脚本文件coursework.sql添加课程相关资料数据表cw_course_material
+* 完成前台课程管理中课时管理添加资料的上传、保存和删除功能
+* 将整型数组转换为Object[]压制编译可变参数的警告，对于方法调用jdbcTemplate.update(String, Object....)
+  对于varargs调用, 应使用Object, 对于非varargs调用, 应使用 Object[]
+* 完成课程学习中课程资料的下载功能
+
 0.4.9: @2023-06-23
 * 完成后台课程管理中公告管理内容显示与删除及批量删除功能
 * 在coursework-kernel核心模块添加spring-web支持，主要是使用MultipartFile类型在服务中上传文件

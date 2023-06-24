@@ -12,7 +12,7 @@
 <#if ['video', 'audio']?seq_contains(lesson.type) && setting('course.student_download_media', '0') != '0' && file??>
     <h5>课时音视频文件下载</h5>
     <div class="lesson-about">
-        <a href="{{ path('course_lesson_media_download', {courseId:lesson.courseId, lessonId:lesson.id}) }}">{file.size|file_size}
+        <a href="${ctx}/course/${lesson.courseId}/lesson/${lesson.id}/media_download">${fastLib.fileSize(file.size)}
             (点击下载)</a>
     </div>
 </#if>
@@ -25,16 +25,16 @@
         <#list materials! as material>
             <li class="media list-item">
                 <div class="media-body list-item-body">
-                    <#if material.link??>
+                    <#if material.link?? && material.link != ''>
                         <div class="title">
                             <a href="${material.link}" target="_blank">${material.title}</a>
                             <span class="glyphicon glyphicon-new-window text-muted text-sm" title="网络链接资料"></span>
                         </div>
                     <#else>
                         <div class="title">
-                            <a href="{{ path('course_material_download', {courseId:course.id, materialId:material.id}) }}"
+                            <a href="${ctx}/course/${course.id}/material/${material.id}/download"
                                target="_blank">${material.title}</a>
-                            <span class="meta">({{ material.fileSize | file_size }})</span>
+                            <span class="meta">(${fastLib.fileSize(material.fileSize)})</span>
                         </div>
                         <div class="summary">${material.description}</div>
                     </#if>

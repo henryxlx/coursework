@@ -32,3 +32,11 @@ data:
       document: <span class="glyphicon glyphicon-briefcase text-success">文档</span>
       image: <span class="glyphicon glyphicon-picture text-success">图片</span>
       other: <span class="glyphicon glyphicon-question-sign text-success">其他</span>
+    questionType:
+      single_choice: 单选题
+      choice: 多选题
+      uncertain_choice: 不定项选择题
+      fill: 填空题
+      determine: 判断题
+      essay: 问答题
+      material: 材料题

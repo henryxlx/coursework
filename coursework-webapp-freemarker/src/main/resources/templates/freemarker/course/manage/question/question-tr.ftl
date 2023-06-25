@@ -2,8 +2,8 @@
     <td><input value="${question.id}" type="checkbox" autocomplete="off" data-role="batch-item"></td>
     <td>
         <a href="#modal" data-toggle="modal"
-           data-url="${ctx}/course/${course.id}/manage/question/${question.id}/preview">${fastLib.plainText(question.stem, 40)}
-            |fill_question_stem_text</a>
+           data-url="${ctx}/course/${course.id}/manage/question/${question.id}/preview">
+            ${fastLib.plainText(fastLib.fillQuestionStemText(question.stem), 40)}</a>
         <div>
             <#assign target = targets[question.target]! />
             <#if (target.type)?? && target.type != 'course'>

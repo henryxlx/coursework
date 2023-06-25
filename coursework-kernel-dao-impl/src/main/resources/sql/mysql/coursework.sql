@@ -302,3 +302,60 @@ CREATE TABLE `cw_course_thread_post`
     `createdTime` bigint unsigned NOT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_question`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_question`;
+CREATE TABLE `cw_question`
+(
+    `id`    int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '题目ID',
+    `type`  varchar(64) NOT NULL DEFAULT '' COMMENT '题目类型',
+    `stem`  text COMMENT '题干',
+    `score` float(10, 1
+) unsigned NOT NULL DEFAULT '0.0' COMMENT '分数',
+    `answer` text COMMENT '参考答案',
+    `analysis` text COMMENT '解析',
+    `metas` text COMMENT '题目元信息',
+    `categoryId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '类别',
+    `difficulty` varchar(64) NOT NULL DEFAULT 'normal' COMMENT '难度',
+    `target` varchar(255) NOT NULL DEFAULT '' COMMENT '从属于',
+    `parentId` int(10) unsigned DEFAULT '0' COMMENT '材料父ID',
+    `subCount` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '子题数量',
+    `finishedTimes` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '完成次数',
+    `passedTimes` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '成功次数',
+    `userId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户id',
+    `updatedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+    `createdTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COMMENT='问题表';
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_question_category`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_question_category`;
+CREATE TABLE `cw_question_category`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '题目类别ID',
+    `name`        varchar(255) NOT NULL COMMENT '类别名称',
+    `target`      varchar(255) NOT NULL DEFAULT '' COMMENT '从属于',
+    `userId`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '操作用户',
+    `updatedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '更新时间',
+    `createdTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+    `seq`         int(10) unsigned NOT NULL DEFAULT '0' COMMENT '排序序号',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='题库类别表';
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_question_favorite`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_question_favorite`;
+CREATE TABLE `cw_question_favorite`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '题目收藏ID',
+    `questionId`  int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被收藏的题目ID',
+    `target`      varchar(255) NOT NULL DEFAULT '' COMMENT '题目所属对象',
+    `userId`      int(10) unsigned NOT NULL DEFAULT '0' COMMENT '收藏人ID',
+    `createdTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '收藏时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

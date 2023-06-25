@@ -245,14 +245,6 @@ public class CourseManageController {
         return teachers;
     }
 
-    @RequestMapping("/course/{id}/manage/question")
-    public String questionAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course", course);
-        return "/course/manage/question/index";
-    }
-
     @RequestMapping("/course/{id}/manage/testpaper")
     public String testpaperAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 

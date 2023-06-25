@@ -105,6 +105,7 @@ public class CourseQuestionManageController {
 
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> data = ParamMap.toQueryAllMap(request);
+            AppUser.putCurrentUser(data, request);
             Map<String, Object> question = this.questionService.createQuestion(data);
 
             if ("continue".equals(data.get("submission"))) {

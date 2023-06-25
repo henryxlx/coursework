@@ -78,7 +78,7 @@
         <table class="table table-striped table-hover" id="quiz-table">
             <thead>
             <tr>
-                <th><input type="checkbox"  autocomplete="off"  data-role="batch-select"></th>
+                <th><input type="checkbox" autocomplete="off" data-role="batch-select"></th>
                 <th width="50%">题干</th>
                 <th>类型</th>
                 <th>最后更新</th>
@@ -86,18 +86,23 @@
             </tr>
             </thead>
             <tbody>
-            <#list questions! as questions>
-            <#--<#include '/course/manage/question/tr.ftl'/>-->
+            <#list questions! as question>
+                <#include '/course/manage/question/question-tr.ftl'/>
             <#else>
-            <tr>
-                <td colspan="20"><div class="empty">一道题都没有，请点击右上角按钮，按不同的题型录入题目</div></td>
-            </tr>
+                <tr>
+                    <td colspan="20">
+                        <div class="empty">一道题都没有，请点击右上角按钮，按不同的题型录入题目</div>
+                    </td>
+                </tr>
             </#list>
             </tbody>
         </table>
-        <div>
-            <label class="checkbox-inline"><input type="checkbox"  autocomplete="off" data-role="batch-select"> 全选</label>
-            <button class="btn btn-default btn-sm mlm" data-role="batch-delete"  data-name="题目" data-url="${ctx}/course/${course.id}/manage/question/deletes">删除</button>
+            <div>
+                <label class="checkbox-inline"><input type="checkbox" autocomplete="off" data-role="batch-select">
+                    全选</label>
+                <button class="btn btn-default btn-sm mlm" data-role="batch-delete" data-name="题目"
+                        data-url="${ctx}/course/${course.id}/manage/question/deletes">删除
+                </button>
             <span class="pull-right text-muted">共${(paginator.getItemCount())!}题</span>
         </div>
         <@web_macro.paginator paginator!/>

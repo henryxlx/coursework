@@ -1,7 +1,7 @@
 package org.edunext.coursework.kernel.service.question.type;
 
-import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.FastHashMap;
+import com.jetwinner.util.ValueParser;
 
 import java.util.Map;
 
@@ -17,10 +17,10 @@ public class ChoiceQuestionType extends AbstractQuestionType {
 
     @Override
     public Map<String, Object> filter(Map<String, Object> fields, String mode) {
-        if (EasyStringUtil.isBlank(fields.get("uncertain"))) {
-            fields.put("type", count(fields.get("answer")) == 1 ? "single_choice" : "choice");
-        } else {
+        if (ValueParser.parseInt(fields.get("uncertain")) > 0) {
             fields.put("type", "uncertain_choice");
+        } else {
+            fields.put("type", count(fields.get("answer")) == 1 ? "single_choice" : "choice");
         }
 
         fields.put("metas", FastHashMap.build(1).add("choices", fields.get("choices")).toMap());

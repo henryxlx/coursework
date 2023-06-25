@@ -20,5 +20,5 @@ public interface QuestionDao {
 
     Integer findQuestionsCountByParentId(Integer parentId);
 
-    void updateQuestion(Integer parentId, Map<String, Object> subCount);
+    Map<String, Object> updateQuestion(Integer id, Map<String, Object> fields);
 }

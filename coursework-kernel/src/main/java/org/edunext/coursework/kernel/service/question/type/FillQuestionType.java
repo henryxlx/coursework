@@ -1,10 +1,13 @@
 package org.edunext.coursework.kernel.service.question.type;
 
 import com.jetwinner.util.FastHashMap;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FillQuestionType extends AbstractQuestionType {
 
@@ -12,16 +15,18 @@ public class FillQuestionType extends AbstractQuestionType {
     public Map<String, Object> filter(Map<String, Object> fields, String mode) {
         fields = this.commonFilter(fields, mode);
 
-//        preg_match_all("/\[\[(.+?)\]\]/", fields.get("stem"), answer, PREG_PATTERN_ORDER);
-//        if (empty($answer[1])){
-//            throw new RuntimeGoingException("该问题没有答案或答案格式不正确！");
-//        }
-        Object[] answer = new Object[0];
+        List<String> answers = new ArrayList<>();
+        Matcher m = Pattern.compile("(?<=\\[\\[).+?(?=\\]\\])").matcher(String.valueOf(fields.get("stem")));
+        while (m.find()) {
+            answers.add(m.group());
+        }
+        if (answers.size() == 0) {
+            throw new RuntimeGoingException("该问题没有答案或答案格式不正确！");
+        }
 
         List<Object> rightAnswers = new ArrayList<>();
-        for (int i = 0, len = answer != null ? answer.length : 0; i < len; i++) {
-            String value = String.valueOf(answer[i]);
-            String[] arr = value.split("|");
+        for (String value : answers) {
+            String[] arr = value.split("\\|");
             if (arr != null && arr.length > 0) {
                 for (String v : arr) {
                     rightAnswers.add(v);

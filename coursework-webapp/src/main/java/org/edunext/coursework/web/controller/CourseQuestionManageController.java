@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -104,7 +105,7 @@ public class CourseQuestionManageController {
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
 
         if ("POST".equals(request.getMethod())) {
-            Map<String, Object> data = ParamMap.toQueryAllMap(request);
+            Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
             AppUser.putCurrentUser(data, request);
             Map<String, Object> question = this.questionService.createQuestion(data);
 
@@ -182,5 +183,30 @@ public class CourseQuestionManageController {
                     "课时" + lesson.get("number") + "：" + lesson.get("title"));
         });
         return choices;
+    }
+
+    @RequestMapping("/course/{courseId}/manage/question/delete/{id}")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                                HttpServletRequest request) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+        Map<String, Object> question = this.questionService.getQuestion(id);
+        this.questionService.deleteQuestion(id);
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/manage/question/deletes")
+    @ResponseBody
+    public Boolean deletesAction(@PathVariable Integer courseId, HttpServletRequest request) {
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        String[] ids = request.getParameterValues("ids[]");
+        for (int i = 0, len = ids == null ? 0 : ids.length; i < len; i++) {
+            Integer id = ValueParser.toInteger(ids[i]);
+            this.questionService.deleteQuestion(id);
+        }
+        return Boolean.TRUE;
     }
 }

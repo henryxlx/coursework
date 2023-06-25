@@ -21,4 +21,6 @@ public interface QuestionService {
     Map<String, Object> createQuestion(Map<String, Object> fields);
 
     List<Map<String, Object>> findCategoriesByTarget(String target, Integer start, Integer limit);
+
+    int deleteQuestion(Integer id);
 }

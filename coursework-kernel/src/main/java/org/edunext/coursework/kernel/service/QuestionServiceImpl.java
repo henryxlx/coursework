@@ -79,4 +79,24 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Map<String, Object>> findCategoriesByTarget(String target, Integer start, Integer limit) {
         return this.categoryDao.findCategoriesByTarget(target, start, limit);
     }
+
+    @Override
+    public int deleteQuestion(Integer id) {
+        Map<String, Object> question = this.questionDao.getQuestion(id);
+        if (MapUtil.isEmpty(question)) {
+            throw new RuntimeGoingException("试题不存在！不允许操作。");
+        }
+        int nums = this.questionDao.deleteQuestion(id);
+
+        if (ValueParser.parseInt(question.get("subCount")) > 0) {
+            nums += this.questionDao.deleteQuestionsByParentId(id);
+        }
+
+        Integer questionParentId = ValueParser.parseInt(question.get("parentId"));
+        if (questionParentId > 0) {
+            int subCount = this.questionDao.findQuestionsCountByParentId(questionParentId);
+            this.questionDao.updateQuestion(questionParentId, FastHashMap.build(1).add("subCount", subCount).toMap());
+        }
+        return nums;
+    }
 }

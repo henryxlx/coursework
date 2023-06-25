@@ -87,6 +87,18 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
         return this.getQuestion(id);
     }
 
+    @Override
+    public int deleteQuestion(Integer id) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        return getJdbcTemplate().update(sql, id);
+    }
+
+    @Override
+    public int deleteQuestionsByParentId(Integer parentId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE parentId = ?";
+        return getJdbcTemplate().update(sql, parentId);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("targetPrefix"))) {
             conditions.put("targetLike", conditions.get("targetPrefix") + "/%");

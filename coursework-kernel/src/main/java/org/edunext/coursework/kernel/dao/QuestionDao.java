@@ -21,4 +21,8 @@ public interface QuestionDao {
     Integer findQuestionsCountByParentId(Integer parentId);
 
     Map<String, Object> updateQuestion(Integer id, Map<String, Object> fields);
+
+    int deleteQuestion(Integer id);
+
+    int deleteQuestionsByParentId(Integer parentId);
 }

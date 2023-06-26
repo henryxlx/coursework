@@ -24,7 +24,7 @@ public final class QuestionTypeFactory {
         cachedMap.put("essay", new EssayQuestionType());
         cachedMap.put("fill", new FillQuestionType());
         cachedMap.put("material", new MaterialQuestionType());
-        cachedMap.put("singlechoice", new SinglechoiceQuestionType());
-        cachedMap.put("uncertainchoice", new UncertainchoiceQuestionType());
+        cachedMap.put("single_choice", new SingleChoiceQuestionType());
+        cachedMap.put("uncertain_choice", new UncertainChoiceQuestionType());
     }
 }

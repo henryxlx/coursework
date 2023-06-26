@@ -1,1 +1,1 @@
-<#include '/course/manage/question/question-form-layout.ftl'/>
+<#include '/course/manage/question/question-form-choice.ftl'/>

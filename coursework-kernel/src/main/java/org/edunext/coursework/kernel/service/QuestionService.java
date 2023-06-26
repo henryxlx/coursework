@@ -23,4 +23,6 @@ public interface QuestionService {
     List<Map<String, Object>> findCategoriesByTarget(String target, Integer start, Integer limit);
 
     int deleteQuestion(Integer id);
+
+    void updateQuestion(Integer id, Map<String, Object> fields);
 }

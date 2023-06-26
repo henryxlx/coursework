@@ -99,4 +99,19 @@ public class QuestionServiceImpl implements QuestionService {
         }
         return nums;
     }
+
+    @Override
+    public void updateQuestion(Integer id, Map<String, Object> fields) {
+        Map<String, Object> question = this.getQuestion(id);
+        if (MapUtil.isEmpty(question)) {
+            throw new RuntimeGoingException("Question #" + id + " is not exist.");
+        }
+
+        fields = QuestionTypeFactory.create(question.get("type")).filter(fields, "update");
+        if (ValueParser.parseInt(question.get("parentId")) > 0) {
+            fields.remove("target");
+        }
+
+        this.questionDao.updateQuestion(id, fields);
+    }
 }

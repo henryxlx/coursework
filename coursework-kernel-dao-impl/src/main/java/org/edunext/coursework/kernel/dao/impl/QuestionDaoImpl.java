@@ -24,7 +24,7 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
     private Map<String, Object> unserialize(Map<String, Object> question) {
         Object obj = question.get("answer");
         if (obj != null) {
-            question.put("answer", JsonUtil.jsonDecode(obj, Object[].class));
+            question.put("answer", JsonUtil.jsonDecode(obj, String[].class));
         }
         obj = question.get("metas");
         if (obj != null) {

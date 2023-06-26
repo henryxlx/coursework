@@ -118,14 +118,14 @@ public class CourseQuestionManageController {
                 return "redirect:/course/" + courseId + "/manage/question/create/" + type;
             } else if ("continue_sub".equals(data.get("submission"))) {
                 BaseControllerHelper.setFlashMessage("success", "题目添加成功，请继续添加子题。", request.getSession());
-                String gotoUrl = request.getParameter("goto");
+                String gotoUrl = BaseControllerHelper.getGotoUrl(request, "goto");
                 gotoUrl = EasyStringUtil.isBlank(gotoUrl) ?
                         "/course/" + courseId + "/manage/question?parentId=" + question.get("id") :
                         gotoUrl;
                 return "redirect:" + gotoUrl;
             } else {
                 BaseControllerHelper.setFlashMessage("success", "题目添加成功。", request.getSession());
-                String gotoUrl = request.getParameter("goto");
+                String gotoUrl = BaseControllerHelper.getGotoUrl(request, "goto");
                 gotoUrl = EasyStringUtil.isBlank(gotoUrl) ? "/course/" + courseId + "/manage/question" : gotoUrl;
                 return "redirect:" + gotoUrl;
             }
@@ -208,5 +208,41 @@ public class CourseQuestionManageController {
             this.questionService.deleteQuestion(id);
         }
         return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/manage/question/{id}/update")
+    public String updateAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                               HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> question = EasyWebFormEditor.toFormDataMap(request);
+            AppUser.putCurrentUser(question, request);
+            this.questionService.updateQuestion(id, question);
+
+            BaseControllerHelper.setFlashMessage("success", "题目修改成功！", request.getSession());
+            String gotoUrl = BaseControllerHelper.getGotoUrl(request, "goto");
+            gotoUrl = EasyStringUtil.isBlank(gotoUrl) ?
+                    "/course/" + courseId + "/manage/question?parentId=" + question.get("parentId") :
+                    gotoUrl;
+            return "redirect:" + gotoUrl;
+        }
+
+
+        Map<String, Object> question = this.questionService.getQuestion(id);
+        Map<String, Object> parentQuestion;
+        int questionParentId = ValueParser.parseInt(question.get("parentId"));
+        if (questionParentId > 0) {
+            parentQuestion = this.questionService.getQuestion(questionParentId);
+        } else {
+            parentQuestion = null;
+        }
+        model.addAttribute("parentQuestion", parentQuestion);
+        model.addAttribute("course", course);
+        model.addAttribute("question", question);
+        model.addAttribute("targetsChoices", this.getQuestionTargetChoices(course));
+        model.addAttribute("categoryChoices", this.getQuestionCategoryChoices(course));
+        return "/course/manage/question/question-form-" + question.get("type");
     }
 }

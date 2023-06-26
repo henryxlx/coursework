@@ -3,7 +3,7 @@ package org.edunext.coursework.kernel.service.question.type;
 /**
  * @author xulixin
  */
-public class UncertainchoiceQuestionType extends ChoiceQuestionType {
+public class UncertainChoiceQuestionType extends ChoiceQuestionType {
 
     @Override
     public boolean hasMissScore() {

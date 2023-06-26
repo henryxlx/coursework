@@ -1,5 +1,9 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.5.2: @2023-06-26
+* 完成前台课程管理中题目管理各类型题目编辑页面的显示
+* 建立新的FreeMarker共享变量注册组件，扩展在FreeMarker页面添加自定义函数，重新定义填空题显示处理函数fill_question_stem_text
+
 0.5.1: @2023-06-25
 * 数据库脚本文件coursework.sql添加题目管理相关数据表cw_question、cw_question_category和cw_question_favorite
 * 题目管理中不同类型题目处理使用工厂方法QuestionTypeFactory调用不同试题处理xxxxQuestionType

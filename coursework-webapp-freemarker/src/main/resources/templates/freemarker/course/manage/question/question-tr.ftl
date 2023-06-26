@@ -3,7 +3,7 @@
     <td>
         <a href="#modal" data-toggle="modal"
            data-url="${ctx}/course/${course.id}/manage/question/${question.id}/preview">
-            ${fastLib.plainText(fastLib.fillQuestionStemText(question.stem), 40)}</a>
+            ${fastLib.plainText(fill_question_stem_text(question.stem), 40)}</a>
         <div>
             <#assign target = targets[question.target]! />
             <#if (target.type)?? && target.type != 'course'>

@@ -9,13 +9,13 @@
     <div class="panel panel-default panel-col">
         <div class="panel-heading">
             <div class="pull-right">
-                <a href="${ctx}/course/${course.id}/manage/question/create/choice?parentId=parentId&gotoUrl=${request.requestUri}"
+                <a href="${ctx}/course/${course.id}/manage/question/create/choice?parentId=parentId&goto=${request.requestUri}"
                    class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 选择题</a>
-                <a href="${ctx}/course/${course.id}/manage/question/create/fill?parentId=parentId&gotoUrl=${request.requestUri}"
+                <a href="${ctx}/course/${course.id}/manage/question/create/fill?parentId=parentId&goto=${request.requestUri}"
                    class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 填空题</a>
-                <a href="${ctx}/course/${course.id}/manage/question/create/determine?parentId=parentId&gotoUrl=${request.requestUri}"
+                <a href="${ctx}/course/${course.id}/manage/question/create/determine?parentId=parentId&goto=${request.requestUri}"
                    class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 判断题</a>
-                <a href="${ctx}/course/${course.id}/manage/question/create/essay?parentId=parentId&gotoUrl=${request.requestUri}"
+                <a href="${ctx}/course/${course.id}/manage/question/create/essay?parentId=parentId&goto=${request.requestUri}"
                    class="btn btn-info btn-sm"><span class="glyphicon glyphicon-plus"></span> 问答题</a>
                 <#if parentQuestion??>
                     <a href="${ctx}/course/${course.id}/manage/question/create/material"

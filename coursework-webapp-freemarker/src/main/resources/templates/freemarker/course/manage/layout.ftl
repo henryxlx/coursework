@@ -50,7 +50,7 @@
                         <a class="list-group-item <#if side_nav == 'testpaper'>active</#if>"
                            href="${ctx}/course/${course.id}/manage/testpaper">试卷管理</a>
                         <a class="list-group-item <#if side_nav == 'testCheck'>active</#if>"
-                           href="${ctx}/course/${course.id}/manage/myquiz/list_course_test_paper">试卷批阅</a>
+                           href="${ctx}/course/${course.id}/check/reviewing/list">试卷批阅</a>
 
                         <!-- <a class="list-group-item <#if side_nav == 'homeworkCheck'>active</#if>" href="${ctx}/course/${course.id}/manage/homework/check-list?status=reviewing">作业批阅</a> -->
                     </div>

@@ -1,7 +1,6 @@
-{% import 'TopxiaWebBundle::macro.html.twig' as macro %}
 <#assign script_controller = 'course/manage/testpaper/index'/>
 <#assign side_nav = 'testpaper'/>
-<#assign  parentId= 'parentId||default(null)'/>
+<#assign  parentId= parentId! />
 <#include '/course/manage/layout.ftl'/>
 <#macro blockTitle>试卷管理 - ${blockTitleParent}</#macro>
 

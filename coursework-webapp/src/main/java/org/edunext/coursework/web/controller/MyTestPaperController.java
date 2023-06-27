@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class MyTestPaperController {
 
-    @RequestMapping("/my/quiz")
+    @RequestMapping({"/my/quiz", "/my/favorite/question/show"})
     public String indexAction(HttpServletRequest request) {
         return "/my/quiz/my-quiz";
     }
 
-    @RequestMapping("/my/teacher/reviewing/test/list")
+    @RequestMapping("/my/teacher/{target}/test/list")
     public String listReviewingTestAction(HttpServletRequest request) {
         return "/my/quiz/teacher-test-layout";
     }

@@ -107,6 +107,26 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
         return list;
     }
 
+    @Override
+    public List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions) {
+        String sqlWhere = "";
+        if (conditions.get("types") != null) {
+            String marks = joinInStringValues(conditions.get("types"));
+            sqlWhere = sqlWhere + " AND type IN (" + marks + ") ";
+        }
+        if (conditions.get("targets") != null) {
+            String targetMarks = joinInStringValues(conditions.get("targets"));
+            sqlWhere = sqlWhere + " AND target IN (" + targetMarks + ") ";
+        }
+        if (EasyStringUtil.isNotBlank(conditions.get("courseId"))) {
+            sqlWhere = sqlWhere + " AND (target='course-" + conditions.get("courseId") +
+                    "' or target like 'course-" + conditions.get("courseId") + "/%') ";
+        }
+        String sql = "SELECT COUNT(*) AS questionNum, type FROM " + TABLE_NAME + " WHERE parentId = '0' " + sqlWhere +
+                " GROUP BY type ";
+        return getJdbcTemplate().queryForList(sql);
+    }
+
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
         if (EasyStringUtil.isNotBlank(conditions.get("targetPrefix"))) {
             conditions.put("targetLike", conditions.get("targetPrefix") + "/%");

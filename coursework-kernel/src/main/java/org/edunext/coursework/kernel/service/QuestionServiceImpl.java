@@ -119,4 +119,9 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Map<String, Object>> findQuestionsByParentId(Integer id) {
         return this.questionDao.findQuestionsByParentId(id);
     }
+
+    @Override
+    public List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions) {
+        return this.questionDao.getQuestionCountGroupByTypes(conditions);
+    }
 }

@@ -27,4 +27,6 @@ public interface QuestionService {
     void updateQuestion(Integer id, Map<String, Object> fields);
 
     List<Map<String, Object>> findQuestionsByParentId(Integer id);
+
+    List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions);
 }

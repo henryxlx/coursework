@@ -24,17 +24,20 @@ public class FillQuestionType extends AbstractQuestionType {
             throw new RuntimeGoingException("该问题没有答案或答案格式不正确！");
         }
 
-        List<Object> rightAnswers = new ArrayList<>();
+        List<Object> rightAnswers = new ArrayList<>(answers.size());
         for (String value : answers) {
             String[] arr = value.split("\\|");
             if (arr != null && arr.length > 0) {
                 for (String v : arr) {
-                    rightAnswers.add(v);
+                    if (v != null) {
+                        v = v.trim();
+                    }
                 }
             }
+            rightAnswers.add(arr);
         }
         if (rightAnswers.size() > 0) {
-            fields.put("answer", rightAnswers.toArray());
+            fields.put("answer", rightAnswers);
         }
 
         return fields;

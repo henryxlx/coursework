@@ -5,10 +5,7 @@ import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 
 import java.lang.reflect.Array;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -39,9 +36,9 @@ public abstract class AbstractQuestionType {
         filtered.put("stem", EasyStringUtil.isBlank(fields.get("stem")) ? "" : EasyStringUtil.purifyHtml(fields.get("stem")));
         filtered.put("difficulty", EasyStringUtil.isBlank(fields.get("difficulty")) ? "simple" : fields.get("difficulty"));
         filtered.put("userId", AppUser.getCurrentUser(fields).getId());
-        filtered.put("answer", fields.get("answer") == null ? new String[0] : fields.get("answer"));
-        filtered.put("analysis", EasyStringUtil.isBlank(fields.get("analysis")) ? "" : fields.get("analysis"));
-        filtered.put("metas", fields.get("metas") == null ? new String[0] : fields.get("metas"));
+        filtered.put("answer", fields.get("answer") == null ? new ArrayList<>(0) : fields.get("answer"));
+        filtered.put("analysis", EasyStringUtil.isBlank(fields.get("analysis")) ? null : fields.get("analysis"));
+        filtered.put("metas", fields.get("metas") == null ? new HashMap(0) : fields.get("metas"));
         filtered.put("score", ValueParser.parseInt(fields.get("score")));
         filtered.put("categoryId", ValueParser.parseInt(fields.get("categoryId")));
         filtered.put("parentId", ValueParser.parseInt(fields.get("parentId")));
@@ -118,7 +115,6 @@ public abstract class AbstractQuestionType {
         }
         return null;
     }
-
 
     protected Object[] arrayValues(Object mass) {
         if (mass instanceof Array) {

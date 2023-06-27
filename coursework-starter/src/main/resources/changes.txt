@@ -1,5 +1,15 @@
 ChangeLog for CourseWork Development
 -------------------------------------------------------------------------------
+0.5.3: @2023-06-27
+* 完成前台课程管理中题目管理各类型题目预览页面的显示
+* AbstractQuestionType中题目答案使用List类型，试题元数据描述使用Map类型
+* 页面定义函数类CourseWorkFreeMarkerSharedVariableRegister添加将ASCII值转换为字符的函数chr
+* 重新实现前台课程管理中试卷管理和试卷批阅的页面显示，使用单独的CourseTestPaperManagerController和TestPaperController
+  重新调整相关FreeMarker页面并重命名，试卷批阅URL地址重新编写为/course/{courseId}/check/reviewing/list
+* 数据库脚本文件coursework.sql添加题目管理相关数据表cw_testpaper、cw_testpaper_item、cw_testpaper_item_result和cw_testpaper_result
+* 实现前台课程管理试卷管理中创建试卷显示页面第一步的页面显示
+* 完成前台课程管理试卷管理试卷浏览显示功能
+
 0.5.2: @2023-06-26
 * 完成前台课程管理中题目管理各类型题目编辑页面的显示
 * 建立新的FreeMarker共享变量注册组件，扩展在FreeMarker页面添加自定义函数，重新定义填空题显示处理函数fill_question_stem_text

@@ -79,12 +79,13 @@ public class CourseTestPaperManageController {
 
         if ("POST".equals(request.getMethod())) {
             Map<String, Object> fields = EasyWebFormEditor.toFormDataMap(request);
+            AppUser.putCurrentUser(fields, request);
             fields.put("ranges", EasyStringUtil.isBlank(fields.get("ranges")) ? new String[0] :
                     String.valueOf(fields.get("ranges")).split(","));
             fields.put("target", "course-" + courseId);
             fields.put("pattern", "QuestionType");
-            Map<String, Object> testpaper = this.testPaperService.createTestpaper(fields);
-            return "redirect:/course/" + courseId + "/manage/testpaper/" + testpaper.get("id") + "/items";
+            Integer testpaperId = this.testPaperService.createTestpaper(fields);
+            return "redirect:/course/" + courseId + "/manage/testpaper/" + testpaperId + "/items";
         }
 
         Map<String, String> typeNames = this.dictHolder.getDict().get("questionType");

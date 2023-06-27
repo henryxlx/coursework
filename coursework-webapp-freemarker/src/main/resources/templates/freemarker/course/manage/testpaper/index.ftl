@@ -1,4 +1,4 @@
-<#assign script_controller = 'course/manage/testpaper/index'/>
+<#assign script_controller = 'test-paper/index'/>
 <#assign side_nav = 'testpaper'/>
 <#assign  parentId= parentId! />
 <#include '/course/manage/layout.ftl'/>
@@ -31,7 +31,7 @@
             <tbody>
             <#list testpapers! as testpaper>
                 <#assign user = users[''+testpaper.updatedUserId]! />
-            <#--<#include '/course/manage/testpaper/tr.ftl'/>-->
+                <#include '/course/manage/testpaper/tr.ftl'/>
             <#else>
             <tr><td colspan="20"><div class="empty">还没有试卷，请点击右上角按钮，<a href="${ctx}/course/${course.id}/manage/testpaper/create">创建一个新试卷</a></div></td></tr>
             </#list>

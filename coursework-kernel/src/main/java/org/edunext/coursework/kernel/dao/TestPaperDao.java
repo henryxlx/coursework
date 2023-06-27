@@ -1,4 +1,4 @@
-package org.edunext.coursework.kernel.service;
+package org.edunext.coursework.kernel.dao;
 
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
@@ -8,11 +8,11 @@ import java.util.Map;
 /**
  * @author xulixin
  */
-public interface TestPaperService {
+public interface TestPaperDao {
 
     Integer searchTestpapersCount(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchTestpapers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
-    Integer createTestpaper(Map<String, Object> fields);
+    Integer addTestpaper(Map<String, Object> fields);
 }

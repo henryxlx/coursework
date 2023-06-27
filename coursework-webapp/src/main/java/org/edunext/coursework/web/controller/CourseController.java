@@ -340,14 +340,6 @@ public class CourseController {
         return grouped;
     }
 
-    @RequestMapping("/course/check/{id}/reviewing/list")
-    public String myquizAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course", course);
-        return "/course/manage/myquiz/list_course_test_paper.ftl";
-    }
-
     @RequestMapping("/course/{id}/joinlearning")
     public String joinLearningAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
         Map<String, Object> course = this.courseService.getCourse(id);

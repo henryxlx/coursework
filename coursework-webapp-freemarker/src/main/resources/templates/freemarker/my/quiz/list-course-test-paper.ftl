@@ -19,7 +19,7 @@
                             href="${ctx}/course/${course.id}/check/finished/list">已批阅</a></li>
             </ul>
             <br>
-            <#include '/course/manage/myquiz/list_teacher_test.ftl'/>
+            <#include '/my/quiz/list-teacher-test.ftl'/>
 
         </div>
     </div>

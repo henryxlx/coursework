@@ -245,30 +245,6 @@ public class CourseManageController {
         return teachers;
     }
 
-    @RequestMapping("/course/{id}/manage/testpaper")
-    public String testpaperAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
-        return "/course/manage/testpaper/index";
-    }
-
-    @RequestMapping("/course/{id}/manage/data")
-    public String dataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course",course);
-        return "/course/manage/data";
-    }
-
-    @RequestMapping("/course/{id}/manage/myquiz/list_course_test_paper")
-    public String checkAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course", course);
-        return "/course/manage/myquiz/list_course_test_paper";
-    }
-
     @RequestMapping("/course/{id}/manage/publish")
     @ResponseBody
     public Boolean publishAction(@PathVariable Integer id, HttpServletRequest request) {
@@ -276,6 +252,14 @@ public class CourseManageController {
         return Boolean.TRUE;
     }
 
+
+    @RequestMapping("/course/{id}/manage/data")
+    public String dataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+        model.addAttribute("course", course);
+        return "/course/manage/data";
+    }
 }
 
 

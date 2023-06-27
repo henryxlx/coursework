@@ -359,3 +359,97 @@ CREATE TABLE `cw_question_favorite`
     `createdTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '收藏时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_testpaper`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_testpaper`;
+CREATE TABLE `cw_testpaper`
+(
+    `id`          int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '试卷ID',
+    `name`        varchar(255) NOT NULL DEFAULT '' COMMENT '试卷名称',
+    `description` text COMMENT '试卷说明',
+    `limitedTime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '限时(单位：秒)',
+    `pattern`     varchar(255) NOT NULL DEFAULT '' COMMENT '试卷生成/显示模式',
+    `target`      varchar(255) NOT NULL DEFAULT '' COMMENT '试卷所属对象',
+    `status`      varchar(32)  NOT NULL DEFAULT 'draft' COMMENT '试卷状态：draft,open,closed',
+    `score`       float(10, 1
+) unsigned NOT NULL DEFAULT '0.0' COMMENT '总分',
+    `passedScore` float(10,1) unsigned NOT NULL DEFAULT '0.0' COMMENT '通过考试的分数线',
+    `itemCount` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '题目数量',
+    `createdUserId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
+    `createdTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '创建时间',
+    `updatedUserId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改人',
+    `updatedTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+    `metas` text COMMENT '题型排序',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_testpaper_item`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_testpaper_item`;
+CREATE TABLE `cw_testpaper_item`
+(
+    `id`           int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '试卷条目ID',
+    `testId`       int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所属试卷',
+    `seq`          int(10) unsigned NOT NULL DEFAULT '0' COMMENT '题目顺序',
+    `questionId`   int(10) unsigned NOT NULL DEFAULT '0' COMMENT '题目ID',
+    `questionType` varchar(64) NOT NULL DEFAULT '' COMMENT '题目类别',
+    `parentId`     int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父题ID',
+    `score`        float(10, 1
+) unsigned NOT NULL DEFAULT '0.0' COMMENT '分值',
+    `missScore` float(10,1) unsigned NOT NULL DEFAULT '0.0' COMMENT '漏选得分',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_testpaper_item_result`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_testpaper_item_result`;
+CREATE TABLE `cw_testpaper_item_result`
+(
+    `id`                int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '试卷题目做题结果ID',
+    `itemId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '试卷条目ID',
+    `testId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '试卷ID',
+    `testPaperResultId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '试卷结果ID',
+    `userId`            int(10) unsigned NOT NULL DEFAULT '0' COMMENT '做题人ID',
+    `questionId`        int(10) unsigned NOT NULL DEFAULT '0' COMMENT '题目ID',
+    `status`            enum('none','right','partRight','wrong','noAnswer') NOT NULL DEFAULT 'none' COMMENT '结果状态',
+    `score`             float(10, 1
+) NOT NULL DEFAULT '0.0' COMMENT '得分',
+    `answer` text COMMENT '回答',
+    `teacherSay` text COMMENT '老师评价',
+    PRIMARY KEY (`id`),
+    KEY `testPaperResultId` (`testPaperResultId`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+-- ------------------------------------------------------------
+-- Table structure for `cw_testpaper_result`
+-- ------------------------------------------------------------
+DROP TABLE IF EXISTS `cw_testpaper_result`;
+CREATE TABLE `cw_testpaper_result`
+(
+    `id`        int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '试卷结果ID',
+    `paperName` varchar(255) NOT NULL DEFAULT '' COMMENT '试卷名称',
+    `testId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '试卷ID',
+    `userId`    int(10) unsigned NOT NULL DEFAULT '0' COMMENT '做卷人ID',
+    `score`     float(10, 1
+) unsigned NOT NULL DEFAULT '0.0' COMMENT '总分',
+    `objectiveScore` float(10,1) unsigned NOT NULL DEFAULT '0.0' COMMENT '主观题得分',
+    `subjectiveScore` float(10,1) unsigned NOT NULL DEFAULT '0.0' COMMENT '客观题得分',
+    `teacherSay` text COMMENT '老师评价',
+    `rightItemCount` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '正确题目数',
+    `passedStatus` enum('none','passed','unpassed') NOT NULL DEFAULT 'none' COMMENT '考试通过状态，none表示该考试没有',
+    `limitedTime` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '试卷限制时间(秒)',
+    `beginTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '开始时间',
+    `endTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '结束时间',
+    `updateTime` bigint unsigned NOT NULL DEFAULT '0' COMMENT '最后更新时间',
+    `active` tinyint(3) unsigned NOT NULL DEFAULT '0',
+    `status` enum('doing','paused','reviewing','finished') NOT NULL COMMENT '状态',
+    `target` varchar(255) NOT NULL DEFAULT '' COMMENT '试卷结果所属对象',
+    `checkTeacherId` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '批卷老师ID',
+    `checkedTime` bigint NOT NULL DEFAULT '0' COMMENT '批卷时间',
+    `usedTime` int(10) unsigned NOT NULL DEFAULT '0',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

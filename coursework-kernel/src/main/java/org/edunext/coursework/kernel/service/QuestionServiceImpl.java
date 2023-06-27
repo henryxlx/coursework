@@ -114,4 +114,9 @@ public class QuestionServiceImpl implements QuestionService {
 
         this.questionDao.updateQuestion(id, fields);
     }
+
+    @Override
+    public List<Map<String, Object>> findQuestionsByParentId(Integer id) {
+        return this.questionDao.findQuestionsByParentId(id);
+    }
 }

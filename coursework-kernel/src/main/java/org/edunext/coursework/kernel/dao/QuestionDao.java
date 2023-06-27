@@ -25,4 +25,6 @@ public interface QuestionDao {
     int deleteQuestion(Integer id);
 
     int deleteQuestionsByParentId(Integer parentId);
+
+    List<Map<String, Object>> findQuestionsByParentId(Integer id);
 }

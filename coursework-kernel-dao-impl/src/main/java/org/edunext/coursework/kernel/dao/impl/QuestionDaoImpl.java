@@ -24,7 +24,7 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
     private Map<String, Object> unserialize(Map<String, Object> question) {
         Object obj = question.get("answer");
         if (obj != null) {
-            question.put("answer", JsonUtil.jsonDecode(obj, String[].class));
+            question.put("answer", JsonUtil.jsonDecode(obj, List.class));
         }
         obj = question.get("metas");
         if (obj != null) {
@@ -97,6 +97,14 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
     public int deleteQuestionsByParentId(Integer parentId) {
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE parentId = ?";
         return getJdbcTemplate().update(sql, parentId);
+    }
+
+    @Override
+    public List<Map<String, Object>> findQuestionsByParentId(Integer id) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE parentId = ? ORDER BY createdTime ASC";
+        List<Map<String, Object>> list = getJdbcTemplate().queryForList(sql, id);
+        list.forEach(this::unserialize);
+        return list;
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

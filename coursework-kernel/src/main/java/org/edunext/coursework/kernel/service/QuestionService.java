@@ -25,4 +25,6 @@ public interface QuestionService {
     int deleteQuestion(Integer id);
 
     void updateQuestion(Integer id, Map<String, Object> fields);
+
+    List<Map<String, Object>> findQuestionsByParentId(Integer id);
 }

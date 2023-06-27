@@ -5,6 +5,7 @@ import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,5 +246,49 @@ public class CourseQuestionManageController {
         model.addAttribute("targetsChoices", this.getQuestionTargetChoices(course));
         model.addAttribute("categoryChoices", this.getQuestionCategoryChoices(course));
         return "/course/manage/question/question-form-" + question.get("type");
+    }
+
+    @RequestMapping("/course/{courseId}/manage/question/{id}/preview")
+    public String previewAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                                HttpServletRequest request, Model model) {
+
+        boolean isNewWindow = ServletRequestUtils.getBooleanParameter(request, "isNew", false);
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> question = this.questionService.getQuestion(id);
+        if (MapUtil.isEmpty(question)) {
+            throw new RuntimeGoingException("题目不存在！");
+        }
+
+        Map<String, Object> item = FastHashMap.build(4)
+                .add("questionId", question.get("id"))
+                .add("questionType", question.get("type"))
+                .add("question", question).toMap();
+
+        if (ValueParser.parseInt(question.get("subCount")) > 0) {
+            List<Map<String, Object>> questions = this.questionService.findQuestionsByParentId(id);
+
+            List<Map<String, Object>> items = new ArrayList<>();
+            questions.forEach(value -> items.add(FastHashMap.build(3)
+                    .add("questionId", value.get("id"))
+                    .add("questionType", value.get("type"))
+                    .add("question", value).toMap()));
+
+            if (item.size() > 0) {
+                item.put("items", items);
+            }
+        }
+
+        model.addAttribute("item", item);
+        model.addAttribute("type", ArrayUtil.inArray(question.get("type"), "single_choice", "uncertain_choice") ?
+                "choice" : String.valueOf(question.get("type")));
+        model.addAttribute("questionPreview", Boolean.TRUE);
+
+        if (isNewWindow) {
+            return "/quiz/test/question-preview";
+        }
+
+        return "/quiz/test/question-preview-modal";
     }
 }

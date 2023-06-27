@@ -26,6 +26,11 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
+    public Map<String, Object> getTestpaper(Object id) {
+        return this.testPaperDao.getTestpaper(id);
+    }
+
+    @Override
     public Integer searchTestpapersCount(Map<String, Object> conditions) {
         return this.testPaperDao.searchTestpapersCount(conditions);
     }
@@ -38,6 +43,12 @@ public class TestPaperServiceImpl implements TestPaperService {
     @Override
     public Integer createTestpaper(Map<String, Object> fields) {
         return this.testPaperDao.addTestpaper(this.filterTestpaperFields(fields, "create"));
+    }
+
+    @Override
+    public void deleteTestpaper(Object id) {
+        this.testPaperDao.deleteTestpaper(id);
+        // this.testPaperItemDao.deleteItemsByTestpaperId(id);
     }
 
     private Map<String, Object> filterTestpaperFields(Map<String, Object> fields) {

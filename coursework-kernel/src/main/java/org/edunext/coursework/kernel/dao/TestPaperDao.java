@@ -15,4 +15,8 @@ public interface TestPaperDao {
     List<Map<String, Object>> searchTestpapers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
     Integer addTestpaper(Map<String, Object> fields);
+
+    Map<String, Object> getTestpaper(Object id);
+
+    int deleteTestpaper(Object id);
 }

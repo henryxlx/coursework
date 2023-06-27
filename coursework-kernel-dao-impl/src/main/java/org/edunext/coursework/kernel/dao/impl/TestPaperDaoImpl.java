@@ -44,8 +44,24 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
         return insertMapReturnKey(TABLE_NAME, fields).intValue();
     }
 
-    private void unserialize(Map<String, Object> map) {
-        map.put("metas", JsonUtil.jsonDecodeMap(map.get("metas")));
+    @Override
+    public Map<String, Object> getTestpaper(Object id) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
+        Map<String, Object> testpaper = getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
+        return testpaper != null ? this.unserialize(testpaper) : null;
+    }
+
+    @Override
+    public int deleteTestpaper(Object id) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
+        return getJdbcTemplate().update(sql, id);
+    }
+
+    private Map<String, Object> unserialize(Map<String, Object> map) {
+        if (map.get("metas") != null) {
+            map.put("metas", JsonUtil.jsonDecodeMap(map.get("metas")));
+        }
+        return map;
     }
 
     private void serialize(Map<String, Object> fields) {

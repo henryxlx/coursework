@@ -10,9 +10,13 @@ import java.util.Map;
  */
 public interface TestPaperService {
 
+    Map<String, Object> getTestpaper(Object id);
+
     Integer searchTestpapersCount(Map<String, Object> conditions);
 
     List<Map<String, Object>> searchTestpapers(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 
     Integer createTestpaper(Map<String, Object> fields);
+
+    void deleteTestpaper(Object id);
 }

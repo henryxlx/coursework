@@ -1,14 +1,12 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
-import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.EasyWebFormEditor;
-import com.jetwinner.util.FastHashMap;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.FastDataDictHolder;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.QuestionService;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -130,5 +129,45 @@ public class CourseTestPaperManageController {
                     "课时" + lesson.get("number") + "： " + lesson.get("title"));
         });
         return ranges;
+    }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{testpaperId}/delete")
+    @ResponseBody
+    public Boolean deleteAction(@PathVariable Integer courseId, @PathVariable Integer testpaperId,
+                                HttpServletRequest request) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+        Map<String, Object> testpaper = this.getTestpaperWithException(course, testpaperId);
+        this.testPaperService.deleteTestpaper(testpaper.get("id"));
+
+        return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/deletes")
+    @ResponseBody
+    public Boolean deletesAction(@PathVariable Integer courseId, HttpServletRequest request) {
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        String[] ids = request.getParameterValues("ids[]");
+        if (ids != null && ids.length > 0) {
+            for (String id : ids) {
+                Map<String, Object> testpaper = this.getTestpaperWithException(course, id);
+                this.testPaperService.deleteTestpaper(id);
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
+    private Map<String, Object> getTestpaperWithException(Map<String, Object> course, Object testpaperId) {
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在！");
+        }
+
+        if (!("course-" + course.get("id")).equals(testpaper.get("target"))) {
+            throw new RuntimeGoingException("试卷与当前课程关联错误，不能进行操作！");
+        }
+        return testpaper;
     }
 }

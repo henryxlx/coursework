@@ -235,4 +235,28 @@ public class CourseTestPaperManageController {
         }
         return testpaper;
     }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{testpaperId}/update")
+    public String updateAction(@PathVariable Integer courseId, @PathVariable Integer testpaperId,
+                               HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在");
+        }
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
+            AppUser.putCurrentUser(data, request);
+            this.testPaperService.updateTestpaper(testpaperId, data);
+            BaseControllerHelper.setFlashMessage("success", "试卷信息保存成功！", request.getSession());
+            return "redirect:/course/" + courseId + "/manage/testpaper";
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("testpaper", testpaper);
+        return "/course/manage/testpaper/update";
+    }
 }

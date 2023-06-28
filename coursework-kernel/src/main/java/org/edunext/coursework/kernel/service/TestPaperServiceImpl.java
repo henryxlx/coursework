@@ -235,6 +235,12 @@ public class TestPaperServiceImpl implements TestPaperService {
         return this.testPaperItemDao.findItemsByTestPaperId(testpaperId);
     }
 
+    @Override
+    public void updateTestpaper(Integer testpaperId, Map<String, Object> fields) {
+        fields = this.filterTestpaperFields(fields, "update");
+        this.testPaperDao.updateTestpaper(testpaperId, fields);
+    }
+
     private Map<String, Object> filterTestpaperFields(Map<String, Object> fields) {
         return filterTestpaperFields(fields, "create");
     }

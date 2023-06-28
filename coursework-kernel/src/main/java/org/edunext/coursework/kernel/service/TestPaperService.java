@@ -23,4 +23,6 @@ public interface TestPaperService {
     void updateTestpaperItems(Object testpaperId, List<Map<String, Object>> items);
 
     List<Map<String, Object>> getTestpaperItems(Object testpaperId);
+
+    void updateTestpaper(Integer testpaperId, Map<String, Object> fields);
 }

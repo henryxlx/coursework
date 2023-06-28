@@ -68,7 +68,8 @@ public class TestPaperServiceImpl implements TestPaperService {
         return testpaperId;
     }
 
-    public List<Map<String, Object>> buildTestpaper(Integer testPaperId, Map<String, Object> options) {
+    @Override
+    public List<Map<String, Object>> buildTestpaper(Object testPaperId, Map<String, Object> options) {
         Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testPaperId);
         if (MapUtil.isEmpty(testpaper)) {
             throw new RuntimeGoingException("Testpaper #" + testPaperId + " is not found.");

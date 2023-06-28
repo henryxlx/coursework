@@ -259,4 +259,46 @@ public class CourseTestPaperManageController {
         model.addAttribute("testpaper", testpaper);
         return "/course/manage/testpaper/update";
     }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{testpaperId}/items_reset")
+    public String itemsResetAction(@PathVariable Integer courseId, @PathVariable Integer testpaperId,
+                                   HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在");
+        }
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
+            AppUser.putCurrentUser(data, request);
+            data.put("ranges", EasyStringUtil.isBlank(data.get("ranges")) ? new String[0] :
+                    String.valueOf(data.get("ranges")).split(","));
+            data.put("target", "course-" + courseId);
+            this.testPaperService.buildTestpaper(testpaper.get("id"), data);
+            return "redirect:/course/" + courseId + "/manage/testpaper/" + testpaperId + "/items";
+        }
+
+        Map<String, String> typeNames = this.dictHolder.getDict().get("questionType");
+        List<Map<String, Object>> types = new ArrayList<>(typeNames.size());
+        typeNames.forEach((type, name) -> {
+            AbstractQuestionType typeObj = QuestionTypeFactory.create(type);
+            types.add(FastHashMap.build(3).add("key", type).add("name", name)
+                    .add("hasMissScore", typeObj.hasMissScore()).toMap());
+        });
+
+        Map<String, Object> conditions = new HashMap<>(2);
+        conditions.put("types", ArrayToolkit.column(types, "key"));
+        conditions.put("courseId", courseId);
+        List<Map<String, Object>> questionNums = this.questionService.getQuestionCountGroupByTypes(conditions);
+        model.addAttribute("questionNums", ArrayToolkit.index(questionNums, "type"));
+
+        model.addAttribute("course", course);
+        model.addAttribute("testpaper", testpaper);
+        model.addAttribute("ranges", this.getQuestionRanges(course));
+        model.addAttribute("types", types);
+        return "/course/manage/testpaper/items-reset";
+    }
 }

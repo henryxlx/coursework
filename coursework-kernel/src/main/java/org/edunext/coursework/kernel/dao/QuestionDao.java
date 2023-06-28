@@ -4,6 +4,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -29,4 +30,6 @@ public interface QuestionDao {
     List<Map<String, Object>> findQuestionsByParentId(Integer id);
 
     List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions);
+
+    List<Map<String, Object>> findQuestionsByIds(Set<Object> ids);
 }

@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.FastHashMap;
 import com.jetwinner.util.MapUtil;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -123,5 +125,10 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions) {
         return this.questionDao.getQuestionCountGroupByTypes(conditions);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> findQuestionsByIds(Set<Object> ids) {
+        return ArrayToolkit.index(this.questionDao.findQuestionsByIds(ids), "id");
     }
 }

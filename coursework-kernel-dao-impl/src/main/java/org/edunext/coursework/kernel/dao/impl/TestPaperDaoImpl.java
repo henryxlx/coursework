@@ -57,6 +57,12 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
         return getJdbcTemplate().update(sql, id);
     }
 
+    @Override
+    public void updateTestpaper(Object id, Map<String, Object> fields) {
+        this.serialize(fields);
+        updateMap(TABLE_NAME, fields, "id", id);
+    }
+
     private Map<String, Object> unserialize(Map<String, Object> map) {
         if (map.get("metas") != null) {
             map.put("metas", JsonUtil.jsonDecodeMap(map.get("metas")));
@@ -65,11 +71,13 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
     }
 
     private void serialize(Map<String, Object> fields) {
-        fields.put("metas", JsonUtil.objectToString(fields.get("metas")));
+        if (fields.get("metas") != null) {
+            fields.put("metas", JsonUtil.objectToString(fields.get("metas")));
+        }
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
-        ArrayToolkit.arrayFilter(conditions);
+        ArrayToolkit.filterNullEntry(conditions);
 
         if (EasyStringUtil.isNotBlank(conditions.get("targetPrefix"))) {
             conditions.put("targetLike", conditions.get("targetPrefix") + "%");

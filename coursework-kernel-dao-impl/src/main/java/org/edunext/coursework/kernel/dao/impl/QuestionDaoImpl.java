@@ -10,8 +10,10 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.QuestionDao;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -125,6 +127,18 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
         String sql = "SELECT COUNT(*) AS questionNum, type FROM " + TABLE_NAME + " WHERE parentId = '0' " + sqlWhere +
                 " GROUP BY type ";
         return getJdbcTemplate().queryForList(sql);
+    }
+
+    @Override
+    public List<Map<String, Object>> findQuestionsByIds(Set<Object> ids) {
+        if (ids == null || ids.size() < 1) {
+            return new ArrayList<>(0);
+        }
+        String marks = repeatQuestionMark(ids.size());
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
+        List<Map<String, Object>> questions = getJdbcTemplate().queryForList(sql, ids.toArray());
+        questions.forEach(this::unserialize);
+        return questions;
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

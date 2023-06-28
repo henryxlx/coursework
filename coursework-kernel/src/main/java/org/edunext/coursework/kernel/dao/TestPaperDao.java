@@ -19,4 +19,6 @@ public interface TestPaperDao {
     Map<String, Object> getTestpaper(Object id);
 
     int deleteTestpaper(Object id);
+
+    void updateTestpaper(Object id, Map<String, Object> fields);
 }

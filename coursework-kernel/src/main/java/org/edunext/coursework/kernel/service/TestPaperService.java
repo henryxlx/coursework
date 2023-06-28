@@ -19,4 +19,8 @@ public interface TestPaperService {
     Integer createTestpaper(Map<String, Object> fields);
 
     void deleteTestpaper(Object id);
+
+    void updateTestpaperItems(Object testpaperId, List<Map<String, Object>> items);
+
+    List<Map<String, Object>> getTestpaperItems(Object testpaperId);
 }

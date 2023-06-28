@@ -122,6 +122,11 @@ public class TestPaperServiceImpl implements TestPaperService {
         return items;
     }
 
+    @Override
+    public Map<String, Map<String, Object>> previewTestpaper(Integer testId) {
+        return null;
+    }
+
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {
         String beanName = StringUtils.uncapitalize(pattern + "TestPaperBuilder");
         TestPaperBuilder paperBuilder = applicationContext.getBean(beanName, TestPaperBuilder.class);

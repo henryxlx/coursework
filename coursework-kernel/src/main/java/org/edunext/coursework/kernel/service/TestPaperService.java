@@ -27,4 +27,6 @@ public interface TestPaperService {
     void updateTestpaper(Integer testpaperId, Map<String, Object> fields);
 
     List<Map<String, Object>> buildTestpaper(Object id, Map<String, Object> options);
+
+    Map<String, Map<String, Object>> previewTestpaper(Integer testId);
 }

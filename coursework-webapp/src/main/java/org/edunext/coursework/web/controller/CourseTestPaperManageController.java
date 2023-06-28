@@ -8,6 +8,7 @@ import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppUserService;
+import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.QuestionService;
@@ -300,5 +301,82 @@ public class CourseTestPaperManageController {
         model.addAttribute("ranges", this.getQuestionRanges(course));
         model.addAttribute("types", types);
         return "/course/manage/testpaper/items-reset";
+    }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{testpaperId}/item_picker")
+    public String itemPickerAction(@PathVariable Integer courseId, @PathVariable Integer testpaperId,
+                                   HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在");
+        }
+
+        Map<String, Object> conditions = ParamMap.toConditionMap(request);
+
+        if (conditions.get("target") == null) {
+            conditions.put("targetPrefix", "course-" + courseId);
+        }
+
+        conditions.put("parentId", 0);
+        conditions.put("excludeIds",
+                EasyStringUtil.isBlank(conditions.get("excludeIds")) ? new String[0] :
+                        EasyStringUtil.explode(",", conditions.get("excludeIds")));
+
+        if (EasyStringUtil.isNotBlank(conditions.get("keyword"))) {
+            conditions.put("stem", conditions.get("keyword"));
+        }
+
+
+        model.addAttribute("replace",
+                EasyStringUtil.isBlank(conditions.get("replace")) ? "" : conditions.get("replace"));
+
+        Paginator paginator = new Paginator(request, this.questionService.searchQuestionsCount(conditions), 7);
+
+        List<Map<String, Object>> questions = this.questionService.searchQuestions(conditions,
+                OrderBy.build(1).addDesc("createdTime"),
+                paginator.getOffsetCount(),
+                paginator.getPerPageCount());
+
+        model.addAttribute("targets",
+                this.targetHelperBean.getTargets(ArrayToolkit.column(questions, "target")));
+        model.addAttribute("course", course);
+        model.addAttribute("testpaper", testpaper);
+        model.addAttribute("questions", questions);
+        model.addAttribute("paginator", paginator);
+        model.addAttribute("targetChoices", this.getQuestionRanges(course, true));
+        model.addAttribute("conditions", conditions);
+        return "/course/manage/testpaper/item-picker-modal";
+
+    }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{testpaperId}/item_picked")
+    public String itemPickedAction(@PathVariable Integer courseId, @PathVariable Integer testpaperId,
+                                   HttpServletRequest request, Model model) {
+
+        model.addAttribute("course", this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId));
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在");
+        }
+        model.addAttribute("testpaper", testpaper);
+
+        Map<String, Object> question = this.questionService.getQuestion(request.getParameter("questionId"));
+        if (MapUtil.isEmpty(question)) {
+            throw new RuntimeGoingException("选择的试题不存在");
+        }
+        model.addAttribute("question", question);
+
+        if (ValueParser.parseInt(question.get("subCount")) > 0) {
+            model.addAttribute("subQuestions",
+                    this.questionService.findQuestionsByParentId(ValueParser.toInteger(question.get("id"))));
+        }
+
+        model.addAttribute("targets", this.targetHelperBean.getTargets(SetUtil.newHashSet(question.get("target"))));
+        model.addAttribute("type", question.get("type"));
+        return "/course/manage/testpaper/item-picked";
     }
 }

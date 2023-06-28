@@ -1,5 +1,5 @@
 <tr id="testpaper-item-${question.id}" data-id="${question.id}" data-type="${question.type}"
-    <#if question.parentId gt 0 >data-parent-id="{{ question.parentId }}"</#if>
+    <#if question.parentId gt 0 >data-parent-id="${question.parentId}"</#if>
     class="<#if question.subCount gt 0> have-sub-questions</#if><#if question.parentId gt 0> is-sub-question<#else> is-question</#if>">
     <td><span class="glyphicon glyphicon-resize-vertical sort-handle"></span></td>
     <td>
@@ -7,7 +7,7 @@
                                                                    value="${question.id}" data-role="batch-item">
         <input type="hidden" name="questionId[]" value="${question.id}">
     </td>
-    <td class="seq"><#if question.subCount gt 0><span class="text-muted">~</span><#else>${item.seq!' '}</#if></td>
+    <td class="seq"><#if question.subCount gt 0><span class="text-muted">~</span><#else>${(item.seq)!' '}</#if></td>
     <td>
         ${fastLib.plainText(question['stem'], 40)}
         <div class="text-muted text-sm">
@@ -23,7 +23,8 @@
     <td>${dict_text('difficulty', question.difficulty)}</td>
     <td>
         <input name="scores[]" class="notMoveHandle form-control input-sm"
-               <#if question.subCount gt 0>type="hidden" <#else>type="text"</#if> value="${item.score!question.score!}"
+               <#if question.subCount gt 0>type="hidden" <#else>type="text"</#if>
+               value="${(item.score)!question.score!}"
                data-miss-score="${testpaper.metas.missScore!0}">
     </td>
 

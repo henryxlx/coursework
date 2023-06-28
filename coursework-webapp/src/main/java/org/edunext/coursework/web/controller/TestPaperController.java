@@ -39,7 +39,7 @@ public class TestPaperController {
         return "/my/quiz/list-course-test-paper";
     }
 
-    @RequestMapping("/test/{testId/preview")
+    @RequestMapping("/test/{testId}/preview")
     public String previewTestAction(@PathVariable Integer testId, Model model) {
         Map<String, Object> testpaper = this.testPaperService.getTestpaper(testId);
 
@@ -49,7 +49,7 @@ public class TestPaperController {
 
         Map<String, Map<String, Object>> items = this.testPaperService.previewTestpaper(testId);
 
-        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
+//        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
 
         model.addAttribute("items", items);
         model.addAttribute("limitTime", ValueParser.parseInt(testpaper.get("limitedTime")) * 60);

@@ -93,6 +93,9 @@
                 </div>
 
                 <button type="button" class="btn btn-primary pull-right mlm request-save">保存</button>
+                <div>
+                    <a href="${ctx}/course/${course.id}/manage/testpaper" class="btn btn-link  pull-right">返回</a>
+                </div>
 
                 <input type="hidden" name="_csrf_token" value="${csrf_token('site')}">
             </form>

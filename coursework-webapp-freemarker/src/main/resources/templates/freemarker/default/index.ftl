@@ -201,7 +201,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 完成了考试 ${fastLib.plainText(learnPropData.testpaper.name, 15)}
                                             </div>
@@ -214,7 +214,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 完成了 课程 ${fastLib.plainText((learnPropData.course.title)!, 15)} 课时
                                                 ${fastLib.plainText((learnPropData.lesson.title)!, 15)} 下的作业
@@ -228,7 +228,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 完成了 课程 ${fastLib.plainText((learnPropData.course.title)!, 15)} 课时
                                                 ${fastLib.plainText((learnPropData.lesson.title)!, 15)} 下的练习
@@ -242,7 +242,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 加入了课程 ${fastLib.plainText(learnPropData.course.title, 15)}
                                             </div>
@@ -255,7 +255,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 成为了${setting('classroom.name')!"班级"}
                                                 ${fastLib.plainText(learnPropData.classroom.title, 15)} 的学员
@@ -269,7 +269,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 成为了${setting('classroom.name')!"班级"}
                                                 ${fastLib.plainText(learnPropData.classroom.title, 15)} 的旁听生
@@ -283,7 +283,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 完成了课时 ${fastLib.plainText(learnPropData.lesson.title!, 15)}
                                             </div>
@@ -296,7 +296,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 收藏了课程 ${fastLib.plainText(learnPropData.course.title!, 15)}
                                             </div>
@@ -309,7 +309,7 @@
                                                      src="${default_path('avatar', learn.user.mediumAvatar, '')}">
                                             </a>
                                             <div class="media-body">
-                                                <#assign learnPropData = learn.properties?eval />
+                                                <#assign learnPropData = learn.properties?eval_json />
                                                 <a href="${ctx}/user/${learn.user.id}">${learn.user.username}</a>
                                                 开始学习课时 ${fastLib.plainText(learnPropData.lesson.title!, 15)}
                                             </div>

@@ -3,10 +3,12 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,12 +25,15 @@ import java.util.*;
 public class CourseLessonManageController {
 
     private final CourseService courseService;
+    private final TestPaperService testPaperService;
     private final AppSettingService settingService;
 
     public CourseLessonManageController(CourseService courseService,
+                                        TestPaperService testPaperService,
                                         AppSettingService settingService) {
 
         this.courseService = courseService;
+        this.testPaperService = testPaperService;
         this.settingService = settingService;
     }
 
@@ -254,9 +259,8 @@ public class CourseLessonManageController {
                 .add("target", "course-" + course.get("id"))
                 .add("status", "open").toMap();
 
-//        List<Map<String, Object>> testpapers = this.testpaperService.searchTestpapers(conditions,
-//                OrderBy.build(1).addDesc("createdTime"), 0, 1000);
-        List<Map<String, Object>> testpapers = new ArrayList<>(0);
+        List<Map<String, Object>> testpapers = this.testPaperService.searchTestpapers(conditions,
+                OrderBy.build(1).addDesc("createdTime"), 0, 1000);
 
         Map<String, Object> paperOptions = null;
         if (testpapers != null && testpapers.size() > 0) {

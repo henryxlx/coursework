@@ -29,4 +29,8 @@ public interface TestPaperService {
     List<Map<String, Object>> buildTestpaper(Object id, Map<String, Object> options);
 
     Map<String, Map<String, Object>> previewTestpaper(Integer testId);
+
+    Map<String, Object> publishTestpaper(Object testpaperId);
+
+    Map<String, Object> closeTestpaper(Integer testpaperId);
 }

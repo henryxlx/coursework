@@ -127,6 +127,34 @@ public class TestPaperServiceImpl implements TestPaperService {
         return null;
     }
 
+    @Override
+    public Map<String, Object> publishTestpaper(Object testpaperId) {
+        Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在！");
+        }
+        if (!ArrayUtil.inArray(testpaper.get("status"), "closed", "draft")) {
+            throw new RuntimeGoingException("试卷状态不合法!");
+        }
+        testpaper = FastHashMap.build(1).add("status", "open").toMap();
+        this.testPaperDao.updateTestpaper(testpaperId, testpaper);
+        return this.getTestpaper(testpaperId);
+    }
+
+    @Override
+    public Map<String, Object> closeTestpaper(Integer testpaperId) {
+        Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷不存在！");
+        }
+        if (!ArrayUtil.inArray(testpaper.get("status"), "open")) {
+            throw new RuntimeGoingException("试卷状态不合法!");
+        }
+        testpaper = FastHashMap.build(1).add("status", "closed").toMap();
+        this.testPaperDao.updateTestpaper(testpaperId, testpaper);
+        return this.getTestpaper(testpaperId);
+    }
+
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {
         String beanName = StringUtils.uncapitalize(pattern + "TestPaperBuilder");
         TestPaperBuilder paperBuilder = applicationContext.getBean(beanName, TestPaperBuilder.class);

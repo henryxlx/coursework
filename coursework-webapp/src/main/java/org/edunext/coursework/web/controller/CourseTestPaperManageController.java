@@ -379,4 +379,34 @@ public class CourseTestPaperManageController {
         model.addAttribute("type", question.get("type"));
         return "/course/manage/testpaper/item-picked";
     }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{id}/publish")
+    public String publishAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                                HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> testpaper = this.getTestpaperWithException(course, id);
+
+        model.addAttribute("testpaper", this.testPaperService.publishTestpaper(id));
+        model.addAttribute("user", this.userService.getUser(testpaper.get("updatedUserId")));
+        model.addAttribute("course", course);
+
+        return "/course/manage/testpaper/tr";
+    }
+
+    @RequestMapping("/course/{courseId}/manage/testpaper/{id}/close")
+    public String closeAction(@PathVariable Integer courseId, @PathVariable Integer id,
+                              HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), courseId);
+
+        Map<String, Object> testpaper = this.getTestpaperWithException(course, id);
+
+        model.addAttribute("testpaper", this.testPaperService.closeTestpaper(id));
+        model.addAttribute("user", this.userService.getUser(testpaper.get("updatedUserId")));
+        model.addAttribute("course", course);
+
+        return "/course/manage/testpaper/tr";
+    }
 }

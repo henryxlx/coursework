@@ -155,6 +155,11 @@ public class TestPaperServiceImpl implements TestPaperService {
         return this.getTestpaper(testpaperId);
     }
 
+    @Override
+    public Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user) {
+        return null;
+    }
+
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {
         String beanName = StringUtils.uncapitalize(pattern + "TestPaperBuilder");
         TestPaperBuilder paperBuilder = applicationContext.getBean(beanName, TestPaperBuilder.class);

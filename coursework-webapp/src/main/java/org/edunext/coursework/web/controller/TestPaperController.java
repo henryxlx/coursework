@@ -2,6 +2,7 @@ package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.FastHashMap;
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import org.edunext.coursework.kernel.service.CourseService;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -84,5 +86,30 @@ public class TestPaperController {
             }
         }
         return total;
+    }
+
+    @RequestMapping("/testpaper/{id}/user_result/json")
+    @ResponseBody
+    public Map<String, Object> userResultJsonAction(@PathVariable Integer id, HttpServletRequest request) {
+
+        AppUser user = AppUser.getCurrentUser(request);
+        if (user == null || user.getId() == null) {
+            return FastHashMap.build(1).add("error", "您尚未登录系统或登录已超时，请先登录。").toMap();
+        }
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(id);
+        if (MapUtil.isEmpty(testpaper)) {
+            return FastHashMap.build(1).add("error", "试卷已删除，请联系管理员。").toMap();
+        }
+
+        Map<String, Object> testResult =
+                this.testPaperService.findTestpaperResultByTestpaperIdAndUserIdAndActive(id, user);
+        if (MapUtil.isEmpty(testResult)) {
+            return FastHashMap.build(1).add("status", "nodo").toMap();
+        }
+
+        return FastHashMap.build(2)
+                .add("status", testResult.get("status"))
+                .add("resultId", testResult.get("id")).toMap();
     }
 }

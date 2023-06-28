@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
@@ -33,4 +34,6 @@ public interface TestPaperService {
     Map<String, Object> publishTestpaper(Object testpaperId);
 
     Map<String, Object> closeTestpaper(Integer testpaperId);
+
+    Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user);
 }

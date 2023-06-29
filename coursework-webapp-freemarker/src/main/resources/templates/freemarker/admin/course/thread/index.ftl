@@ -1,8 +1,9 @@
 <#assign menu = 'thread'/>
 <#assign script_controller = 'course/threads'/>
 
+<@block_title '讨论区管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>讨论区管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
     <div class="page-header clearfix">

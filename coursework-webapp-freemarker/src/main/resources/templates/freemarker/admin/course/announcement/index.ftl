@@ -1,8 +1,9 @@
 <#assign menu = 'announcement'/>
 <#assign script_controller = 'course/announcement'/>
 
+<@block_title '公告管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>公告管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

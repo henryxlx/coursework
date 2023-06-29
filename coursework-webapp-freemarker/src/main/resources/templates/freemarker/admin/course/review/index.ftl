@@ -1,8 +1,9 @@
 <#assign menu = 'review'/>
 <#assign script_controller = 'review/list'/>
 
+<@block_title '课程评价管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>课程评价管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
     <div class="page-header clearfix">

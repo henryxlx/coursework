@@ -1,16 +1,18 @@
 <#assign menu = 'course'/>
 <#assign script_controller = 'course/manage'/>
 
+<@block_title '课程管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>课程管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<div class="page-header">
-    <#if liveSetEnabled == '1'>
-    <a href="${ctx}/course/create?flag=isLive" class="btn btn-info btn-sm pull-right mls" target="_blank">创建直播课程</a>
-    </#if>
-    <a href="${ctx}/course/create" class="btn btn-success btn-sm pull-right" target="_blank">创建课程</a>
+    <div class="page-header">
+        <#if liveSetEnabled == '1'>
+            <a href="${ctx}/course/create?flag=isLive" class="btn btn-info btn-sm pull-right mls"
+               target="_blank">创建直播课程</a>
+        </#if>
+        <a href="${ctx}/course/create" class="btn btn-success btn-sm pull-right" target="_blank">创建课程</a>
     <h1>课程管理</h1>
 </div>
 

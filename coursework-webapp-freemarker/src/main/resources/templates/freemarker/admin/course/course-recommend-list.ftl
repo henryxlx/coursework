@@ -1,8 +1,9 @@
 <#assign menu = 'course-recommend-list'/>
 <#assign script_controller = 'course/recommend-list'/>
 
+<@block_title '推荐课程列表'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>推荐课程列表 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
     <div class="page-header">

@@ -1,16 +1,17 @@
 <#assign menu = 'note'/>
 <#assign script_controller = 'course/note'/>
 
+<@block_title '笔记管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>笔记管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<div class="page-header clearfix">
-    <h1 class="pull-left">笔记管理</h1>
-</div>
+    <div class="page-header clearfix">
+        <h1 class="pull-left">笔记管理</h1>
+    </div>
 
-<div class="well well-sm">
+    <div class="well well-sm">
     <form class="form-inline">
 
         <div class="form-group">

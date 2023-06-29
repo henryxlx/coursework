@@ -1,12 +1,15 @@
 <#assign menu = 'category'/>
 <#assign script_controller = 'course/category'/>
 
+<@block_title '分类管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
     <div class="page-header clearfix">
-        <button class="btn btn-sm btn-info pull-right add-category" data-toggle="modal" data-target="#modal" data-url="${ctx}/admin/category_create', {groupId:group.id}) }}">添加分类</button>
+        <button class="btn btn-sm btn-info pull-right add-category" data-toggle="modal" data-target="#modal"
+                data-url="${ctx}/admin/category_create', {groupId:group.id}) }}">添加分类
+        </button>
         <h1 class="pull-left">{{ group.name }}管理</h1>
     </div>
 

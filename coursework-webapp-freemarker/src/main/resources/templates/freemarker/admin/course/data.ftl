@@ -1,7 +1,8 @@
 <#assign menu = 'course-data'/>
 
+<@block_title '数据管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>数据管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

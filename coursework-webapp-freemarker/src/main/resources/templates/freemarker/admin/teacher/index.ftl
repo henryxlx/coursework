@@ -1,8 +1,9 @@
 <#assign menu = 'teacher'/>
 <#assign script_controller = 'user/teacher-list'/>
 
+<@block_title '教师管理'/>
+
 <#include '/admin/course/layout.ftl'/>
-<#macro blockTitle>教师管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
     <div class="page-header">

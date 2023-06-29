@@ -1,4 +1,4 @@
-<@block_title "搜索：${keywords!}"/>
+<@block_title "搜索${(keywords??)?then('：'+keywords, '')!}"/>
 
 <#include '/layout.ftl'>
 

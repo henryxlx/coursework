@@ -87,7 +87,7 @@ public class TargetHelperBean {
                     parsedTargets.put(target, FastHashMap.build(2).add("type", "unknow").add("id", 0).toMap());
                 } else {
                     String[] arr = lastTarget.split("-");
-                    if (arr != null && arr.length == 0) {
+                    if (arr != null && arr.length >= 2) {
                         String type = arr[0];
                         String id = arr[1];
                         parsedTargets.put(target, FastHashMap.build(2).add("type", type).add("id", id).toMap());

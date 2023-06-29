@@ -131,4 +131,9 @@ public class QuestionServiceImpl implements QuestionService {
     public Map<String, Map<String, Object>> findQuestionsByIds(Set<Object> ids) {
         return ArrayToolkit.index(this.questionDao.findQuestionsByIds(ids), "id");
     }
+
+    @Override
+    public List<Map<String, Object>> findAllFavoriteQuestionsByUserId(Object userId) {
+        return null;
+    }
 }

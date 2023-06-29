@@ -32,4 +32,6 @@ public interface QuestionService {
     List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions);
 
     Map<String, Map<String, Object>> findQuestionsByIds(Set<Object> ids);
+
+    List<Map<String, Object>> findAllFavoriteQuestionsByUserId(Object userId);
 }

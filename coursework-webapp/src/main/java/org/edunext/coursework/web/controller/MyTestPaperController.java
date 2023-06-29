@@ -50,7 +50,7 @@ public class MyTestPaperController {
         Set<Object> courseIds = new HashSet<>();
         targets.forEach(target -> parseCourseIdFromTarget(courseIds, target));
 
-        model.addAttribute("courses", this.courseService.findCoursesByIds(courseIds));
+        model.addAttribute("courses", ArrayToolkit.index(this.courseService.findCoursesByIds(courseIds), "id"));
 
         model.addAttribute("myQuizActive", "active");
         model.addAttribute("user", user);

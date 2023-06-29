@@ -8,10 +8,12 @@ import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.TestPaperDao;
 import org.edunext.coursework.kernel.dao.TestPaperItemDao;
+import org.edunext.coursework.kernel.dao.TestPaperResultDao;
 import org.edunext.coursework.kernel.service.question.type.AbstractQuestionType;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuildResult;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuilder;
+import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -30,15 +32,19 @@ public class TestPaperServiceImpl implements TestPaperService {
 
     private final TestPaperDao testPaperDao;
     private final TestPaperItemDao testPaperItemDao;
+    private final TestPaperResultDao testPaperResultDao;
     private final QuestionService questionService;
     private final ApplicationContext applicationContext;
 
-    public TestPaperServiceImpl(TestPaperDao testPaperDao, TestPaperItemDao testPaperItemDao,
+    public TestPaperServiceImpl(TestPaperDao testPaperDao,
+                                TestPaperItemDao testPaperItemDao,
+                                TestPaperResultDao testPaperResultDao,
                                 QuestionService questionService,
                                 ApplicationContext applicationContext) {
 
         this.testPaperDao = testPaperDao;
         this.testPaperItemDao = testPaperItemDao;
+        this.testPaperResultDao = testPaperResultDao;
         this.questionService = questionService;
         this.applicationContext = applicationContext;
     }
@@ -120,11 +126,6 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public Map<String, Map<String, Object>> previewTestpaper(Integer testId) {
-        return null;
-    }
-
-    @Override
     public Map<String, Object> publishTestpaper(Object testpaperId) {
         Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testpaperId);
         if (MapUtil.isEmpty(testpaper)) {
@@ -153,23 +154,56 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user) {
+    public Map<String, Map<String, Object>> previewTestpaper(Integer testId) {
         return null;
     }
 
     @Override
+    public Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, Integer userId) {
+        return this.testPaperResultDao.findTestpaperResultByTestpaperIdAndUserIdAndActive(testpaperId, userId);
+    }
+
+    @Override
     public Integer findTestpaperResultsCountByUserId(Integer userId) {
-        return 0;
+        return this.testPaperResultDao.findTestpaperResultsCountByUserId(userId);
     }
 
     @Override
     public List<Map<String, Object>> findTestpaperResultsByUserId(Integer userId, Integer start, Integer limit) {
-        return new ArrayList<>(0);
+        return this.testPaperResultDao.findTestpaperResultsByUserId(userId, start, limit);
     }
 
     @Override
     public List<Map<String, Object>> findTestpapersByIds(Set<Object> ids) {
-        return new ArrayList<>(0);
+        return this.testPaperDao.findTestpapersByIds(ids);
+    }
+
+    @Override
+    public Map<String, Object> startTestpaper(Integer testId, Map<String, Object> target) {
+        Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testId);
+
+        Map<String, Object> testpaperResult = FastHashMap.build(8)
+                .add("paperName", testpaper.get("name"))
+                .add("testId", testId)
+                .add("userId", AppUser.getCurrentUser(target).getId())
+                .add("limitedTime", testpaper.get("limitedTime"))
+                .add("beginTime", System.currentTimeMillis())
+                .add("status", "doing")
+                .add("usedTime", 0)
+                .add("target", EasyStringUtil.isBlank(target.get("type")) ? "" :
+                        testpaper.get("target") + "/" + target.get("type") + "-" + target.get("id")).toMap();
+
+        return this.testPaperResultDao.addTestpaperResult(testpaperResult);
+    }
+
+    @Override
+    public Map<String, Object> getTestpaperResult(Integer id) {
+        return this.testPaperResultDao.getTestpaperResult(id);
+    }
+
+    @Override
+    public TestPaperExamResult showTestpaper(Integer id) {
+        return new TestPaperExamResult();
     }
 
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {

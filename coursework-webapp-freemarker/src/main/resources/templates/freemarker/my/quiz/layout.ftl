@@ -21,3 +21,9 @@
         </div>
     </div>
 </#macro>
+
+<#function get_course_id target>
+    <#local arr = target?split('/') />
+    <#local arr = arr[0]?split('-') />
+    <#return arr[1] />
+</#function>

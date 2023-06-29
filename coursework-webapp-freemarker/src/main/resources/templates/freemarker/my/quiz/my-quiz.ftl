@@ -8,9 +8,9 @@
         <table class="table table-striped table-hover">
             <tbody>
             <#list myTestpaperResults as myTestpaperResult>
-                <#assign myTestpaper = myTestpapers[myTestpaperResult.testId]! />
+                <#assign myTestpaper = myTestpapers[''+myTestpaperResult.testId]! />
                 <#if myTestpaper??>
-                    <#assign course = courses[get_course_id(myTestpaper.target)] />
+                    <#assign course = courses[get_course_id(myTestpaper.target)]! />
                 </#if>
                 <#include '/my/quiz/my-quiz-tr.ftl' />
             </#list>

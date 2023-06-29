@@ -1,7 +1,7 @@
 package org.edunext.coursework.kernel.service;
 
-import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 
 import java.util.List;
 import java.util.Map;
@@ -30,17 +30,23 @@ public interface TestPaperService {
 
     List<Map<String, Object>> buildTestpaper(Object id, Map<String, Object> options);
 
-    Map<String, Map<String, Object>> previewTestpaper(Integer testId);
-
     Map<String, Object> publishTestpaper(Object testpaperId);
 
     Map<String, Object> closeTestpaper(Integer testpaperId);
 
-    Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user);
+    Map<String, Map<String, Object>> previewTestpaper(Integer testId);
+
+    Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, Integer userId);
 
     Integer findTestpaperResultsCountByUserId(Integer userId);
 
     List<Map<String, Object>> findTestpaperResultsByUserId(Integer userId, Integer start, Integer limit);
 
     List<Map<String, Object>> findTestpapersByIds(Set<Object> ids);
+
+    Map<String, Object> startTestpaper(Integer testId, Map<String, Object> options);
+
+    Map<String, Object> getTestpaperResult(Integer id);
+
+    TestPaperExamResult showTestpaper(Integer id);
 }

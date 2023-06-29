@@ -4,6 +4,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -21,4 +22,6 @@ public interface TestPaperDao {
     int deleteTestpaper(Object id);
 
     void updateTestpaper(Object id, Map<String, Object> fields);
+
+    List<Map<String, Object>> findTestpapersByIds(Set<Object> ids);
 }

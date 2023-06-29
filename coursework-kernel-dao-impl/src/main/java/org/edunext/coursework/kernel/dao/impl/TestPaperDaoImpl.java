@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -61,6 +62,16 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
     public void updateTestpaper(Object id, Map<String, Object> fields) {
         this.serialize(fields);
         updateMap(TABLE_NAME, fields, "id", id);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTestpapersByIds(Set<Object> ids) {
+        if (ids == null || ids.size() < 1) {
+            return null;
+        }
+        String marks = repeatQuestionMark(ids.size());
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
+        return getJdbcTemplate().queryForList(sql, ids.toArray());
     }
 
     private Map<String, Object> unserialize(Map<String, Object> map) {

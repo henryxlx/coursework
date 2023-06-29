@@ -18,10 +18,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -158,6 +155,21 @@ public class TestPaperServiceImpl implements TestPaperService {
     @Override
     public Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user) {
         return null;
+    }
+
+    @Override
+    public Integer findTestpaperResultsCountByUserId(Integer userId) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> findTestpaperResultsByUserId(Integer userId, Integer start, Integer limit) {
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTestpapersByIds(Set<Object> ids) {
+        return new ArrayList<>(0);
     }
 
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {

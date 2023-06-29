@@ -5,6 +5,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -36,4 +37,10 @@ public interface TestPaperService {
     Map<String, Object> closeTestpaper(Integer testpaperId);
 
     Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, AppUser user);
+
+    Integer findTestpaperResultsCountByUserId(Integer userId);
+
+    List<Map<String, Object>> findTestpaperResultsByUserId(Integer userId, Integer start, Integer limit);
+
+    List<Map<String, Object>> findTestpapersByIds(Set<Object> ids);
 }

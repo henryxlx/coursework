@@ -7,16 +7,16 @@
     <#if myTestpaperResults??>
         <table class="table table-striped table-hover">
             <tbody>
-            {% for myTestpaperResult in myTestpaperResults %}
-            {% set myTestpaper = myTestpapers[myTestpaperResult.testId]|default(null) %}
-            {% if myTestpaper %}
-            {% set course = courses[myTestpaper.target|get_course_id] %}
-            {% endif %}
-            {% include 'TopxiaWebBundle:MyQuiz:my-quiz-tr.html.twig' %}
-            {% endfor %}
+            <#list myTestpaperResults as myTestpaperResult>
+                <#assign myTestpaper = myTestpapers[myTestpaperResult.testId]! />
+                <#if myTestpaper??>
+                    <#assign course = courses[get_course_id(myTestpaper.target)] />
+                </#if>
+                <#include '/my/quiz/my-quiz-tr.ftl' />
+            </#list>
             </tbody>
         </table>
-        {{ web_macro.paginator(paginator) }}
+        <@web_macro.paginator paginator! />
     <#else>
         <div class="empty">还没有参加过任何考试</div>
     </#if>

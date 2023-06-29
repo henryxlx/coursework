@@ -1,16 +1,18 @@
 <#assign script_controller = 'course-manage-file/index'/>
 <#assign side_nav = 'file'/>
 <#assign tab = 'courseLesson'/>
+
+<@block_title '文件管理'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>文件管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<style type="text/css">
-    .tooltip-inner{
-        max-width: 600px;
-    }
-</style>
+    <style type="text/css">
+        .tooltip-inner {
+            max-width: 600px;
+        }
+    </style>
 
 <div class="panel panel-default panel-col">
 

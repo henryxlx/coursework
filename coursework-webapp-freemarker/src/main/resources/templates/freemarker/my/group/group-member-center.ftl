@@ -1,12 +1,13 @@
 <#assign side_nav = 'my-group'/>
 <#assign tab_nav = 'index' />
+
+<@block_title '我的小组'/>
+
 <#include '/my/layout.ftl'/>
 
-<#macro blockTitle>我的小组 - ${blockTitleParent}</#macro>
-
 <#macro blockMain>
-  <#assign class = 'panel-col'/>
-  <#include '/bootstrap/panel.ftl' />
+    <#assign class = 'panel-col'/>
+    <#include '/bootstrap/panel.ftl' />
 </#macro>
 
 <#macro blockHeading>我的小组</#macro>

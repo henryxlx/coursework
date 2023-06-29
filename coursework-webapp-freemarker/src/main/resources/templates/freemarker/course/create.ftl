@@ -1,13 +1,16 @@
 <#assign script_controller = 'course/create' />
-<#include '/layout.ftl'/>
-<#macro blockTitle>创建<#if type == 'normal'>课程<#else>直播课程</#if> - ${blockTitleParent!}</#macro>
-<#macro blockContent>
-<div class="row">
-    <div class="col-md-offset-2 col-md-8">
-        <div class="panel panel-default panel-page">
-            <div class="panel-heading"><h2>创建<#if type == 'normal'>课程<#else>直播课程</#if></h2></div>
 
-            <#if !appUser.largeAvatar?? || !appUser.title?? || !userProfile.aboutme??>
+<@block_title "创建${(type == 'normal')?then('课程', '直播课程')}"/>
+
+<#include '/layout.ftl'/>
+
+<#macro blockContent>
+    <div class="row">
+        <div class="col-md-offset-2 col-md-8">
+            <div class="panel panel-default panel-page">
+                <div class="panel-heading"><h2>创建<#if type == 'normal'>课程<#else>直播课程</#if></h2></div>
+
+                <#if !appUser.largeAvatar?? || !appUser.title?? || !userProfile.aboutme??>
             <div class="alert alert-info">
                 <h5><strong>请先完成以下设置，才能创建课程：</strong></h5>
                 <ol>

@@ -1,18 +1,19 @@
 <#assign side_nav = 'base'/>
 <#assign script_controller = 'course-manage/base'/>
 <#assign script_arguments = "{'categoryUrl': '/category/all','tagMatchUrl': '${ctx}/tag/match_jsonp', 'locationUrl': '/location/all'}"/>
-<#include '/course/manage/layout.ftl'/>
 
-<#macro blockTitle>基本信息 - 课程管理 - ${blockTitleParent}</#macro>
+<@block_title '基本信息'/>
+
+<#include '/course/manage/layout.ftl'/>
 
 <#macro  blockMain>
 
-<div class="panel panel-default panel-col">
-    <div class="panel-heading">基本信息</div>
-    <div class="panel-body">
-        <form class="form-horizontal" id="course-form" method="post">
+    <div class="panel panel-default panel-col">
+        <div class="panel-heading">基本信息</div>
+        <div class="panel-body">
+            <form class="form-horizontal" id="course-form" method="post">
 
-            <@web_macro.flash_messages/>
+                <@web_macro.flash_messages/>
 
             <div class="form-group">
                 <label class="col-md-2 control-label">标题</label>

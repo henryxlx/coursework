@@ -1,8 +1,10 @@
 <#assign side_nav = 'testCheck'/>
 <#assign parentId = parentId!/>
 <#assign script_controller = 'testpaper/index'/>
+
+<@block_title '试卷批阅'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>试卷批阅 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

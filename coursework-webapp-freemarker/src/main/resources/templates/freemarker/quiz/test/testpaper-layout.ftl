@@ -1,11 +1,10 @@
 <#assign script_controller = 'quiz-question/do-test'/>
 
+<@block_title '${paper.name}'/>
+
 <#include '/layout.ftl'/>
 
-<#macro blockTitle>${paper.name} - ${blockTitleParent}</#macro>
-
 <#macro blockContent>
-
 
     <div class="es-row-wrap testpaper-heading">
         <div class="row">

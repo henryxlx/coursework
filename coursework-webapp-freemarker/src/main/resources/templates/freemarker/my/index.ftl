@@ -1,17 +1,17 @@
 <#assign nav = 'index'/>
 <#assign bodyClass = 'index'/>
 
-<#include '/layout.ftl'/>
+<@block_title '个人中心'/>
 
-<#macro blockTitle>个人中心 - ${blockTitleParent}</#macro>
+<#include '/layout.ftl'/>
 
 <#macro blockContent>
 
-<div class="row">
-    <#include '/my/my-nav.ftl'/>
-    <div class="col-md-9">
-        <div class="panel panel-default panel-col">
-            <div class="panel-heading">
+    <div class="row">
+        <#include '/my/my-nav.ftl'/>
+        <div class="col-md-9">
+            <div class="panel panel-default panel-col">
+                <div class="panel-heading">
 <#--                <#include '/mycourse/my-courses-nav.ftl'/>-->
             </div>
             <div class="panel-body">

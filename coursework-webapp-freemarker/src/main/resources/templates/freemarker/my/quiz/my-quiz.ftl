@@ -1,6 +1,6 @@
-<#include '/my/quiz/layout.ftl'/>
+<@block_title '我的考试记录'/>
 
-<#macro blockTitle>我的考试记录 - 我的考试 - ${blockTitleParent}</#macro>
+<#include '/my/quiz/layout.ftl'/>
 
 <#macro blockList>
 

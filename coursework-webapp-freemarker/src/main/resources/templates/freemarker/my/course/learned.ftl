@@ -1,8 +1,8 @@
 <#assign tab_nav = 'learned'/>
 
-<#include '/my/course/layout.ftl'/>
+<@block_title '已学完'/>
 
-<#macro blockTitle>已学完 - 我的课程 - ${blockTitleParent}</#macro>
+<#include '/my/course/layout.ftl'/>
 
 <#macro blockMain>
     <div class="panel panel-default panel-col">

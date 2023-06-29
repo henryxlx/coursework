@@ -1,8 +1,9 @@
 <#assign script_controller = 'testpaper/item-manager'/>
 <#assign side_nav = 'testpaper'/>
 
+<@block_title '试卷题目管理'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>试卷题目管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

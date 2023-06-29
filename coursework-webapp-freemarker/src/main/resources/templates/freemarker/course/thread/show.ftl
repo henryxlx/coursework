@@ -1,8 +1,8 @@
 <#assign script_controller = 'course/thread-show' />
 
-<#include '/course/dashboard-layout.ftl' />
+<@block_title '${thread.title} - ${course.title}'/>
 
-<#macro blockTitle>${thread.title} - ${course.title} - ${blockTitleParent}</#macro>
+<#include '/course/dashboard-layout.ftl' />
 
 <#macro blockDashboardMain>
 

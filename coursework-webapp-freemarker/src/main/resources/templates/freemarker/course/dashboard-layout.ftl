@@ -2,9 +2,9 @@
 
 <#assign script_arguments>{"course_uri": "${ctx}/course/${course.id}"}</#assign>
 
-<#include '/layout.ftl'>
+<@block_title '${course.title}'/>
 
-<#macro blockTitle>${course.title} - ${blockTitleParent}</#macro>
+<#include '/layout.ftl'>
 
 <#macro blockContent>
 

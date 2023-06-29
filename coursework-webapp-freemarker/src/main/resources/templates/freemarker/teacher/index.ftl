@@ -3,9 +3,9 @@
 <#assign metaKeywords>师资介绍 ${setting('site.name')!}</#assign>
 <#assign metaDescription>${setting('site.name')!}的师资介绍。</#assign>
 
-<#include '/layout.ftl'/>
+<@block_title '师资介绍'/>
 
-<#macro blockTitle>师资介绍 - ${blockTitleParent}</#macro>
+<#include '/layout.ftl'/>
 
 <#macro blockContent>
 

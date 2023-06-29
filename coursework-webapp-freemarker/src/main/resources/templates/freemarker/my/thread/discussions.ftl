@@ -1,7 +1,8 @@
 <#assign side_nav = 'my-discussions'>
-<#include '/my/layout.ftl'/>
 
-<#macro blockTitle>我的话题 - ${blockTitleParent}</#macro>
+<@block_title '我的话题'/>
+
+<#include '/my/layout.ftl'/>
 
 <#macro blockMain>
 

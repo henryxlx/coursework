@@ -1,8 +1,9 @@
 <#assign side_nav = 'testpaper'/>
 <#assign script_controller = 'testpaper/testpaper-form'/>
 
+<@block_title '重新生成试卷题目'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>重新生成试卷题目 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

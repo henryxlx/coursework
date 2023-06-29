@@ -4,20 +4,16 @@
     <#assign side_nav = 'my-teaching-discussions'/>
 </#if>
 
-<#include '/my/layout.ftl'/>
-
-<#macro blockTitle>
-
+<#assign varLocalBlockTitle>
     <#if type == 'question'>
         ${setting('default.user_name', '学员')}问答
     <#elseif type == 'discussion'>
         ${setting('default.user_name', '学员')}话题
     </#if>
+</#assign>
+<@block_title varLocalBlockTitle/>
 
-    - ${blockTitleParent}
-
-</#macro>
-
+<#include '/my/layout.ftl'/>
 
 <#macro blockMain>
 

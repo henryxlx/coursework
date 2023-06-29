@@ -1,16 +1,17 @@
 <#assign script_controller = 'course-manage/lesson'/>
 <#assign side_nav = 'lesson'/>
 
+<@block_title '课时管理'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>课时管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
-<div class="panel panel-default panel-col lesson-manage-panel">
-    <div class="panel-heading">
-        <div class="pull-right">
+    <div class="panel panel-default panel-col lesson-manage-panel">
+        <div class="panel-heading">
+            <div class="pull-right">
 
-            <button class="btn btn-info btn-sm" id="lesson-create-btn" data-toggle="modal" data-target="#modal"
-                    data-backdrop="static" data-keyboard="false"
+                <button class="btn btn-info btn-sm" id="lesson-create-btn" data-toggle="modal" data-target="#modal"
+                        data-backdrop="static" data-keyboard="false"
                     data-url="<#if course.type == 'normal'>${ctx}/course/${course.id}/manage/lesson/create<#else>${ctx}/course/${course.id}/manage/live/lesson/create</#if>">
                 <i class="glyphicon glyphicon-plus"></i> <#if course.type == 'normal'>课时<#else>直播课时</#if></button>
 

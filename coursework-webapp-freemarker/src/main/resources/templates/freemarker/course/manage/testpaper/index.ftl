@@ -1,16 +1,19 @@
 <#assign script_controller = 'test-paper/index'/>
 <#assign side_nav = 'testpaper'/>
 <#assign  parentId= parentId! />
+
+<@block_title '试卷管理'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>试卷管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
 
-<div class="panel panel-default panel-col">
-    <div class="panel-heading">
-        <a href="${ctx}/course/${course.id}/manage/testpaper/create" class="btn btn-info btn-sm pull-right mls"><span class="glyphicon glyphicon-plus"></span>创建试卷</a>
-        试卷管理
+    <div class="panel panel-default panel-col">
+        <div class="panel-heading">
+            <a href="${ctx}/course/${course.id}/manage/testpaper/create"
+               class="btn btn-info btn-sm pull-right mls"><span class="glyphicon glyphicon-plus"></span>创建试卷</a>
+            试卷管理
     </div>
 
     <div class="panel-body " id="quiz-table-container">

@@ -1,15 +1,18 @@
 <#assign side_nav = 'picture'/>
 <#assign script_controller = 'course-manage/picture-crop'/>
+
+<@block_title '课程图片'/>
+
 <#include "/course/manage/layout.ftl"/>
-<#macro blockTitle>课程图片 - ${blockTitleParent}</#macro>
+
 <#macro blockMain>
 
-  <div class="panel panel-default panel-col">
-    <div class="panel-heading">
-      课程图片
-    </div>
+    <div class="panel panel-default panel-col">
+        <div class="panel-heading">
+            课程图片
+        </div>
 
-    <div class="panel-body">
+        <div class="panel-body">
       <form id="course-picture-crop-form" method="post" enctype="multipart/form-data">
         <@web_macro.flash_messages/>
 

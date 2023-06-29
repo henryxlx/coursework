@@ -1,8 +1,8 @@
 <#assign side_nav = 'my-teaching-courses'/>
 
-<#include '/my/layout.ftl'/>
+<@block_title '在教课程'/>
 
-<#macro blockTitle>在教课程 - ${blockTitleParent}</#macro>
+<#include '/my/layout.ftl'/>
 
 <#macro blockMain>
 <#--<div class="panel panel-default panel-col">-->

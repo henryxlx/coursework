@@ -1,15 +1,17 @@
 <#assign script_controller = 'course-manage/teachers'/>
 <#assign side_nav = 'teacher'/>
+
+<@block_title '教师设置'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>教师设置 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<style>
+    <style>
 
-    .ui-autocomplete {
-        border:1px solid #ccc;
-        background-color: #FFFFFF;
+        .ui-autocomplete {
+            border: 1px solid #ccc;
+            background-color: #FFFFFF;
         box-shadow: 2px 2px 3px #EEEEEE;
     }
     .ui-autocomplete-ctn{

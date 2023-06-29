@@ -1,16 +1,16 @@
 <#assign script_controller = 'course/thread-form' />
 
-<#include '/course/dashboard-layout.ftl' />
+<@block_title "${(thread??)?then('编辑', '发表')}话题 - ${course.title}"/>
 
-<#macro blockTitle><#if thread??>编辑话题<#else>发表话题</#if> - ${course.title} - ${blockTitleParent}</#macro>
+<#include '/course/dashboard-layout.ftl' />
 
 <#macro blockDashboardMain>
 
   <ul class="breadcrumb">
     <li><a href="${ctx}/course/${course.id}/thread">讨论区</a></li>
     <#if thread??>
-      <li><a href="${ctx}/course/${thread.courseId}/thread/${thread.id}" title="${thread.title}">${thread.title}
-          |plain_text(10)</a></li>
+      <li><a href="${ctx}/course/${thread.courseId}/thread/${thread.id}"
+             title="${thread.title}">${fastLib.plainText(thread.title, 10)}</a></li>
       <li class="active"><#if type == 'question'>编辑问题<#else>编辑话题</#if></li>
     <#else>
       <li class="active"><#if type == 'question'>提问题<#else>发表话题</#if></li>

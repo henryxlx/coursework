@@ -1,8 +1,8 @@
 <#assign tab_nav = 'favorited'/>
 
-<#include '/my/course/layout.ftl'/>
+<@block_title '已收藏'/>
 
-<#macro blockTitle>已收藏 - 我的课程 - ${blockTitleParent}</#macro>
+<#include '/my/course/layout.ftl'/>
 
 <#macro blockMain>
     <div class="panel panel-default panel-col">

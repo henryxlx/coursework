@@ -1,7 +1,9 @@
 <#assign script_controller = 'quiz-question/create'/>
 <#assign side_nav = 'question'/>
+
+<@block_title "${(question.id?? && question.id > 0)?then('编辑', '添加')}题目"/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle><#if question.id?? && question.id gt 0>编辑<#else>添加</#if>题目 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

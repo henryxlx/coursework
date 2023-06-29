@@ -1,8 +1,10 @@
 <#assign script_controller = 'course-manage/list'/>
 <#assign side_nav = 'question'/>
 <#assign  parentId= '(parentQuestion.id)!0'/>
+
+<@block_title '题目管理'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>题目管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 

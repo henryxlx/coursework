@@ -1,9 +1,9 @@
 <#assign script_controller = 'testpaper/testpaper-form'/>
 <#assign side_nav = 'testpaper'/>
 
-<#include '/course/manage/layout.ftl'/>
+<@block_title '创建试卷'/>
 
-<#macro blockTitle>创建试卷 - ${blockTitleParent}</#macro>
+<#include '/course/manage/layout.ftl'/>
 
 <#macro blockMain>
 

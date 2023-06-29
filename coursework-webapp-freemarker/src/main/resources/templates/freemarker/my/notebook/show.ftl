@@ -1,8 +1,9 @@
 <#assign side_nav = 'notes'/>
 <#assign script_controller = 'my/notebook-show'/>
-<#include '/my/layout.ftl'/>
 
-<#macro blockTitle>我的课程 - ${blockTitleParent}</#macro>
+<@block_title '我的笔记'/>
+
+<#include '/my/layout.ftl'/>
 
 <#macro blockMain>
     <style>

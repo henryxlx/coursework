@@ -1,6 +1,6 @@
-<#include '/default/layout.ftl'/>
+<@block_title "标签:${(tag.name)!'不存在'}"/>
 
-<#macro blockTitle>标签<#if tag??>:${tag.name }</#if> - ${blockTitleParent}</#macro>
+<#include '/default/layout.ftl'/>
 
 <#macro blockContent>
 

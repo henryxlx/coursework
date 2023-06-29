@@ -1,6 +1,6 @@
-<#include '/layout.ftl'>
+<@block_title '账户中心'/>
 
-<#macro blockTitle>账户中心 - ${blockTitleParent}</#macro>
+<#include '/layout.ftl'>
 
 <#macro blockContent>
 

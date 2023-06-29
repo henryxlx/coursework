@@ -1,16 +1,17 @@
 <#assign script_controller = 'course-manage/detail'/>
 <#assign side_nav = 'detail'/>
 
+<@block_title '详细信息'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>详细信息 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<div class="panel panel-default panel-col">
-    <div class="panel-heading">详细信息</div>
-    <div class="panel-body">
-        <form id="course-base-form" class="form-horizontal" method="post">
-            <@web_macro.flash_messages/>
+    <div class="panel panel-default panel-col">
+        <div class="panel-heading">详细信息</div>
+        <div class="panel-body">
+            <form id="course-base-form" class="form-horizontal" method="post">
+                <@web_macro.flash_messages/>
 
             <div class="form-group">
                 <div class="col-md-2 control-label"><label>课程简介</label></div>

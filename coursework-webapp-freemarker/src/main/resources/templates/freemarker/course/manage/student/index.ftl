@@ -1,10 +1,11 @@
 <#assign script_controller = 'course-manage/students'/>
 <#assign side_nav = 'student'/>
+
+<@block_title "${setting('default.user_name', '学员')}管理"/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>${setting('default.user_name', '学员')}管理 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
-
 
     <div class="panel panel-default panel-col">
         <div class="panel-heading">${setting('default.user_name', '学员')}管理

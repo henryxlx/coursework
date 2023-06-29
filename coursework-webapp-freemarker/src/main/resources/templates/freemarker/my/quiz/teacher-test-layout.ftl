@@ -1,8 +1,9 @@
 <#assign side_nav = 'my-teaching-check'>
 <#assign status = status!'reviewing'/>
-<#include '/my/layout.ftl'/>
 
-<#macro blockTitle>我的批阅 - ${blockTitleParent}</#macro>
+<@block_title '我的批阅'/>
+
+<#include '/my/layout.ftl'/>
 
 <#macro blockMain>
     <div class="panel panel-default panel-col">

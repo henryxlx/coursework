@@ -3,22 +3,22 @@
 <#assign bodyClass = 'lesson-dashboard-page' />
 
 <#if setting('homework.enabled', '0') == '1'>
-  <#assign script_arguments = "{plugins: ['lesson', 'question', 'note', 'material', 'homework']}" />
+    <#assign script_arguments = "{plugins: ['lesson', 'question', 'note', 'material', 'homework']}" />
 <#else>
-  <#assign script_arguments = "{plugins: ['lesson', 'question', 'note', 'material']}" />
+    <#assign script_arguments = "{plugins: ['lesson', 'question', 'note', 'material']}" />
 </#if>
+
+<@block_title '${course.title}'/>
 
 <#include '/layout.ftl'>
 
-<#macro blockTitle>${course.title} - ${blockTitleParent}</#macro>
-
 <#macro blockStylesheetsExtra>
-  <link rel="stylesheet" media="screen"
-        href="${ctx}/assets/libs/jquery-plugin/perfect-scrollbar/0.4.8/perfect-scrollbar.css"/>
+    <link rel="stylesheet" media="screen"
+          href="${ctx}/assets/libs/jquery-plugin/perfect-scrollbar/0.4.8/perfect-scrollbar.css"/>
 </#macro>
 
 <#macro blockContent>
-  <div class="container lesson-dashboard" id="lesson-dashboard"
+    <div class="container lesson-dashboard" id="lesson-dashboard"
        data-course-id="${course.id}"
        data-course-uri="${ctx}/course/${course.id}"
        data-dashboard-uri="${ctx}/course/${course.id}/learn"

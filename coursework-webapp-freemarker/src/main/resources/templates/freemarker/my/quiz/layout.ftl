@@ -1,4 +1,7 @@
 <#assign side_nav = 'quiz'>
+
+<@block_title '我的考试'/>
+
 <#include '/my/layout.ftl'/>
 
 <#macro blockMain>

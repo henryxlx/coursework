@@ -1,16 +1,16 @@
 <#assign script_controller = 'course/thread-post-form' />
 
-<#include '/course/dashboard-layout.ftl' />
+<@block_title "${(post??)?then('编辑帖子', '回复帖子')} - ${course.title}"/>
 
-<#macro blockTitle><#if post??>编辑帖子<#else>回复帖子</#if> - ${course.title} - ${blockTitleParent}</#macro>
+<#include '/course/dashboard-layout.ftl' />
 
 <#macro blockDashboardMain>
 
-  <ul class="breadcrumb">
-    <li><a href="${ctx}/course/${course.id}/thread">讨论区</a></li>
-    <li><a href="${ctx}/course/${course.id}/thread/${thread.id}">${fastLib.plainText(thread.title, 10)}</a></li>
-    <li class="active">编辑帖子</li>
-  </ul>
+    <ul class="breadcrumb">
+        <li><a href="${ctx}/course/${course.id}/thread">讨论区</a></li>
+        <li><a href="${ctx}/course/${course.id}/thread/${thread.id}">${fastLib.plainText(thread.title, 10)}</a></li>
+        <li class="active">编辑帖子</li>
+    </ul>
 
   <form id="thread-post-form" method="post"
           <#if post??>

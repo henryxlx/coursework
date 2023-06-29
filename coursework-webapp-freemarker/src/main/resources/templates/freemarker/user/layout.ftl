@@ -1,9 +1,9 @@
 <#assign bodyClass = 'userpage'/>
 <#assign script_controller = 'user/user'/>
 
-<#include '/layout.ftl'/>
+<@block_title "${(user.username)!'佚名'}的公共主页"/>
 
-<#macro blockTitle>${(user.username)!'佚名'}的公共主页 - ${blockTitleParent}</#macro>
+<#include '/layout.ftl'/>
 
 <#macro blockContent>
 

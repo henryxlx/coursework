@@ -1,16 +1,18 @@
 <#assign script_controller = 'course/manage/data'/>
 <#assign side_nav = 'course_manage_data'/>
 
+<@block_title '课程学习数据'/>
+
 <#include '/course/manage/layout.ftl'/>
-<#macro blockTitle>课程学习数据 - ${blockTitleParent}</#macro>
 
 <#macro blockMain>
 
-<div class="panel panel-default panel-col course-data">
-    <div class="panel-heading">课程学习数据</div>
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table class="table table-bordered" id="learning-data-table" style="word-break:break-all;text-align:center;">
+    <div class="panel panel-default panel-col course-data">
+        <div class="panel-heading">课程学习数据</div>
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="learning-data-table"
+                       style="word-break:break-all;text-align:center;">
                 <tr class="active">
                     <td>课程名</td>
                     <td>课程学习人数</td>

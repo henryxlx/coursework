@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <div class="notification-body">
-            <#assign data = notification.content?eval/>
+            <#assign data = notification.content?eval_json/>
             您的<#if data.threadType == 'question'>问题<#else>话题</#if>
             <a href="${ctx}/course/${data.courseId}/thread/${data.threadId}#post-${data.postId}"
                target="_blank"><strong>${data.threadTitle}</strong></a> 有了<strong>${data.postUserNickname}</strong>的新回复。

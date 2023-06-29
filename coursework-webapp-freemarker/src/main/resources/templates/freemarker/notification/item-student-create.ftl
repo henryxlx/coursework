@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <div class="notification-body">
-            <#assign data = notification.content?eval/>
+            <#assign data = notification.content?eval_json/>
             您已经被管理员添加为课程<a href="${ctx}/course/${data.courseId!}">《${data.courseTitle!}
                 》</a>的${setting('default.user_name')!'学员'}，赶紧去学习吧！
         </div>

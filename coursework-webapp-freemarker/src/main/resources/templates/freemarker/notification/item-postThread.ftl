@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <div class="notification-body">
-            <#assign data = notification.content?eval/>
+            <#assign data = notification.content?eval_json/>
             ${data.message!}
         </div>
         <div class="notification-footer">

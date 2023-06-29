@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <div class="notification-body">
-            <#assign data = notification.content?eval/>
+            <#assign data = notification.content?eval_json/>
             <a href="${ctx}/user/${data.user.id}" target="_blank">${data.user.nickname}</a> 在话题 <a
                     href="${ctx}/thread/${data.thread.id}/post/${data.id}/jump" target="_blank">${data.thread.title}</a>
             回复了你。

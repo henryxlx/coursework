@@ -4,7 +4,7 @@
     </div>
     <div class="media-body">
         <div class="notification-body">
-            <#assign data = notification.content?eval/>
+            <#assign data = notification.content?eval_json/>
             <a href="{{ path('user_show', {id:data.user.id}) }}" target="_blank">{{ data.user.nickname }}</a> 在话题 <a
                     href="{{ path('thread_jump', {threadId:data.id}) }}" target="_blank">{{ data.title }}</a> 中提到了你。
             <blockquote>

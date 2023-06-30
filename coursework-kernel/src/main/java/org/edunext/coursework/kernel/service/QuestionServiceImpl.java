@@ -9,10 +9,10 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.QuestionCategoryDao;
 import org.edunext.coursework.kernel.dao.QuestionDao;
+import org.edunext.coursework.kernel.dao.QuestionFavoriteDao;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +27,15 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionDao questionDao;
     private final QuestionCategoryDao categoryDao;
+    private final QuestionFavoriteDao questionFavoriteDao;
 
-    public QuestionServiceImpl(QuestionDao questionDao, QuestionCategoryDao categoryDao) {
+    public QuestionServiceImpl(QuestionDao questionDao,
+                               QuestionCategoryDao categoryDao,
+                               QuestionFavoriteDao questionFavoriteDao) {
+
         this.questionDao = questionDao;
         this.categoryDao = categoryDao;
+        this.questionFavoriteDao = questionFavoriteDao;
     }
 
 
@@ -135,26 +140,41 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Map<String, Object>> findAllFavoriteQuestionsByUserId(Object userId) {
-        return new ArrayList<>(0);
+        return this.questionFavoriteDao.findAllFavoriteQuestionsByUserId(userId);
     }
 
     @Override
-    public void favoriteQuestion(Integer id, String target, Integer userId) {
+    public void favoriteQuestion(Integer questionId, String target, Integer userId) {
+        Map<String, Object> favorite = FastHashMap.build(4)
+                .add("questionId", questionId)
+                .add("target", target)
+                .add("userId", userId)
+                .add("createdTime", System.currentTimeMillis()).toMap();
 
+        Map<String, Object> favoriteBack = this.questionFavoriteDao.getFavoriteByQuestionIdAndTargetAndUserId(favorite);
+
+        if (MapUtil.isEmpty(favoriteBack)) {
+            this.questionFavoriteDao.addFavorite(favorite);
+        }
     }
 
     @Override
-    public void unFavoriteQuestion(Integer id, String target, Integer userId) {
+    public void unFavoriteQuestion(Integer questionId, String target, Integer userId) {
+        Map<String, Object> favorite = FastHashMap.build(3)
+                .add("questionId", questionId)
+                .add("target", target)
+                .add("userId", userId).toMap();
 
+        this.questionFavoriteDao.deleteFavorite(favorite);
     }
 
     @Override
     public Integer findFavoriteQuestionsCountByUserId(Integer userId) {
-        return 0;
+        return this.questionFavoriteDao.findFavoriteQuestionsCountByUserId(userId);
     }
 
     @Override
     public List<Map<String, Object>> findFavoriteQuestionsByUserId(Integer userId, Integer start, Integer limit) {
-        return new ArrayList<>(0);
+        return this.questionFavoriteDao.findFavoriteQuestionsByUserId(userId, start, limit);
     }
 }

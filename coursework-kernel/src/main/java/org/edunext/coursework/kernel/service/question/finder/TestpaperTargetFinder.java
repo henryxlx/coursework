@@ -1,6 +1,7 @@
 package org.edunext.coursework.kernel.service.question.finder;
 
 import com.jetwinner.util.FastHashMap;
+import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +17,15 @@ import java.util.Set;
 @Lazy
 public class TestpaperTargetFinder extends AbstractTargetFinder {
 
+    private final TestPaperService testPaperService;
+
+    public TestpaperTargetFinder(TestPaperService testPaperService) {
+        this.testPaperService = testPaperService;
+    }
+
     @Override
     public Map<String, Map<String, Object>> find(Set<Object> ids) {
-//        List<Map<String, Object>> testpapers = this.testpaperService.findTestpapersByIds(ids);
-        List<Map<String, Object>> testpapers = null;
+        List<Map<String, Object>> testpapers = this.testPaperService.findTestpapersByIds(ids);
 
         Map<String, Map<String, Object>> targets = null;
         if (testpapers != null && testpapers.size() > 0) {

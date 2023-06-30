@@ -35,9 +35,9 @@ public interface QuestionService {
 
     List<Map<String, Object>> findAllFavoriteQuestionsByUserId(Object userId);
 
-    void favoriteQuestion(Integer id, String target, Integer userId);
+    void favoriteQuestion(Integer questionId, String target, Integer userId);
 
-    void unFavoriteQuestion(Integer id, String target, Integer userId);
+    void unFavoriteQuestion(Integer questionId, String target, Integer userId);
 
     Integer findFavoriteQuestionsCountByUserId(Integer userId);
 

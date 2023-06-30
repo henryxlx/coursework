@@ -5,7 +5,7 @@
         <div class="text-muted">
             <small>来自试卷《${paper.name}》</small>
             <small class="mhs">•</small>
-            <small>收藏于 ${favoriteQuestion.createdTime?number_to_datetime?string(yyyy-MM-dd HH:mm:ss)}}</small>
+            <small>收藏于 ${favoriteQuestion.createdTime?number_to_datetime?string('yyyy-MM-dd HH:mm:ss')}</small>
         </div>
     </td>
     <td>

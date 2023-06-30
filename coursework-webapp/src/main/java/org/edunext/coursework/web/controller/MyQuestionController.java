@@ -86,8 +86,9 @@ public class MyQuestionController {
         Map<String, Map<String, Object>> targets = targetHelperBean.getTargets(ArrayToolkit.column(favoriteQuestions, "target"));
 
         favoriteQuestions.forEach(v -> {
-            if ("testpaper".equals(targets.get(v.get("target")).get("type"))) {
-                myTestpaperIds.add(targets.get(v.get("target")).get("id"));
+            Map<String, Object> mapTarget = targets.get(v.get("target"));
+            if (mapTarget != null && "testpaper".equals(mapTarget.get("type"))) {
+                myTestpaperIds.add(mapTarget.get("id"));
             }
         });
 

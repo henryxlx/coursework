@@ -9,7 +9,7 @@
     <#if favoriteQuestions?? && favoriteQuestions?size gt 0>
         <table class="table table-striped table-hover">
             <tbody>
-            <#list favoriteQuestions as favoriteQuestion>
+            <#list favoriteQuestions as qid, favoriteQuestion>
                 <#assign paper = testpapers[''+targets[favoriteQuestion.target].id]! />
                 <#assign question = questions[''+favoriteQuestion.questionId]! />
 

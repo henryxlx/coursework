@@ -1,8 +1,12 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.util.ArrayUtil;
+import com.jetwinner.util.FastHashMap;
+import com.jetwinner.util.MapUtil;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.service.QuestionService;
 import org.edunext.coursework.kernel.service.TestPaperService;
 import org.edunext.coursework.kernel.service.question.finder.TargetHelperBean;
@@ -14,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -102,5 +103,44 @@ public class MyQuestionController {
         model.addAttribute("targets", targets);
         model.addAttribute("paginator", paginator);
         return "/my/quiz/my-favorite-question";
+    }
+
+    @RequestMapping("/my/favorite/question/{id}/preview")
+    public String previewAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> question = this.questionService.getQuestion(id);
+        if (MapUtil.isEmpty(question)) {
+            throw new RuntimeGoingException("题目不存在！");
+        }
+        List<Map<String, Object>> myFavorites =
+                this.questionService.findAllFavoriteQuestionsByUserId(AppUser.getCurrentUser(request).getId());
+
+        Set<Object> questionIds = ArrayToolkit.column(myFavorites, "questionId");
+        if (!ArrayUtil.inArray("" + question.get("id"), questionIds.stream().map(String::valueOf).toArray(String[]::new))) {
+            throw new RuntimeGoingException("无权预览非本人收藏的题目!");
+        }
+
+        Map<String, Object> item = FastHashMap.build(4)
+                .add("questionId", question.get("id"))
+                .add("questionType", question.get("type"))
+                .add("question", question).toMap();
+
+        if ("material".equals(question.get("type"))) {
+            List<Map<String, Object>> questions = this.questionService.findQuestionsByParentId(id);
+
+            List<Map<String, Object>> items = new ArrayList<>(questions.size());
+            questions.forEach(value -> FastHashMap.build(3)
+                    .add("questionId", value.get("id"))
+                    .add("questionType", value.get("type"))
+                    .add("question", value).toMap());
+
+            item.put("items", items);
+        }
+        model.addAttribute("item", item);
+
+        model.addAttribute("type",
+                ArrayUtil.inArray(question.get("type"), "single_choice", "uncertain_choice") ? "choice" : question.get("type"));
+        model.addAttribute("questionPreview", Boolean.TRUE);
+
+        return "/quiz/test/question-preview-modal";
     }
 }

@@ -229,7 +229,7 @@ public class TestPaperController {
                 this.userService.findUsersByIds(ArrayToolkit.column(testpaperResults, "userId")));
 
         Set<Object> teacherIds = ArrayToolkit.column(testpaperResults, "checkTeacherId");
-        List<AppUser> teachers = new ArrayList(this.userService.findUsersByIds(teacherIds).values());
+        List<AppUser> teachers = new ArrayList<>(this.userService.findUsersByIds(teacherIds).values());
         model.addAttribute("teachers", ArrayToolkitOnJava8.index(teachers, AppUser::getId));
 
         model.addAttribute("status", status);

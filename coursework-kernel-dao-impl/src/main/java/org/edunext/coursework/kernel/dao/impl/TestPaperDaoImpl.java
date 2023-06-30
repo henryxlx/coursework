@@ -80,9 +80,13 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
         if (targets == null || targets.length < 1) {
             return new ArrayList<>(0);
         }
+        Object[] objTargets = new Object[targets.length];
+        for (int i = 0; i < targets.length; i++) {
+            objTargets[i] = targets[i];
+        }
         String marks = repeatQuestionMark(targets.length);
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE target IN (" + marks + ");";
-        List<Map<String, Object>> results = getJdbcTemplate().queryForList(sql, targets);
+        List<Map<String, Object>> results = getJdbcTemplate().queryForList(sql, objTargets);
         results.forEach(this::unserialize);
         return results;
     }

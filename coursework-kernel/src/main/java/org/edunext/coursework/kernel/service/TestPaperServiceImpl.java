@@ -620,4 +620,22 @@ public class TestPaperServiceImpl implements TestPaperService {
 
         return filterMap;
     }
+
+    @Override
+    public List<Map<String, Object>> findAllTestpapersByTarget(Integer id) {
+        String target = "course-" + id;
+        return this.testPaperDao.findTestpaperByTargets(target);
+    }
+
+    @Override
+    public Integer findTestpaperResultCountByStatusAndTestIds(Set<Object> testpaperIds, String status) {
+        return this.testPaperResultDao.findTestpaperResultCountByStatusAndTestIds(testpaperIds, status);
+    }
+
+    @Override
+    public List<Map<String, Object>> findTestpaperResultsByStatusAndTestIds(Set<Object> testpaperIds, String status,
+                                                                            Integer start, Integer limit) {
+
+        return this.testPaperResultDao.findTestpaperResultsByStatusAndTestIds(testpaperIds, status, start, limit);
+    }
 }

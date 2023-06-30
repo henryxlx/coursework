@@ -53,4 +53,11 @@ public interface TestPaperService {
     }
 
     TestPaperExamResult showTestpaper(Integer testpaperId, boolean isAccuracy);
+
+    List<Map<String, Object>> findAllTestpapersByTarget(Integer id);
+
+    Integer findTestpaperResultCountByStatusAndTestIds(Set<Object> testpaperIds, String status);
+
+    List<Map<String, Object>> findTestpaperResultsByStatusAndTestIds(Set<Object> testpaperIds, String status,
+                                                                     Integer start, Integer limit);
 }

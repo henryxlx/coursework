@@ -24,4 +24,6 @@ public interface TestPaperDao {
     void updateTestpaper(Object id, Map<String, Object> fields);
 
     List<Map<String, Object>> findTestpapersByIds(Set<Object> ids);
+
+    List<Map<String, Object>> findTestpaperByTargets(String... targets);
 }

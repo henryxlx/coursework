@@ -9,6 +9,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.TestPaperDao;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,6 +73,18 @@ public class TestPaperDaoImpl extends FastJdbcDaoSupport implements TestPaperDao
         String marks = repeatQuestionMark(ids.size());
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id IN (" + marks + ");";
         return getJdbcTemplate().queryForList(sql, ids.toArray());
+    }
+
+    @Override
+    public List<Map<String, Object>> findTestpaperByTargets(String... targets) {
+        if (targets == null || targets.length < 1) {
+            return new ArrayList<>(0);
+        }
+        String marks = repeatQuestionMark(targets.length);
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE target IN (" + marks + ");";
+        List<Map<String, Object>> results = getJdbcTemplate().queryForList(sql, targets);
+        results.forEach(this::unserialize);
+        return results;
     }
 
     private Map<String, Object> unserialize(Map<String, Object> map) {

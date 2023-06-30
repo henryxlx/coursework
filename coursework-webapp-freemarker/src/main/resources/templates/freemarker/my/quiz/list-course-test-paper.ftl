@@ -17,7 +17,7 @@
             <ul class="nav nav-tabs">
                 <li class="<#if status?? && status == 'reviewing'>active</#if>"><a
                             href="${ctx}/course/${course.id}/check/reviewing/list">未批阅</a></li>
-                <li class="<#if status ?? && status == 'finished'>}active</#if>"><a
+                <li class="<#if status ?? && status == 'finished'>active</#if>"><a
                             href="${ctx}/course/${course.id}/check/finished/list">已批阅</a></li>
             </ul>
             <br>

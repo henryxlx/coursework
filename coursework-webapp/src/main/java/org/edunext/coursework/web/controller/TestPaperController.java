@@ -1,12 +1,15 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.toolbag.ArrayToolkitOnJava8;
 import com.jetwinner.util.ArrayUtil;
 import com.jetwinner.util.FastHashMap;
 import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.QuestionService;
@@ -21,9 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,25 +38,19 @@ public class TestPaperController {
     private final TestPaperService testPaperService;
     private final QuestionService questionService;
     private final TargetHelperBean targetHelperBean;
+    private final AppUserService userService;
 
     public TestPaperController(CourseService courseService,
                                TestPaperService testPaperService,
                                QuestionService questionService,
-                               TargetHelperBean targetHelperBean) {
+                               TargetHelperBean targetHelperBean,
+                               AppUserService userService) {
 
         this.courseService = courseService;
         this.testPaperService = testPaperService;
         this.questionService = questionService;
         this.targetHelperBean = targetHelperBean;
-    }
-
-    @RequestMapping("/course/{id}/check/{status}/list")
-    public String teacherCheckInCourseAction(@PathVariable Integer id, @PathVariable String status,
-                                             HttpServletRequest request, Model model) {
-
-        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
-        model.addAttribute("course", course);
-        return "/my/quiz/list-course-test-paper";
+        this.userService = userService;
     }
 
     @RequestMapping("/test/{testId}/preview")
@@ -211,5 +206,37 @@ public class TestPaperController {
         model.addAttribute("paperResult", testpaperResult);
         model.addAttribute("id", id);
         return "/quiz/test/testpaper-show";
+    }
+
+    @RequestMapping("/course/{id}/check/{status}/list")
+    public String teacherCheckInCourseAction(@PathVariable Integer id, @PathVariable String status,
+                                             HttpServletRequest request, Model model) {
+
+        Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        List<Map<String, Object>> testpapers = this.testPaperService.findAllTestpapersByTarget(id);
+
+        Set<Object> testpaperIds = ArrayToolkit.column(testpapers, "id");
+
+        Paginator paginator = new Paginator(request,
+                this.testPaperService.findTestpaperResultCountByStatusAndTestIds(testpaperIds, status), 10);
+
+        List<Map<String, Object>> testpaperResults =
+                this.testPaperService.findTestpaperResultsByStatusAndTestIds(testpaperIds, status,
+                        paginator.getOffsetCount(), paginator.getPerPageCount());
+
+        model.addAttribute("users",
+                this.userService.findUsersByIds(ArrayToolkit.column(testpaperResults, "userId")));
+
+        Set<Object> teacherIds = ArrayToolkit.column(testpaperResults, "checkTeacherId");
+        List<AppUser> teachers = new ArrayList(this.userService.findUsersByIds(teacherIds).values());
+        model.addAttribute("teachers", ArrayToolkitOnJava8.index(teachers, AppUser::getId));
+
+        model.addAttribute("status", status);
+        model.addAttribute("testpapers", ArrayToolkit.index(testpapers, "id"));
+        model.addAttribute("paperResults", ArrayToolkit.index(testpaperResults, "id"));
+        model.addAttribute("course", course);
+        model.addAttribute("paginator", paginator);
+        return "/my/quiz/list-course-test-paper";
     }
 }

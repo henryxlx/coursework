@@ -7,6 +7,7 @@ import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,8 +74,9 @@ public class MyTestPaperController {
         }
     }
 
-    @RequestMapping("/my/teacher/{target}/test/list")
-    public String listReviewingTestAction(HttpServletRequest request) {
+    @RequestMapping("/my/teacher/{status}/test/list")
+    public String listReviewingTestAction(@PathVariable String status, HttpServletRequest request, Model model) {
+        model.addAttribute("status", status);
         return "/my/quiz/teacher-test-layout";
     }
 }

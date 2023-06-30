@@ -5,7 +5,11 @@ import freemarker.template.SimpleNumber;
 import freemarker.template.SimpleScalar;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author xulixin
@@ -40,12 +44,15 @@ public class CourseWorkFreeMarkerSharedVariableRegister extends BaseFreeMarkerSh
             SimpleScalar scalar = (SimpleScalar) args.get(0);
             String stem = scalar.getAsString();
             if (stem != null && stem.indexOf("[[") >= 0 && stem.indexOf("]]") >= 0) {
-//                $index = 0;
-//                $stem = preg_replace_callback('/\[\[.+?\]\]/', function($matches) use (&$index) {
-//                    $index ++;
-//                    return "<span class='question-stem-fill-blank'>({$index})</span>";
-//                }, $stem);
-//                return $stem;
+                Matcher m = Pattern.compile("(?<=\\[\\[).+?(?=\\]\\])").matcher(stem);
+                List<String> list = new ArrayList<>();
+                while (m.find()) {
+                    list.add(m.group());
+                }
+                for (int i = 0; i < list.size(); i++) {
+                    String target = "[[" + list.get(i) + "]]";
+                    stem = stem.replace(target, "<span class='question-stem-fill-blank'>(" + i + ")</span>");
+                }
             }
             return stem;
         });

@@ -48,5 +48,9 @@ public interface TestPaperService {
 
     Map<String, Object> getTestpaperResult(Integer id);
 
-    TestPaperExamResult showTestpaper(Integer id);
+    default TestPaperExamResult showTestpaper(Integer testpaperId) {
+        return this.showTestpaper(testpaperId, false);
+    }
+
+    TestPaperExamResult showTestpaper(Integer testpaperId, boolean isAccuracy);
 }

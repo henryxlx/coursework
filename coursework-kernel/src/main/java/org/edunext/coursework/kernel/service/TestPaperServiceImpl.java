@@ -8,6 +8,7 @@ import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.TestPaperDao;
 import org.edunext.coursework.kernel.dao.TestPaperItemDao;
+import org.edunext.coursework.kernel.dao.TestPaperItemResultDao;
 import org.edunext.coursework.kernel.dao.TestPaperResultDao;
 import org.edunext.coursework.kernel.service.question.type.AbstractQuestionType;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
@@ -33,18 +34,21 @@ public class TestPaperServiceImpl implements TestPaperService {
     private final TestPaperDao testPaperDao;
     private final TestPaperItemDao testPaperItemDao;
     private final TestPaperResultDao testPaperResultDao;
+    private final TestPaperItemResultDao testPaperItemResultDao;
     private final QuestionService questionService;
     private final ApplicationContext applicationContext;
 
     public TestPaperServiceImpl(TestPaperDao testPaperDao,
                                 TestPaperItemDao testPaperItemDao,
                                 TestPaperResultDao testPaperResultDao,
+                                TestPaperItemResultDao testPaperItemResultDao,
                                 QuestionService questionService,
                                 ApplicationContext applicationContext) {
 
         this.testPaperDao = testPaperDao;
         this.testPaperItemDao = testPaperItemDao;
         this.testPaperResultDao = testPaperResultDao;
+        this.testPaperItemResultDao = testPaperItemResultDao;
         this.questionService = questionService;
         this.applicationContext = applicationContext;
     }
@@ -178,13 +182,14 @@ public class TestPaperServiceImpl implements TestPaperService {
                 } else {
                     mapItems = ArrayToolkit.toMap(mapParentQuestion.get("item"));
                 }
-//                $items[$item['parentId']]['items'][$questionId] = $items[$questionId];
+                // $items[$item['parentId']]['items'][$questionId] = $items[$questionId];
                 mapItems.put(questionId, item);
-//                formatItems['material'][$item['parentId']]['items'][$item['seq']] = $items[$questionId];
 
+                // formatItems['material'][$item['parentId']]['items'][$item['seq']] = $items[$questionId];
+                putFormatItemsBySeq(formatItems, item);
                 it.remove(); // items.remove(questionId);
             } else {
-//                formatItems.get(item.get("questionType")).put("" + item.get("questionId"), items.get(questionId));
+                // formatItems.get(item.get("questionType")).put("" + item.get("questionId"), items.get(questionId));
                 Map<String, Object> mapForItem;
                 if (formatItems.containsKey(item.get("questionType"))) {
                     mapForItem = formatItems.get("" + item.get("questionType"));
@@ -199,6 +204,30 @@ public class TestPaperServiceImpl implements TestPaperService {
 
         // ksort($formatItems);
         return formatItems;
+    }
+
+    private void putFormatItemsBySeq(Map<String, Map<String, Object>> formatItems, Map<String, Object> item) {
+        Map<String, Object> mapForMaterial = formatItems.get("material");
+        if (mapForMaterial == null) {
+            mapForMaterial = new HashMap<>();
+            formatItems.put("material", mapForMaterial);
+        }
+        Map<String, Object> mapFormatItems;
+        String parentId = String.valueOf(item.get("parentId"));
+        if (mapForMaterial.get(parentId) == null) {
+            mapFormatItems = new HashMap<>();
+            mapForMaterial.put(parentId, mapForMaterial);
+        } else {
+            mapFormatItems = ArrayToolkit.toMap(mapForMaterial.get(parentId));
+        }
+        Map<String, Object> mapItemSeq;
+        if (mapFormatItems.get("items") == null) {
+            mapItemSeq = new HashMap<>();
+            mapFormatItems.put("items", mapFormatItems);
+        } else {
+            mapItemSeq = ArrayToolkit.toMap(mapFormatItems.get("items"));
+        }
+        mapItemSeq.put("" + item.get("seq"), item);
     }
 
     private Map<String, Map<String, Object>> completeQuestion(Map<String, Map<String, Object>> items,
@@ -263,8 +292,170 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public TestPaperExamResult showTestpaper(Integer id) {
-        return new TestPaperExamResult();
+    public TestPaperExamResult showTestpaper(Integer testpaperResultId, boolean isAccuracy) {
+        List<Map<String, Object>> list = this.testPaperItemResultDao.findTestResultsByTestpaperResultId(testpaperResultId);
+        Map<String, Map<String, Object>> itemResults = ArrayToolkit.index(list, "questionId");
+
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(testpaperResultId);
+
+        list = this.getTestpaperItems(testpaperResult.get("testId"));
+        Map<String, Map<String, Object>> items = ArrayToolkit.index(list, "questionId");
+
+        Map<String, Map<String, Object>> questions = this.questionService.findQuestionsByIds(ArrayToolkit.column(list, "questionId"));
+
+        questions = this.completeQuestion(items, questions);
+
+        Map<String, Map<String, Object>> formatItems = new HashMap<>();
+        Iterator<Map.Entry<String, Map<String, Object>>> it = items.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Map<String, Object>> entry = it.next();
+            String questionId = entry.getKey();
+            Map<String, Object> item = entry.getValue();
+
+            if (itemResults.containsKey(questionId)) {
+                questions.get(questionId).put("testResult", itemResults.get(questionId));
+            }
+
+            items.get(questionId).put("question", questions.get(questionId));
+
+            if (ValueParser.parseInt(item.get("parentId")) != 0) {
+                Map<String, Object> mapParentQuestion = items.get("" + item.get("parentId"));
+                Map<String, Object> mapItems;
+                if (!mapParentQuestion.containsKey("items")) {
+                    mapItems = new HashMap<>();
+                    mapParentQuestion.put("items", mapItems);
+                } else {
+                    mapItems = ArrayToolkit.toMap(mapParentQuestion.get("item"));
+                }
+                // $items[$item['parentId']]['items'][$questionId] = $items[$questionId];
+                mapItems.put(questionId, item);
+
+                // formatItems['material'][$item['parentId']]['items'][$item['seq']] = $items[$questionId];
+                putFormatItemsBySeq(formatItems, item);
+                it.remove(); // items.remove(questionId);
+            } else {
+                Map<String, Object> mapForItem;
+                if (formatItems.containsKey(item.get("questionType"))) {
+                    mapForItem = formatItems.get("" + item.get("questionType"));
+                } else {
+                    mapForItem = new HashMap<>();
+                    formatItems.put("" + item.get("questionType"), mapForItem);
+                }
+                mapForItem.put("" + item.get("questionId"), item);
+            }
+
+        }
+
+        TestPaperExamResult examResult = new TestPaperExamResult();
+        if (isAccuracy) {
+            examResult.setAccuracy(this.makeAccuracy(items));
+        }
+
+        // ksort($formatItems);
+        examResult.setFormatItems(formatItems);
+        return examResult;
+    }
+
+    private Map<String, Map<String, Integer>> makeAccuracy(Map<String, Map<String, Object>> items) {
+        Map<String, Integer> accuracyResult = new HashMap<>(7);
+        accuracyResult.put("right", 0);
+        accuracyResult.put("partRight", 0);
+        accuracyResult.put("wrong", 0);
+        accuracyResult.put("noAnswer", 0);
+        accuracyResult.put("all", 0);
+        accuracyResult.put("score", 0);
+        accuracyResult.put("totalScore", 0);
+
+        Map<String, Map<String, Integer>> accuracy = new HashMap<>(7);
+        accuracy.put("single_choice", accuracyResult);
+        accuracy.put("choice", accuracyResult);
+        accuracy.put("uncertain_choice", accuracyResult);
+        accuracy.put("determine", accuracyResult);
+        accuracy.put("fill", accuracyResult);
+        accuracy.put("essay", accuracyResult);
+        accuracy.put("material", accuracyResult);
+
+        for (Map<String, Object> item : items.values()) {
+            if ("material".equals(item.get("questionType"))) {
+
+                if (item.get("items") == null) {
+                    continue;
+                }
+
+                Map<String, Object> mapForItem = ArrayToolkit.toMap(item.get("items"));
+
+                for (Object objEntry : mapForItem.values()) {
+                    Map<String, Object> mapForValue = ArrayToolkit.toMap(objEntry);
+                    if (MapUtil.isEmpty(mapForValue)) {
+                        continue;
+                    }
+                    if ("essay".equals(mapForValue.get("questionType"))) {
+                        accuracy.get("material").put("hasEssay", 1); // hasEssay = true;
+                    }
+                    Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapForValue.get("questionTestResult"));
+                    if (MapUtil.isEmpty(mapForTestResult)) {
+                        continue;
+                    }
+
+                    int value = ValueParser.parseInt(accuracy.get("material").get("score"));
+                    accuracy.get("material").put("score", value + ValueParser.parseInt(mapForTestResult.get("score")));
+                    value = ValueParser.parseInt(accuracy.get("material").get("totalScore"));
+                    accuracy.get("material").put("totalScore", value + ValueParser.parseInt(mapForValue.get("score")));
+
+                    value = ValueParser.parseInt(accuracy.get("material").get("all"));
+                    accuracy.get("material").put("all", ++value);
+                    if ("right".equals(mapForTestResult.get("status"))) {
+                        value = ValueParser.parseInt(accuracy.get("material").get("right"));
+                        accuracy.get("material").put("right", ++value);
+                    }
+                    if ("partRight".equals(mapForTestResult.get("status"))) {
+                        value = ValueParser.parseInt(accuracy.get("material").get("partRight"));
+                        accuracy.get("material").put("partRight", ++value);
+                    }
+                    if ("wrong".equals(mapForTestResult.get("status"))) {
+                        value = ValueParser.parseInt(accuracy.get("material").get("wrong"));
+                        accuracy.get("material").put("wrong", ++value);
+                    }
+                    if ("noAnswer".equals(mapForTestResult.get("status"))) {
+                        value = ValueParser.parseInt(accuracy.get("material").get("noAnswer"));
+                        accuracy.get("material").put("noAnswer", ++value);
+                    }
+                }
+            } else {
+
+                Map<String, Object> mapForTestResult = ArrayToolkit.toMap(item.get("questionTestResult"));
+                if (MapUtil.isEmpty(mapForTestResult)) {
+                    continue;
+                }
+
+                int value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("score"));
+                accuracy.get(item.get("questionType")).put("score", value + ValueParser.parseInt(mapForTestResult.get("score")));
+                value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("totalScore"));
+                accuracy.get(item.get("questionType")).put("totalScore", value + ValueParser.parseInt(item.get("score")));
+
+                value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("all"));
+                accuracy.get(item.get("questionType")).put("all", ++value);
+                if ("right".equals(mapForTestResult.get("status"))) {
+                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("right"));
+                    accuracy.get(item.get("questionType")).put("right", ++value);
+                }
+                if ("partRight".equals(mapForTestResult.get("status"))) {
+                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("partRight"));
+                    accuracy.get(item.get("questionType")).put("partRight", ++value);
+                }
+                if ("wrong".equals(mapForTestResult.get("status"))) {
+                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("wrong"));
+                    accuracy.get(item.get("questionType")).put("wrong", ++value);
+                }
+                if ("noAnswer".equals(mapForTestResult.get("status"))) {
+                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("noAnswer"));
+                    accuracy.get(item.get("questionType")).put("noAnswer", ++value);
+                }
+
+            }
+        }
+
+        return accuracy;
     }
 
     private TestPaperBuilder getTestPaperBuilder(Object pattern) throws ActionGraspException {

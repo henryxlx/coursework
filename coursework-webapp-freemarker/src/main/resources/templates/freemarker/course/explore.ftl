@@ -2,7 +2,7 @@
 <#assign metaKeywords><#if category.id??>${category.name}</#if> ${setting('site.name')}</#assign>
 <#assign metaDescription><#if category.id??>${category.name}}的</#if>课程列表，第${RequestParameters['page']!1}页。</#assign>
 
-<#assign localVarForBlockTitle><#if category.id??>${category.name} 课程<#else>全部课程</#if> 第${RequestParameters['page']!1}页- ${blockTitleParent}</#assign>
+<#assign localVarForBlockTitle><#if category.id??>${category.name} 课程<#else>全部课程</#if> 第${RequestParameters['page']!1}页</#assign>
 <@block_title localVarForBlockTitle/>
 
 <#include '/default/layout.ftl'>

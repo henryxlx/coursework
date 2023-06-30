@@ -154,8 +154,69 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public Map<String, Map<String, Object>> previewTestpaper(Integer testId) {
-        return null;
+    public Map<String, Map<String, Object>> previewTestpaper(Integer testpaperId) {
+        List<Map<String, Object>> list = this.getTestpaperItems(testpaperId);
+        Map<String, Map<String, Object>> items = ArrayToolkit.index(list, "questionId");
+        Map<String, Map<String, Object>> questions = this.questionService.findQuestionsByIds(ArrayToolkit.column(list, "questionId"));
+
+        questions = this.completeQuestion(items, questions);
+
+        Map<String, Map<String, Object>> formatItems = new HashMap<>();
+        Iterator<Map.Entry<String, Map<String, Object>>> it = items.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Map<String, Object>> entry = it.next();
+            String questionId = entry.getKey();
+            Map<String, Object> item = entry.getValue();
+            items.get(questionId).put("question", questions.get(questionId));
+
+            if (ValueParser.parseInt(item.get("parentId")) != 0) {
+                Map<String, Object> mapParentQuestion = items.get("" + item.get("parentId"));
+                Map<String, Object> mapItems;
+                if (!mapParentQuestion.containsKey("items")) {
+                    mapItems = new HashMap<>();
+                    mapParentQuestion.put("items", mapItems);
+                } else {
+                    mapItems = ArrayToolkit.toMap(mapParentQuestion.get("item"));
+                }
+//                $items[$item['parentId']]['items'][$questionId] = $items[$questionId];
+                mapItems.put(questionId, item);
+//                formatItems['material'][$item['parentId']]['items'][$item['seq']] = $items[$questionId];
+
+                it.remove(); // items.remove(questionId);
+            } else {
+//                formatItems.get(item.get("questionType")).put("" + item.get("questionId"), items.get(questionId));
+                Map<String, Object> mapForItem;
+                if (formatItems.containsKey(item.get("questionType"))) {
+                    mapForItem = formatItems.get("" + item.get("questionType"));
+                } else {
+                    mapForItem = new HashMap<>();
+                    formatItems.put("" + item.get("questionType"), mapForItem);
+                }
+                mapForItem.put("" + item.get("questionId"), item);
+            }
+
+        }
+
+        // ksort($formatItems);
+        return formatItems;
+    }
+
+    private Map<String, Map<String, Object>> completeQuestion(Map<String, Map<String, Object>> items,
+                                                              Map<String, Map<String, Object>> questions) {
+
+        String[] arrQuestionIds = questions.keySet().toArray(new String[questions.keySet().size()]);
+        items.entrySet().forEach(e -> {
+            Map<String, Object> item = e.getValue();
+            if (!ArrayUtil.inArray("" + item.get("questionId"), arrQuestionIds)) {
+                questions.put(String.valueOf(item.get("questionId")),
+                        FastHashMap.build(4)
+                                .add("isDeleted", Boolean.TRUE)
+                                .add("stem", "此题已删除")
+                                .add("score", 0)
+                                .add("answer", "").toMap());
+            }
+        });
+        return questions;
     }
 
     @Override

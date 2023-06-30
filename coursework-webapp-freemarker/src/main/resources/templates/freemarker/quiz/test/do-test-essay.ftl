@@ -122,7 +122,7 @@
         </div>
 
 
-        <#if (questionPreview && setting('questions.testpaper_answers_show_mode', 'hide') == 'hide')  || (setting('questions.testpaper_answers_show_mode', '') == 'reviewed' && paperResultStatus == 'finished')>
+        <#if (questionPreview?? && questionPreview && setting('questions.testpaper_answers_show_mode', 'hide') == 'hide')  || (setting('questions.testpaper_answers_show_mode', '') == 'reviewed' && paperResultStatus == 'finished')>
             <div class="testpaper-preview-answer clearfix mtl mbl">
                 <div class="testpaper-question-result">
                     <div class="testpaper-question-result-suggested">

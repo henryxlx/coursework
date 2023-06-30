@@ -68,14 +68,14 @@ public class TestPaperController {
 
         Map<String, Map<String, Object>> items = this.testPaperService.previewTestpaper(testId);
 
-//        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
+        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
 
         model.addAttribute("items", items);
         model.addAttribute("limitTime", ValueParser.parseInt(testpaper.get("limitedTime")) * 60);
         model.addAttribute("paper", testpaper);
         model.addAttribute("id", 0);
         model.addAttribute("isPreview", "preview");
-        return "quiz/test/testpaper-show";
+        return "/quiz/test/testpaper-show";
     }
 
     private Map<String, Object> makeTestpaperTotal(Map<String, Object> testpaper,
@@ -95,7 +95,7 @@ public class TestPaperController {
                 map.put("missScore", 0);
                 if (testPaperMetas.containsKey("missScore")) {
                     Map<String, Object> mapForMiss = ArrayToolkit.toMap(testPaperMetas.get("missScore"));
-                    if (mapForMiss.containsKey(type)) {
+                    if (mapForMiss != null && mapForMiss.containsKey(type)) {
                         map.put("missScore", mapForMiss.get(type));
                     }
                 }

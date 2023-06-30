@@ -21,15 +21,17 @@
 
         <#list paper.metas.question_type_seq! as type>
 
-            <#list (items[type])! as item>
+            <#list (items[type])! as qid, item>
                 <#if item.questionType != 'material'>
                     <a href="javascript:;"
-                       data-anchor="#question${item.questionId}" class="btn btn-default btn-index pull-left <#if item.question.testResult??>active</#if>>${item.seq}</a>
-				<#else>
-					<#list item.items as item>
-						<a href="javascript:;" data-anchor="#question${item.questionId}" class="btn btn-default btn-index pull-left <#if item.question.testResult??>active</#if>">${item.seq}</a>
-					</#list>
-				</#if>
+                       data-anchor="#question${item.questionId}"
+                       class="btn btn-default btn-index pull-left <#if item.question.testResult??>active</#if>">${item.seq}</a>
+                <#else>
+                    <#list item.items as item>
+                        <a href="javascript:;" data-anchor="#question${item.questionId}"
+                           class="btn btn-default btn-index pull-left <#if item.question.testResult??>active</#if>">${item.seq}</a>
+                    </#list>
+                </#if>
 
             </#list>
 

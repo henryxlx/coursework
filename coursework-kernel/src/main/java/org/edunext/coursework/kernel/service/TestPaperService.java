@@ -34,7 +34,7 @@ public interface TestPaperService {
 
     Map<String, Object> closeTestpaper(Integer testpaperId);
 
-    Map<String, Map<String, Object>> previewTestpaper(Integer testId);
+    Map<String, Map<String, Object>> previewTestpaper(Integer testpaperId);
 
     Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, Integer userId);
 

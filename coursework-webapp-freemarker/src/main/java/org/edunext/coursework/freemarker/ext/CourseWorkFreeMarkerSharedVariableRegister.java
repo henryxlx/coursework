@@ -51,7 +51,7 @@ public class CourseWorkFreeMarkerSharedVariableRegister extends BaseFreeMarkerSh
                 }
                 for (int i = 0; i < list.size(); i++) {
                     String target = "[[" + list.get(i) + "]]";
-                    stem = stem.replace(target, "<span class='question-stem-fill-blank'>(" + i + ")</span>");
+                    stem = stem.replace(target, "<span class='question-stem-fill-blank'>(" + (i + 1) + ")</span>");
                 }
             }
             return stem;

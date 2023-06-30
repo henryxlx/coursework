@@ -62,7 +62,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <a href="{{ path('course_manage_test_results', {id:id} ) }}" id="show_testpaper_result"
+                            <a href="${ctx}/test/${id}/result" id="show_testpaper_result"
                                class="btn btn-info">查看结果</a>
                         </div>
                     </div>
@@ -108,8 +108,8 @@
                             <a href="javascript:;" class="btn btn-default" data-dismiss="modal">取消</a>
                             <button type="submit" class="btn btn-info" data-toggle="form-submit"
                                     data-target="#teacherCheckForm" id="testpaper-teacherSay-btn"
-                                    data-post-url="{{ path('course_manage_test_teacher_check', { id: id }) }}"
-                                    data-goto="{{ path('course_manage_list_teacher_test_reviewing') }}">完成批阅
+                                    data-post-url="${ctx}/test/${id}/teacher/check"
+                                    data-goto="${ctx}/my/teacher/reviewing/test/list">完成批阅
                             </button>
                         </div>
                     </div>

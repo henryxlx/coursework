@@ -29,7 +29,7 @@ public class MyTestPaperController {
         this.courseService = courseService;
     }
 
-    @RequestMapping({"/my/quiz", "/my/favorite/question/show"})
+    @RequestMapping("/my/quiz")
     public String indexAction(HttpServletRequest request, Model model) {
         AppUser user = AppUser.getCurrentUser(request);
 

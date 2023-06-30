@@ -12,6 +12,7 @@ import org.edunext.coursework.kernel.dao.QuestionDao;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,6 +135,26 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<Map<String, Object>> findAllFavoriteQuestionsByUserId(Object userId) {
-        return null;
+        return new ArrayList<>(0);
+    }
+
+    @Override
+    public void favoriteQuestion(Integer id, String target, Integer userId) {
+
+    }
+
+    @Override
+    public void unFavoriteQuestion(Integer id, String target, Integer userId) {
+
+    }
+
+    @Override
+    public Integer findFavoriteQuestionsCountByUserId(Integer userId) {
+        return 0;
+    }
+
+    @Override
+    public List<Map<String, Object>> findFavoriteQuestionsByUserId(Integer userId, Integer start, Integer limit) {
+        return new ArrayList<>(0);
     }
 }

@@ -52,12 +52,12 @@ public class TestPaperController {
     }
 
     @RequestMapping("/test/{testId}/preview")
-    public String previewTestAction(@PathVariable Integer testId, Model model) {
+    public String previewTestAction(@PathVariable Integer testId, HttpServletRequest request, Model model) {
         Map<String, Object> testpaper = this.testPaperService.getTestpaper(testId);
 
-//        if (!this.testPaperService.canTeacherCheck(testpaper.get("id"))) {
-//            throw new RuntimeGoingException("无权预览试卷！");
-//        }
+        if (!this.testPaperService.canTeacherCheck(testpaper.get("id"), AppUser.getCurrentUser(request))) {
+            throw new RuntimeGoingException("无权预览试卷！");
+        }
 
         Map<String, Map<String, Object>> items = this.testPaperService.previewTestpaper(testId);
 
@@ -242,10 +242,10 @@ public class TestPaperController {
     @ResponseBody
     public Boolean submitTestAction(@PathVariable Integer id, HttpServletRequest request) {
         Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
-        String[] answers = data.get("data") != null ? request.getParameterValues("data") : new String[0];
+        Map<String, Object> answers = this.mapping("data", data);
 
-//        this.testPaperService.submitTestpaperAnswer(id, answers);
-//        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
+        this.testPaperService.submitTestpaperAnswer(id, answers, AppUser.getCurrentUser(request));
+        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
 
         return Boolean.TRUE;
     }
@@ -257,17 +257,43 @@ public class TestPaperController {
         if (MapUtil.isEmpty(testpaperResult)) {
             throw new RuntimeGoingException("试卷不存在!");
         }
+
+        AppUser user = AppUser.getCurrentUser(request);
         //权限！
-        if (ValueParser.parseInt(testpaperResult.get("userId")) != AppUser.getCurrentUser(request).getId()) {
+        if (ValueParser.parseInt(testpaperResult.get("userId")) != user.getId()) {
             throw new RuntimeGoingException("不可以访问其他学生的试卷哦~");
         }
 
         Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
-        String[] answers = data.get("data") != null ? request.getParameterValues("data") : new String[0];
+        Map<String, Object> answers = this.mapping("data", data);
 
-//        this.testPaperService.submitTestpaperAnswer(id, answers);
-//        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
+        this.testPaperService.submitTestpaperAnswer(id, answers, user);
+        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
 
         return Boolean.TRUE;
+    }
+
+    private Map<String, Object> mapping(String fieldName, Map<String, Object> fields) {
+        if (!fieldName.endsWith("[")) {
+            fieldName = fieldName + "[";
+        }
+        int nums = 0;
+        Set<String> keys = fields.keySet();
+        for (String key : keys) {
+            if (key.startsWith(fieldName)) {
+                nums++;
+            }
+        }
+        Map<String, Object> map = new HashMap<>(nums);
+        if (nums > 0) {
+            for (String key : keys) {
+                if (!key.startsWith(fieldName)) {
+                    continue;
+                }
+                String name = key.substring(fieldName.length(), key.length() - 2);
+                map.put(name, fields.get(key));
+            }
+        }
+        return map;
     }
 }

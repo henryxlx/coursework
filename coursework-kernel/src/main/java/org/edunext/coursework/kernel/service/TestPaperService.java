@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 
@@ -60,4 +61,10 @@ public interface TestPaperService {
 
     List<Map<String, Object>> findTestpaperResultsByStatusAndTestIds(Set<Object> testpaperIds, String status,
                                                                      Integer start, Integer limit);
+
+    boolean canTeacherCheck(Object testpaperId, AppUser currentUser);
+
+    List<Map<String, Object>> submitTestpaperAnswer(Integer testpaperId, Map<String, Object> answers, AppUser user);
+
+    void updateTestpaperResult(Integer testpaperId, Object usedTime);
 }

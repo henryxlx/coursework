@@ -1,5 +1,6 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
@@ -35,21 +36,27 @@ public class TestPaperServiceImpl implements TestPaperService {
     private final TestPaperItemDao testPaperItemDao;
     private final TestPaperResultDao testPaperResultDao;
     private final TestPaperItemResultDao testPaperItemResultDao;
+    private final CourseService courseService;
     private final QuestionService questionService;
+    private final UserAccessControlService userAccessControlService;
     private final ApplicationContext applicationContext;
 
     public TestPaperServiceImpl(TestPaperDao testPaperDao,
                                 TestPaperItemDao testPaperItemDao,
                                 TestPaperResultDao testPaperResultDao,
                                 TestPaperItemResultDao testPaperItemResultDao,
+                                CourseService courseService,
                                 QuestionService questionService,
+                                UserAccessControlService userAccessControlService,
                                 ApplicationContext applicationContext) {
 
         this.testPaperDao = testPaperDao;
         this.testPaperItemDao = testPaperItemDao;
         this.testPaperResultDao = testPaperResultDao;
         this.testPaperItemResultDao = testPaperItemResultDao;
+        this.courseService = courseService;
         this.questionService = questionService;
+        this.userAccessControlService = userAccessControlService;
         this.applicationContext = applicationContext;
     }
 
@@ -637,5 +644,109 @@ public class TestPaperServiceImpl implements TestPaperService {
                                                                             Integer start, Integer limit) {
 
         return this.testPaperResultDao.findTestpaperResultsByStatusAndTestIds(testpaperIds, status, start, limit);
+    }
+
+    @Override
+    public boolean canTeacherCheck(Object testpaperId, AppUser currentUser) {
+        Map<String, Object> paper = this.testPaperDao.getTestpaper(testpaperId);
+        if (MapUtil.isEmpty(paper)) {
+            throw new RuntimeGoingException("试卷不存在");
+        }
+
+        if (userAccessControlService.isAdmin()) {
+            return true;
+        }
+
+        String[] target = EasyStringUtil.explode("-", paper.get("target"));
+        target = target == null || target.length < 2 ? new String[1] : target;
+
+        if ("course".equals(target[0])) {
+            String[] targetId = EasyStringUtil.explode("/", target[1]);
+            targetId = targetId == null || targetId.length < 1 ? new String[]{"0"} : targetId;
+            Map<String, Object> member = this.courseService.getCourseMember(ValueParser.toInteger(targetId[0]),
+                    currentUser.getId());
+
+            // @todo: 这个是有问题的。
+            if ("teacher".equals(member.get("role"))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public List<Map<String, Object>> submitTestpaperAnswer(Integer testpaperId, Map<String, Object> answers, AppUser user) {
+        if (MapUtil.isEmpty(answers)) {
+            return new ArrayList<>(0);
+        }
+
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(testpaperId);
+
+        if (ValueParser.parseInt(testpaperResult.get("userId")) != user.getId()) {
+            throw new RuntimeGoingException("无权修改其他学员的试卷！");
+        }
+
+        if (ArrayUtil.inArray(testpaperResult.get("status"), "reviewing", "finished")) {
+            throw new RuntimeGoingException("已经交卷的试卷不能更改答案!");
+        }
+
+        //已经有记录的
+        List<Map<String, Object>> itemResults = this.filterTestAnswers(testpaperResult.get("id"), answers);
+        Map<String, Map<String, Object>> itemIdsOld = ArrayToolkit.index(itemResults, "questionId");
+
+        Map<String, Object> answersOld = ArrayToolkit.part(answers, itemIdsOld.keySet().stream().toArray(String[]::new));
+
+        if (MapUtil.isNotEmpty(answersOld)) {
+            this.testPaperItemResultDao.updateItemAnswers(testpaperResult.get("id"), answersOld);
+        }
+        //还没记录的
+        Set<String> itemIdsNew = this.diff(answers.keySet(), itemIdsOld.keySet());
+
+        Map<String, Object> answersNew = ArrayToolkit.part(answers, itemIdsNew.stream().toArray(String[]::new));
+
+        if (MapUtil.isNotEmpty(answersNew)) {
+            this.testPaperItemResultDao.addItemAnswers(testpaperResult.get("id"), answersNew,
+                    testpaperResult.get("testId"), user.getId());
+        }
+
+        //测试数据
+        return this.filterTestAnswers(testpaperResult.get("id"), answers);
+    }
+
+    private List<Map<String, Object>> filterTestAnswers(Object testpaperResultId, Map<String, Object> answers) {
+        return this.testPaperItemResultDao.findTestResultsByItemIdAndTestId(answers.keySet(), testpaperResultId);
+    }
+
+    private Set<String> diff(Set<String> a, Set<String> b) {
+        Set<String> dif = new HashSet<>();
+        for (String s : b) {
+            if (!(a.contains(s))) {
+                dif.add(s);
+            }
+        }
+        for (String s : a) {
+            if (!(b.contains(s))) {
+                dif.add(s);
+            }
+        }
+        return dif;
+    }
+
+    @Override
+    public void updateTestpaperResult(Integer testpaperId, Object usedTime) {
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(testpaperId);
+
+        Map<String, Object> fields = new HashMap<>(4);
+        fields.put("usedTime", ValueParser.parseInt(usedTime) + ValueParser.parseInt(testpaperResult.get("usedTime")));
+
+        fields.put("updateTime", System.currentTimeMillis());
+
+        fields.put("endTime", System.currentTimeMillis());
+        fields.put("active", 1);
+
+        this.testPaperResultDao.updateTestpaperResultActive(testpaperResult.get("testId"),
+                testpaperResult.get("userId"));
+
+        this.testPaperResultDao.updateTestpaperResult(testpaperId, fields);
     }
 }

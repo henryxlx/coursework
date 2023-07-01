@@ -3,6 +3,8 @@ package org.edunext.coursework.web.controller;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.FileToolkit;
 import com.jetwinner.util.EasyStringUtil;
+import com.jetwinner.util.FastHashMap;
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.image.ImageSize;
 import com.jetwinner.webfast.image.ImageUtil;
 import com.jetwinner.webfast.kernel.AppUser;
@@ -15,7 +17,10 @@ import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import com.jetwinner.webfast.mvc.extension.WebExtensionPack;
+import org.edunext.coursework.kernel.service.CourseNoteService;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.CourseThreadService;
+import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +44,9 @@ import java.util.Map;
 public class CourseManageController {
 
     private final CourseService courseService;
+    private final CourseNoteService noteService;
+    private final CourseThreadService threadService;
+    private final TestPaperService testPaperService;
     private final AppCategoryService categoryService;
     private final AppSettingService settingService;
     private final FastAppConst appConst;
@@ -46,6 +54,9 @@ public class CourseManageController {
     private final AppUserService userService;
 
     public CourseManageController(CourseService courseService,
+                                  CourseNoteService noteService,
+                                  CourseThreadService threadService,
+                                  TestPaperService testPaperService,
                                   AppCategoryService categoryService,
                                   AppSettingService settingService,
                                   FastAppConst appConst,
@@ -53,6 +64,9 @@ public class CourseManageController {
                                   AppUserService userService) {
 
         this.courseService = courseService;
+        this.noteService = noteService;
+        this.threadService = threadService;
+        this.testPaperService = testPaperService;
         this.categoryService = categoryService;
         this.settingService = settingService;
         this.appConst = appConst;
@@ -257,8 +271,56 @@ public class CourseManageController {
     public String dataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
 
         Map<String, Object> course = courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        Integer isLearnedNum = this.courseService.searchMemberCount(FastHashMap.build(2)
+                .add("isLearned", 1).add("courseId", id).toMap());
+
+        Integer learnTime = this.courseService.searchLearnTime(FastHashMap.build(1).add("courseId", id).toMap());
+        int studentNum = ValueParser.parseInt(course.get("studentNum"));
+        learnTime = studentNum == 0 ? 0 : (int) (1.0 * learnTime / studentNum);
+
+        Integer noteCount = this.noteService.searchNoteCount(FastHashMap.build(1).add("courseId", id).toMap());
+
+        Integer questionCount = this.threadService.searchThreadCount(FastHashMap.build(2)
+                .add("courseId", id).add("type", "question").toMap());
+
+        List<Map<String, Object>> lessons = this.courseService.searchLessons(FastHashMap.build(1).add("courseId", id).toMap(),
+                OrderBy.build(1).addDesc("createdTime"), 0, 1000);
+
+        for (Map<String, Object> value : lessons) {
+            int lessonLearnedNum = this.courseService.findLearnsCountByLessonId(ValueParser.toInteger(value.get("id")));
+
+            int finishedNum = this.courseService.searchLearnCount(FastHashMap.build(2)
+                    .add("status", "finished").add("lessonId", value.get("id")).toMap());
+
+            int lessonLearnTime = this.courseService.searchLearnTime(FastHashMap.build(1).add("lessonId", value.get("id")).toMap());
+            lessonLearnTime = lessonLearnedNum == 0 ? 0 : (int) (1.0 * lessonLearnTime / lessonLearnedNum);
+
+            int lessonWatchTime = this.courseService.searchWatchTime(FastHashMap.build(1).add("lessonId", value.get("id")).toMap());
+            lessonWatchTime = lessonWatchTime == 0 ? 0 : (int) (1.0 * lessonWatchTime / lessonLearnedNum);
+
+            value.put("LearnedNum", lessonLearnedNum);
+            value.put("length", (int) (1.0 * ValueParser.parseInt(value.get("length")) / 60));
+            value.put("finishedNum", finishedNum);
+            value.put("learnTime", lessonLearnTime);
+            value.put("watchTime", lessonWatchTime);
+
+            if ("testpaper".equals(value.get("type"))) {
+                Object paperId = value.get("mediaId");
+                // :TODO testPaper not finished.
+//                int score = this.testPaperService.searchTestpapersScore(FastHashMap.build(1).add("testId", paperId).toMap());
+//                int paperNum = this.testPaperService.searchTestpaperResultsCount(FastHashMap.build(1).add("testId", paperId).toMap());
+//                value.put("score", finishedNum == 0 ? 0 : (int) (1.0 * score / paperNum));
+            }
+        }
+
+        model.addAttribute("isLearnedNum", isLearnedNum);
+        model.addAttribute("learnTime", learnTime);
+        model.addAttribute("noteCount", noteCount);
+        model.addAttribute("questionCount", questionCount);
+        model.addAttribute("lessons", lessons);
         model.addAttribute("course", course);
-        return "/course/manage/data";
+        return "/course/manage/learning-data";
     }
 }
 

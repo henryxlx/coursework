@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.dao;
 
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+
 import java.util.List;
 import java.util.Map;
 
@@ -27,4 +29,10 @@ public interface LessonLearnDao {
     Integer searchLearnTime(Map<String, Object> conditions);
 
     List<Map<String, Object>> findLearnsByUserIdAndCourseId(Integer userId, Object courseId);
+
+    Integer searchLearnCount(Map<String, Object> conditions);
+
+    Integer searchWatchTime(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchLearns(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit);
 }

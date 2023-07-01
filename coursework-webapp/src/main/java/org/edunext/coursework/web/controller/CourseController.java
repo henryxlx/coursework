@@ -16,6 +16,7 @@ import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import com.jetwinner.webfast.module.bigapp.service.AppTagService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.CourseThreadService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -38,6 +39,7 @@ public class CourseController {
     private final AppTagService tagService;
     private final AppUserFieldService userFieldService;
     private final CourseService courseService;
+    private final CourseThreadService threadService;
 
     public CourseController(AppUserService userService,
                             UserAccessControlService userAccessControlService,
@@ -45,7 +47,7 @@ public class CourseController {
                             AppCategoryService categoryService,
                             AppTagService tagService,
                             AppUserFieldService userFieldService,
-                            CourseService courseService) {
+                            CourseService courseService, CourseThreadService threadService) {
 
         this.userService = userService;
         this.userAccessControlService = userAccessControlService;
@@ -54,6 +56,7 @@ public class CourseController {
         this.tagService = tagService;
         this.userFieldService = userFieldService;
         this.courseService = courseService;
+        this.threadService = threadService;
     }
 
     @RequestMapping("/course/explore")
@@ -589,5 +592,52 @@ public class CourseController {
 
         this.courseService.removeStudent(user, id, user.getId());
         return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{id}/detail/data")
+    public String detailDataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        Integer count = this.courseService.getCourseStudentCount(id);
+        Paginator paginator = new Paginator(request, count, 20);
+
+        List<Map<String, Object>> students = this.courseService.findCourseStudents(id,
+                paginator.getOffsetCount(), paginator.getPerPageCount());
+
+        for (Map<String, Object> student : students) {
+            AppUser user = this.userService.getUser(student.get("userId"));
+            student.put("username", user.getUsername());
+
+            Integer questionCount = this.threadService.searchThreadCount(FastHashMap.build(3)
+                    .add("courseId", id).add("type", "question").add("userId", user.getId()).toMap());
+            student.put("questionCount", questionCount);
+
+            int studentLearnedNum = ValueParser.parseInt(student.get("learnedNum"));
+            int courseLearnedNum = ValueParser.parseInt(course.get("learnedNum"));
+            long createdTime = ValueParser.parseLong(student.get("createdTime"));
+            if (studentLearnedNum >= courseLearnedNum && courseLearnedNum > 0) {
+                List<Map<String, Object>> finishLearn = this.courseService.searchLearns(FastHashMap.build(3)
+                                .add("courseId", id).add("userId", user.getId()).add("status", "finished").toMap(),
+                        OrderBy.build(1).addDesc("finishedTime"), 0, 1);
+
+                if (finishLearn != null && finishLearn.size() > 0) {
+                    long finishedTime = ValueParser.parseLong(finishLearn.get(0).get("finishedTime"));
+                    student.put("fininshTime", finishedTime);
+                    student.put("fininshDay", (finishedTime - createdTime) / (60 * 60 * 24 * 1000));
+                }
+
+            } else {
+                student.put("fininshDay", (System.currentTimeMillis() - createdTime) / (60 * 60 * 24 * 1000));
+            }
+
+            Integer learnTime = this.courseService.searchLearnTime(FastHashMap.build(2)
+                    .add("userId", user.getId()).add("courseId", id).toMap());
+            student.put("learnTime", learnTime);
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("paginator", paginator);
+        model.addAttribute("students", students);
+        return "/course/course-data-modal";
     }
 }

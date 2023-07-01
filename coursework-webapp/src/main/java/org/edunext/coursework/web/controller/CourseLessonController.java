@@ -1,16 +1,17 @@
 package org.edunext.coursework.web.controller;
 
 import com.jetwinner.security.UserAccessControlService;
-import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.FastTimeUtil;
-import com.jetwinner.util.MapUtil;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
+import com.jetwinner.webfast.kernel.Paginator;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
+import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,15 +31,21 @@ import java.util.Map;
 public class CourseLessonController {
 
     private final CourseService courseService;
+    private final TestPaperService testPaperService;
     private final AppSettingService settingService;
+    private final AppUserService userService;
     private final UserAccessControlService userAccessControlService;
 
     public CourseLessonController(CourseService courseService,
+                                  TestPaperService testPaperService,
                                   AppSettingService settingService,
+                                  AppUserService userService,
                                   UserAccessControlService userAccessControlService) {
 
         this.courseService = courseService;
+        this.testPaperService = testPaperService;
         this.settingService = settingService;
+        this.userService = userService;
         this.userAccessControlService = userAccessControlService;
     }
 
@@ -225,6 +233,49 @@ public class CourseLessonController {
             return Boolean.FALSE;
         }
         return Boolean.TRUE;
+    }
+
+    @RequestMapping("/course/{courseId}/lesson/{lessonId}/detail/data")
+    public String detailDataAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                                   HttpServletRequest request, Model model) {
+
+        List<Map<String, Object>> students = new ArrayList<>();
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+
+        Integer count = this.courseService.searchLearnCount(FastHashMap.build(2)
+                .add("courseId", courseId).add("lessonId", lessonId).toMap());
+
+        Paginator paginator = new Paginator(request, count, 20);
+
+        List<Map<String, Object>> learns = this.courseService.searchLearns(FastHashMap.build(2)
+                        .add("courseId", courseId).add("lessonId", lessonId).toMap(),
+                OrderBy.build(1).add("startTime"), paginator.getOffsetCount(), paginator.getPerPageCount());
+
+        for (Map<String, Object> learn : learns) {
+            AppUser user = this.userService.getUser(learn.get("userId"));
+            Map<String, Object> student = new HashMap<>();
+            student.put("username", user.getUsername());
+            student.put("startTime", learn.get("startTime"));
+            student.put("finishedTime", learn.get("finishedTime"));
+            student.put("learnTime", learn.get("learnTime"));
+            student.put("watchTime", learn.get("watchTime"));
+
+            if ("testpaper".equals(lesson.get("type"))) {
+                Integer paperId = ValueParser.toInteger(lesson.get("mediaId"));
+                Map<String, Object> score =
+                        this.testPaperService.findTestpaperResultByTestpaperIdAndUserIdAndActive(paperId, user.getId());
+
+                student.put("result", score.get("score"));
+            }
+            students.add(student);
+        }
+
+        lesson.put("length", ValueParser.parseInt(lesson.get("length")) / 60);
+
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("paginator", paginator);
+        model.addAttribute("students", students);
+        return "/course/lesson/lesson-data-modal";
     }
 
 }

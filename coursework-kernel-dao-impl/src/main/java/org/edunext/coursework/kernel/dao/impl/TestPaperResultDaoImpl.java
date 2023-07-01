@@ -4,10 +4,7 @@ import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import org.edunext.coursework.kernel.dao.TestPaperResultDao;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -27,7 +24,7 @@ public class TestPaperResultDaoImpl extends FastJdbcDaoSupport implements TestPa
     @Override
     public Map<String, Object> getTestpaperResult(Integer id) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE id = ? LIMIT 1";
-        return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(null);
+        return getJdbcTemplate().queryForList(sql, id).stream().findFirst().orElse(new HashMap<>(0));
     }
 
     @Override
@@ -45,7 +42,7 @@ public class TestPaperResultDaoImpl extends FastJdbcDaoSupport implements TestPa
     @Override
     public Map<String, Object> findTestpaperResultByTestpaperIdAndUserIdAndActive(Integer testpaperId, Integer userId) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE testId = ? AND userId = ? AND active = 1";
-        return getJdbcTemplate().queryForList(sql, testpaperId, userId).stream().findFirst().orElse(null);
+        return getJdbcTemplate().queryForList(sql, testpaperId, userId).stream().findFirst().orElse(new HashMap<>(0));
     }
 
     @Override

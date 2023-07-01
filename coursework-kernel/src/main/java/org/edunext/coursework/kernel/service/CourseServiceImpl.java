@@ -1775,6 +1775,26 @@ public class CourseServiceImpl implements CourseService {
         this.courseMaterialService.resetLessonMaterialCount(lessonId, count);
     }
 
+    @Override
+    public Integer findLearnsCountByLessonId(Integer lessonId) {
+        return this.lessonLearnDao.findLearnsCountByLessonId(lessonId);
+    }
+
+    @Override
+    public Integer searchLearnCount(Map<String, Object> conditions) {
+        return this.lessonLearnDao.searchLearnCount(conditions);
+    }
+
+    @Override
+    public Integer searchWatchTime(Map<String, Object> conditions) {
+        return this.lessonLearnDao.searchWatchTime(conditions);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchLearns(Map<String, Object> condition, OrderBy orderBy, Integer start, Integer limit) {
+        return this.lessonLearnDao.searchLearns(condition, orderBy, start, limit);
+    }
+
     public List<Map<String, Object>> findAnnouncementsByCourseIds(Set<Object> ids, Integer start, Integer limit) {
         return this.announcementDao.findAnnouncementsByCourseIds(ids, start, limit);
     }

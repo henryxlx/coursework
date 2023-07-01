@@ -4,6 +4,7 @@ import com.jetwinner.util.EasyStringUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.dao.LessonLearnDao;
 import org.springframework.stereotype.Repository;
 
@@ -77,6 +78,28 @@ public class LessonLearnDaoImpl extends FastJdbcDaoSupport implements LessonLear
     public List<Map<String, Object>> findLearnsByUserIdAndCourseId(Integer userId, Object courseId) {
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE userId=? AND courseId=?";
         return getJdbcTemplate().queryForList(sql, userId, courseId);
+    }
+
+    @Override
+    public Integer searchLearnCount(Map<String, Object> conditions) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions).select("count(id)");
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
+    }
+
+    @Override
+    public Integer searchWatchTime(Map<String, Object> conditions) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions).select("sum(watchTime)");
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
+    }
+
+    @Override
+    public List<Map<String, Object>> searchLearns(Map<String, Object> conditions, OrderBy orderBy, Integer start, Integer limit) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions)
+                .select("*")
+                .orderBy(orderBy)
+                .setFirstResult(start)
+                .setMaxResults(limit);
+        return getNamedParameterJdbcTemplate().queryForList(builder.getSQL(), conditions);
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

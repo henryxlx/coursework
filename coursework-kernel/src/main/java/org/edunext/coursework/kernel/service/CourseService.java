@@ -21,68 +21,6 @@ public interface CourseService {
         FastEventHandler.getDefault().dispatchEvent(eventName, serviceEvent);
     }
 
-    class CourseSerialize {
-
-        private static final String UNSERIALIZE_KEY = "unserialize";
-
-        public static String[] objectToArray(Object obj) {
-            String[] arr = null;
-            if (EasyStringUtil.isNotBlank(obj)) {
-                String s = String.valueOf(obj);
-                if (s.startsWith("|")) {
-                    s = s.substring(1);
-                }
-                arr = s.split("\\|");
-            }
-            return arr;
-        }
-
-        public static void objectToArray(Map<String, Object> map, String key) {
-            Object obj = map.get(key);
-            String[] arr = objectToArray(obj);
-            if (arr != null) {
-                map.put(key, arr);
-            }
-        }
-
-        public static void unserialize(Map<String, Object> course) {
-            if (course == null || course.isEmpty() || course.containsKey(UNSERIALIZE_KEY)) {
-                return;
-            }
-
-            objectToArray(course, "goals");
-            objectToArray(course, "audiences");
-            objectToArray(course, "teacherIds");
-            course.put(UNSERIALIZE_KEY, Boolean.TRUE);
-        }
-
-        public static String listToString(List<?> list) {
-            List<String> strList = list.stream().map(String::valueOf).collect(Collectors.toList());
-            return strList.stream().collect(Collectors.joining("|", "|", "|"));
-        }
-
-        public static void arrayToString(Map<String, Object> model, String key) {
-            Object objTarget = model.get(key);
-            boolean needSerialize = true;
-            if (ArrayUtil.isNotArray(objTarget)) {
-                if (EasyStringUtil.isNotBlank(objTarget)) {
-                    objTarget = new Object[]{objTarget};
-                } else {
-                    needSerialize = false;
-                }
-            }
-            if (needSerialize) {
-                model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
-            }
-        }
-
-        public static void serialize(Map<String, Object> course) {
-            arrayToString(course, "goals");
-            arrayToString(course, "audiences");
-            arrayToString(course, "teacherIds");
-        }
-    }
-
     /**
      * 每个课程可添加的最大的教师人数
      */
@@ -275,4 +213,74 @@ public interface CourseService {
     void increaseLessonMaterialCount(Object lessonId);
 
     void resetLessonMaterialCount(Integer lessonId, Integer count);
+
+    Integer findLearnsCountByLessonId(Integer lessonId);
+
+    Integer searchLearnCount(Map<String, Object> conditions);
+
+    Integer searchWatchTime(Map<String, Object> conditions);
+
+    List<Map<String, Object>> searchLearns(Map<String, Object> condition, OrderBy orderBy, Integer start, Integer limit);
+
+    class CourseSerialize {
+
+        private static final String UNSERIALIZE_KEY = "unserialize";
+
+        public static String[] objectToArray(Object obj) {
+            String[] arr = null;
+            if (EasyStringUtil.isNotBlank(obj)) {
+                String s = String.valueOf(obj);
+                if (s.startsWith("|")) {
+                    s = s.substring(1);
+                }
+                arr = s.split("\\|");
+            }
+            return arr;
+        }
+
+        public static void objectToArray(Map<String, Object> map, String key) {
+            Object obj = map.get(key);
+            String[] arr = objectToArray(obj);
+            if (arr != null) {
+                map.put(key, arr);
+            }
+        }
+
+        public static void unserialize(Map<String, Object> course) {
+            if (course == null || course.isEmpty() || course.containsKey(UNSERIALIZE_KEY)) {
+                return;
+            }
+
+            objectToArray(course, "goals");
+            objectToArray(course, "audiences");
+            objectToArray(course, "teacherIds");
+            course.put(UNSERIALIZE_KEY, Boolean.TRUE);
+        }
+
+        public static String listToString(List<?> list) {
+            List<String> strList = list.stream().map(String::valueOf).collect(Collectors.toList());
+            return strList.stream().collect(Collectors.joining("|", "|", "|"));
+        }
+
+        public static void arrayToString(Map<String, Object> model, String key) {
+            Object objTarget = model.get(key);
+            boolean needSerialize = true;
+            if (ArrayUtil.isNotArray(objTarget)) {
+                if (EasyStringUtil.isNotBlank(objTarget)) {
+                    objTarget = new Object[]{objTarget};
+                } else {
+                    needSerialize = false;
+                }
+            }
+            if (needSerialize) {
+                model.put(key, '|' + EasyStringUtil.implode("|", objTarget) + '|');
+            }
+        }
+
+        public static void serialize(Map<String, Object> course) {
+            arrayToString(course, "goals");
+            arrayToString(course, "audiences");
+            arrayToString(course, "teacherIds");
+        }
+    }
 }

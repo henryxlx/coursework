@@ -2,10 +2,7 @@ package org.edunext.coursework.web.controller;
 
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.toolbag.ArrayToolkitOnJava8;
-import com.jetwinner.util.ArrayUtil;
-import com.jetwinner.util.FastHashMap;
-import com.jetwinner.util.MapUtil;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
@@ -19,6 +16,7 @@ import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -238,5 +236,38 @@ public class TestPaperController {
         model.addAttribute("course", course);
         model.addAttribute("paginator", paginator);
         return "/my/quiz/list-course-test-paper";
+    }
+
+    @PostMapping("/test/{id}/submit")
+    @ResponseBody
+    public Boolean submitTestAction(@PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
+        String[] answers = data.get("data") != null ? request.getParameterValues("data") : new String[0];
+
+//        this.testPaperService.submitTestpaperAnswer(id, answers);
+//        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
+
+        return Boolean.TRUE;
+    }
+
+    @PostMapping("/test/{id}/suspend")
+    @ResponseBody
+    public Boolean testSuspendAction(@PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> testpaperResult = this.testPaperService.getTestpaperResult(id);
+        if (MapUtil.isEmpty(testpaperResult)) {
+            throw new RuntimeGoingException("试卷不存在!");
+        }
+        //权限！
+        if (ValueParser.parseInt(testpaperResult.get("userId")) != AppUser.getCurrentUser(request).getId()) {
+            throw new RuntimeGoingException("不可以访问其他学生的试卷哦~");
+        }
+
+        Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
+        String[] answers = data.get("data") != null ? request.getParameterValues("data") : new String[0];
+
+//        this.testPaperService.submitTestpaperAnswer(id, answers);
+//        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
+
+        return Boolean.TRUE;
     }
 }

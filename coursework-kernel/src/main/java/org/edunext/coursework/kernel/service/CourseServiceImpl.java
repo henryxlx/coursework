@@ -45,7 +45,9 @@ public class CourseServiceImpl implements CourseService {
     private final CourseMemberDao memberDao;
     private final CourseNoteDao noteDao;
     private final CourseAnnouncementDao announcementDao;
+    private final CourseMaterialService courseMaterialService;
     private final FavoriteDao favoriteDao;
+    private UploadFileService uploadFileService;
     private final AppMessageService messageService;
     private final AppTagService tagService;
     private final AppSettingService settingService;
@@ -59,7 +61,8 @@ public class CourseServiceImpl implements CourseService {
                              LessonViewDao lessonViewDao, CourseChapterDao chapterDao,
                              CourseDraftDao courseDraftDao, CourseMemberDao memberDao,
                              CourseNoteDao noteDao, CourseAnnouncementDao announcementDao,
-                             FavoriteDao favoriteDao,
+                             CourseMaterialService courseMaterialService, FavoriteDao favoriteDao,
+                             UploadFileService uploadFileService,
                              AppMessageService messageService, AppTagService tagService,
                              AppSettingService settingService, AppLogService logService) {
 
@@ -76,7 +79,9 @@ public class CourseServiceImpl implements CourseService {
         this.memberDao = memberDao;
         this.noteDao = noteDao;
         this.announcementDao = announcementDao;
+        this.courseMaterialService = courseMaterialService;
         this.favoriteDao = favoriteDao;
+        this.uploadFileService = uploadFileService;
         this.messageService = messageService;
         this.tagService = tagService;
         this.settingService = settingService;
@@ -478,12 +483,12 @@ public class CourseServiceImpl implements CourseService {
         if (ListUtil.isNotEmpty(lessons)) {
             Set<Object> fileIds = ArrayToolkit.column(lessons, "mediaId");
             if (fileIds != null) {
-//:TODO                uploadFileService.decreaseFileUsedCount(fileIds);
+                uploadFileService.decreaseFileUsedCount(fileIds.stream().map(ValueParser::toInteger).toArray(Integer[]::new));
             }
         }
 
         // Delete all linked course materials (the UsedCount of each material file will also be decreaased.)
-//:TODO        courseMaterialService.deleteMaterialsByCourseId(courseId);
+        courseMaterialService.deleteMaterialsByCourseId(courseId);
 
         // Delete course related data
         memberDao.deleteMembersByCourseId(courseId);
@@ -761,8 +766,9 @@ public class CourseServiceImpl implements CourseService {
         lesson = this.lessonDao.addLesson(lesson);
 
         // Increase the linked file usage count, if there's a linked file used by this lesson.
-        if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
-//:TODO            this.uploadFileService.increaseFileUsedCount(lesson.get("mediaId"));
+        int mediaId = ValueParser.parseInt(lesson.get("mediaId"));
+        if (mediaId > 0) {
+            this.uploadFileService.increaseFileUsedCount(mediaId);
         }
 
         this.updateCourseCounter(course.get("id"), new ParamMap()
@@ -794,13 +800,13 @@ public class CourseServiceImpl implements CourseService {
                 if (EasyStringUtil.isBlank(media.get("id"))) {
                     throw new RuntimeGoingException("media id参数不正确，添加/编辑课时失败！");
                 }
-//:TODO                Map<String, Object> file = this.uploadFileService.getFile(media.get("id"));
-//:TODO                if (MapUtil.isEmpty(file)) {
-//:TODO                    throw new RuntimeGoingException("文件不存在，添加/编辑课时失败！");
-//:TODO                }
+                Map<String, Object> file = this.uploadFileService.getFile(media.get("id"));
+                if (MapUtil.isEmpty(file)) {
+                    throw new RuntimeGoingException("文件不存在，添加/编辑课时失败！");
+                }
 
-//:TODO                lesson.put("mediaId", file.get("id"));
-//:TODO                lesson.put("mediaName", file.get("filename"));
+                lesson.put("mediaId", file.get("id"));
+                lesson.put("mediaName", file.get("filename"));
                 lesson.put("mediaSource", "self");
                 lesson.put("mediaUri", "");
             } else {
@@ -1292,15 +1298,17 @@ public class CourseServiceImpl implements CourseService {
                 new ParamMap().add("giveCredit", this.lessonDao.sumLessonGiveCreditByCourseId(course.get("id"))).toMap());
 
         // Update link count of the course lesson file, if the lesson file is changed
-        if (fields.get("mediaId") != lesson.get("mediaId")) {
+        int fieldMediaId = ValueParser.parseInt(fields.get("mediaId"));
+        int lessonMediaId = ValueParser.parseInt(lesson.get("mediaId"));
+        if (fieldMediaId != lessonMediaId) {
             // Incease the link count of the new selected lesson file
-            if (EasyStringUtil.isNotBlank(fields.get("mediaId"))) {
-                //:TODO this.uploadFileService.increaseFileUsedCount(fields.get("mediaId"));
+            if (fieldMediaId > 0) {
+                this.uploadFileService.increaseFileUsedCount(fieldMediaId);
             }
 
             // Decrease the link count of the original lesson file
-            if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
-                //:TODO this.uploadFileService.decreaseFileUsedCount(lesson.get("mediaId"));
+            if (lessonMediaId > 0) {
+                this.uploadFileService.decreaseFileUsedCount(lessonMediaId);
             }
         }
 
@@ -1349,12 +1357,13 @@ public class CourseServiceImpl implements CourseService {
         // [END] 更新课时序号
 
         // Decrease the course lesson file usage count, if there's a linked file used by this lesson.
-        if (EasyStringUtil.isNotBlank(lesson.get("mediaId"))) {
-            //:TODO this.uploadFileService.decreaseFileUsedCount(lesson.get("mediaId"));
+        int lessonMediaId = ValueParser.parseInt(lesson.get("mediaId"));
+        if (lessonMediaId > 0) {
+            this.uploadFileService.decreaseFileUsedCount(lessonMediaId);
         }
 
         // Delete all linked course materials (the UsedCount of each material file will also be decreaased.)
-        //:TODO this.courseMaterialService.deleteMaterialsByLessonId(lessonId);
+        this.courseMaterialService.deleteMaterialsByLessonId(lessonId);
 
         this.logService.info(currentUser, "lesson", "delete",
                 String.format("删除课程《%s》(#%s)的课时 %s",
@@ -1485,7 +1494,7 @@ public class CourseServiceImpl implements CourseService {
 
         Map<String, Object> file = null;
         if (EasyStringUtil.isNotBlank(createLessonView.get("fileId"))) {
-            //:TODO file = this.uploadFileService.getFile(createLessonView.get("fileId"));
+            file = this.uploadFileService.getFile(createLessonView.get("fileId"));
         }
 
         createLessonView.put("fileStorage", file == null ? "net" : file.get("storage"));
@@ -1758,17 +1767,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void increaseLessonMaterialCount(Object lessonId) {
-        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
-        int materialNum = ValueParser.parseInt(lesson.get("materialNum")) + 1;
-        lesson.put("materialNum", materialNum);
-        this.lessonDao.updateLesson(ValueParser.toInteger(lessonId), lesson);
+        this.courseMaterialService.increaseLessonMaterialCount(lessonId);
     }
 
     @Override
     public void resetLessonMaterialCount(Integer lessonId, Integer count) {
-        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
-        lesson.put("materialNum", count);
-        this.lessonDao.updateLesson(lessonId, lesson);
+        this.courseMaterialService.resetLessonMaterialCount(lessonId, count);
     }
 
     public List<Map<String, Object>> findAnnouncementsByCourseIds(Set<Object> ids, Integer start, Integer limit) {

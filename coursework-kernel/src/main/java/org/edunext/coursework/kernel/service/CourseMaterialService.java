@@ -21,4 +21,12 @@ public interface CourseMaterialService {
     void deleteMaterial(Integer courseId, Integer materialId);
 
     Map<String, Object> getMaterial(Integer courseId, Integer materialId);
+
+    void deleteMaterialsByCourseId(Integer courseId);
+
+    void deleteMaterialsByLessonId(Integer lessonId);
+
+    void increaseLessonMaterialCount(Object lessonId);
+
+    void resetLessonMaterialCount(Integer lessonId, Integer count);
 }

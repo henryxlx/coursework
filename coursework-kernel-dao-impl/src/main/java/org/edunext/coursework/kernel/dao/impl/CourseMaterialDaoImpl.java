@@ -62,4 +62,16 @@ public class CourseMaterialDaoImpl extends FastJdbcDaoSupport implements CourseM
         String sql = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE  courseId = ? AND lessonId = ?";
         return getJdbcTemplate().queryForObject(sql, Integer.class, courseId, lessonId);
     }
+
+    @Override
+    public int deleteMaterialsByCourseId(Integer courseId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE courseId = ?";
+        return getJdbcTemplate().update(sql, courseId);
+    }
+
+    @Override
+    public int deleteMaterialsByLessonId(Integer lessonId) {
+        String sql = "DELETE FROM " + TABLE_NAME + " WHERE lessonId = ?";
+        return getJdbcTemplate().update(sql, lessonId);
+    }
 }

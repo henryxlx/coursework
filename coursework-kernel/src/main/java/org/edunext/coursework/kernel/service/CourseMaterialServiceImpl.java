@@ -6,12 +6,15 @@ import com.jetwinner.util.MapUtil;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import org.edunext.coursework.kernel.dao.CourseDao;
 import org.edunext.coursework.kernel.dao.CourseMaterialDao;
+import org.edunext.coursework.kernel.dao.LessonDao;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author xulixin
@@ -20,15 +23,18 @@ import java.util.Map;
 public class CourseMaterialServiceImpl implements CourseMaterialService {
 
     private final CourseMaterialDao materialDao;
-    private final CourseService courseService;
+    private final CourseDao courseDao;
+    private final LessonDao lessonDao;
     private final UploadFileService uploadFileService;
 
     public CourseMaterialServiceImpl(CourseMaterialDao materialDao,
-                                     CourseService courseService,
+                                     CourseDao courseDao,
+                                     LessonDao lessonDao,
                                      UploadFileService uploadFileService) {
 
         this.materialDao = materialDao;
-        this.courseService = courseService;
+        this.courseDao = courseDao;
+        this.lessonDao = lessonDao;
         this.uploadFileService = uploadFileService;
     }
 
@@ -58,7 +64,7 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
             throw new RuntimeGoingException("参数缺失，上传失败！");
         }
 
-        Map<String, Object> course = this.courseService.getCourse(ValueParser.toInteger(material.get("courseId")));
+        Map<String, Object> course = this.courseDao.getCourse(ValueParser.toInteger(material.get("courseId")));
         if (MapUtil.isEmpty(course)) {
             throw new RuntimeGoingException("课程不存在，上传资料失败！");
         }
@@ -97,7 +103,7 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
             this.uploadFileService.increaseFileUsedCount(materialFileId);
         }
 
-        this.courseService.increaseLessonMaterialCount(fields.get("lessonId"));
+        this.increaseLessonMaterialCount(fields.get("lessonId"));
 
         return material;
     }
@@ -119,7 +125,7 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
         Integer materialLessonId = ValueParser.toInteger(material.get("lessonId"));
         if (materialLessonId > 0) {
             int count = this.materialDao.getLessonMaterialCount(courseId, materialLessonId);
-            this.courseService.resetLessonMaterialCount(materialLessonId, count);
+            this.resetLessonMaterialCount(materialLessonId, count);
         }
     }
 
@@ -130,5 +136,48 @@ public class CourseMaterialServiceImpl implements CourseMaterialService {
             return null;
         }
         return material;
+    }
+
+    @Override
+    public void deleteMaterialsByCourseId(Integer courseId) {
+        List<Map<String, Object>> materials = this.materialDao.findMaterialsByCourseId(courseId, 0, 1000);
+
+        Set<Object> fileIds = ArrayToolkit.column(materials, "fileId");
+
+        // Decrease the linked material file usage count, if there are linked materials used by this course.
+        if (fileIds != null && fileIds.size() > 0) {
+            this.uploadFileService.decreaseFileUsedCount(fileIds.stream().map(ValueParser::toInteger).toArray(Integer[]::new));
+        }
+
+        this.materialDao.deleteMaterialsByCourseId(courseId);
+    }
+
+    @Override
+    public void deleteMaterialsByLessonId(Integer lessonId) {
+        List<Map<String, Object>> materials = this.materialDao.findMaterialsByLessonId(lessonId, 0, 1000);
+
+        Set<Object> fileIds = ArrayToolkit.column(materials, "fileId");
+
+        // Decrease the linked matrial file usage count, if there are linked materials used by this lesson.
+        if (fileIds != null && fileIds.size() > 0) {
+            this.uploadFileService.decreaseFileUsedCount(fileIds.stream().map(ValueParser::toInteger).toArray(Integer[]::new));
+        }
+
+        this.materialDao.deleteMaterialsByLessonId(lessonId);
+    }
+
+    @Override
+    public void increaseLessonMaterialCount(Object lessonId) {
+        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
+        int materialNum = ValueParser.parseInt(lesson.get("materialNum")) + 1;
+        lesson.put("materialNum", materialNum);
+        this.lessonDao.updateLesson(ValueParser.toInteger(lessonId), lesson);
+    }
+
+    @Override
+    public void resetLessonMaterialCount(Integer lessonId, Integer count) {
+        Map<String, Object> lesson = this.lessonDao.getLesson(lessonId);
+        lesson.put("materialNum", count);
+        this.lessonDao.updateLesson(lessonId, lesson);
     }
 }

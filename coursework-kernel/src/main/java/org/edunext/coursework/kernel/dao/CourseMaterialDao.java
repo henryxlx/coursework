@@ -23,4 +23,8 @@ public interface CourseMaterialDao {
     void deleteMaterial(Object id);
 
     Integer getLessonMaterialCount(Integer courseId, Integer lessonId);
+
+    int deleteMaterialsByCourseId(Integer courseId);
+
+    int deleteMaterialsByLessonId(Integer lessonId);
 }

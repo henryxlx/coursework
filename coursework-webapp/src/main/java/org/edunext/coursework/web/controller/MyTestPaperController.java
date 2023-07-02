@@ -85,8 +85,7 @@ public class MyTestPaperController {
         }
     }
 
-    @RequestMapping("/my/teacher/reviewing/test/list")
-    public ModelAndView listReviewingTestAction(HttpServletRequest request) {
+    public ModelAndView listTestActionByStatus(HttpServletRequest request, String status) {
         AppUser user = AppUser.getCurrentUser(request);
 
         if (!userAccessControlService.hasRole("ROLE_TEACHER")) {
@@ -101,12 +100,12 @@ public class MyTestPaperController {
         Set<Object> testpaperIds = ArrayToolkit.column(testpapers, "id");
 
         Paginator paginator = new Paginator(request,
-                this.testPaperService.findTestpaperResultCountByStatusAndTestIds(testpaperIds, "reviewing"),
+                this.testPaperService.findTestpaperResultCountByStatusAndTestIds(testpaperIds, status),
                 10);
 
         List<Map<String, Object>> paperResults = this.testPaperService.findTestpaperResultsByStatusAndTestIds(
                 testpaperIds,
-                "reviewing",
+                status,
                 paginator.getOffsetCount(),
                 paginator.getPerPageCount());
 
@@ -130,9 +129,9 @@ public class MyTestPaperController {
         courses = this.courseService.findCoursesByIds(courseIdsFromTarget);
 
         ModelAndView mav = new ModelAndView("/my/quiz/teacher-test-layout");
-        mav.addObject("status", "reviewing");
+        mav.addObject("status", status);
         mav.addObject("users", users);
-        mav.addObject("paperResults", ArrayToolkit.index(paperResults, "id"));
+        mav.addObject("paperResults", paperResults);
         mav.addObject("courses", ArrayToolkit.index(courses, "id"));
         mav.addObject("testpapers", ArrayToolkit.index(testpapers, "id"));
         mav.addObject("teacher", user);
@@ -140,9 +139,13 @@ public class MyTestPaperController {
         return mav;
     }
 
+    @RequestMapping("/my/teacher/reviewing/test/list")
+    public ModelAndView listReviewingTestAction(HttpServletRequest request) {
+        return listTestActionByStatus(request, "reviewing");
+    }
+
     @RequestMapping("/my/teacher/finished/test/list")
-    public String listFinishedTestAction(HttpServletRequest request, Model model) {
-        model.addAttribute("status", "finished");
-        return "/my/quiz/teacher-test-layout";
+    public ModelAndView listFinishedTestAction(HttpServletRequest request, Model model) {
+        return listTestActionByStatus(request, "finished");
     }
 }

@@ -13,9 +13,11 @@ import org.edunext.coursework.kernel.dao.QuestionFavoriteDao;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author xulixin
@@ -176,5 +178,28 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Map<String, Object>> findFavoriteQuestionsByUserId(Integer userId, Integer start, Integer limit) {
         return this.questionFavoriteDao.findFavoriteQuestionsByUserId(userId, start, limit);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> judgeQuestions(Map<String, Object[]> answers, boolean refreshStats) {
+        Set<Object> questionIds = answers.keySet().stream().map(e -> (Object) e).collect(Collectors.toSet());
+        List<Map<String, Object>> listForQuestions = this.questionDao.findQuestionsByIds(questionIds);
+        Map<String, Map<String, Object>> questions = ArrayToolkit.index(listForQuestions, "id");
+
+        Map<String, Map<String, Object>> results = new HashMap<>();
+        for (Map.Entry<String, Object[]> entry : answers.entrySet()) {
+            String id = entry.getKey();
+            Object[] answer = entry.getValue();
+            if (answer == null || answer.length < 1) {
+                results.put(id, FastHashMap.build(1).add("status", "noAnswer").toMap());
+            } else if (MapUtil.isEmpty(questions.get(id))) {
+                results.put(id, FastHashMap.build(1).add("status", "notFound").toMap());
+            } else {
+                Map<String, Object> question = questions.get(id);
+                results.put(id, QuestionTypeFactory.create(question.get("type")).judge(question, answer));
+            }
+        }
+
+        return results;
     }
 }

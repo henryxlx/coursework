@@ -6,6 +6,7 @@ import com.jetwinner.util.*;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppNotificationService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
@@ -37,18 +38,21 @@ public class TestPaperController {
     private final QuestionService questionService;
     private final TargetHelperBean targetHelperBean;
     private final AppUserService userService;
+    private final AppNotificationService notificationService;
 
     public TestPaperController(CourseService courseService,
                                TestPaperService testPaperService,
                                QuestionService questionService,
                                TargetHelperBean targetHelperBean,
-                               AppUserService userService) {
+                               AppUserService userService,
+                               AppNotificationService notificationService) {
 
         this.courseService = courseService;
         this.testPaperService = testPaperService;
         this.questionService = questionService;
         this.targetHelperBean = targetHelperBean;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     @RequestMapping("/test/{testId}/preview")
@@ -295,5 +299,85 @@ public class TestPaperController {
             }
         }
         return map;
+    }
+
+    @PostMapping("/test/{id}/finish")
+    @ResponseBody
+    public Boolean finishTestAction(@PathVariable Integer id, HttpServletRequest request) {
+
+        Map<String, Object> testpaperResult = this.testPaperService.getTestpaperResult(id);
+
+        if (MapUtil.isNotEmpty(testpaperResult) &&
+                !ArrayUtil.inArray(testpaperResult.get("status"), "doing", "paused")) {
+            return Boolean.TRUE;
+        }
+
+        AppUser user = AppUser.getCurrentUser(request);
+
+        Map<String, Object> data = EasyWebFormEditor.toFormDataMap(request);
+        Map<String, Object> answers = this.mapping("data", data);
+
+
+        this.testPaperService.updateTestpaperResult(id, data.get("usedTime"));
+
+        //提交变化的答案
+        this.testPaperService.submitTestpaperAnswer(id, answers, user);
+
+        //完成试卷，计算得分
+        List<Map<String, Object>> testResults = this.testPaperService.makeTestpaperResultFinish(id, user);
+
+        testpaperResult = this.testPaperService.getTestpaperResult(id);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperResult.get("testId"));
+
+        //试卷信息记录
+        this.testPaperService.finishTest(id, user.getId(), data.get("usedTime"));
+
+        Map<String, Map<String, Object>> targets = this.targetHelperBean.getTargets(SetUtil.newHashSet(testpaper.get("target")));
+
+        Map<String, Object> course = this.courseService.getCourse(ValueParser.toInteger(targets.get(testpaper.get("target")).get("id")));
+
+        if (this.testPaperService.isExistsEssay(testResults)) {
+            String userUrl = request.getContextPath() + "/user/" + user.getId();
+            String teacherCheckUrl = request.getContextPath() + "/test/" + testpaperResult.get("id") + "/teacher/check";
+
+            String[] courseTeacherIds = course.get("teacherIds") instanceof String ?
+                    CourseService.CourseSerialize.objectToArray(course.get("teacherIds")) : toStringArray(course.get("teacherIds"));
+            for (String receiverId : courseTeacherIds) {
+                this.notificationService.notify(ValueParser.toInteger(receiverId), "default",
+                        "【试卷已完成】 <a href='" + userUrl + "' target='_blank'>" + user.getUsername() +
+                                "</a> 刚刚完成了 " + testpaperResult.get("paperName") +
+                                " ，<a href='" + teacherCheckUrl +
+                                "' target='_blank'>请点击批阅</a>");
+            }
+        }
+
+        // @todo refactor. , wellming
+        targets = targetHelperBean.getTargets(SetUtil.newHashSet(testpaperResult.get("target")));
+
+        Map<String, Object> target = targets.get(testpaperResult.get("target"));
+        if ("lesson".equals(target.get("type")) &&
+                ValueParser.parseInt(target.get("id")) > 0) {
+
+            List<Map<String, Object>> lessons = this.courseService.findLessonsByIds(SetUtil.newHashSet(target.get("id")));
+            for (Map<String, Object> lesson : lessons) {
+                this.courseService.finishLearnLesson(ValueParser.toInteger(lesson.get("courseId")),
+                        ValueParser.toInteger(lesson.get("id")), user);
+            }
+        }
+
+        return Boolean.TRUE;
+    }
+
+    private String[] toStringArray(Object obj) {
+        if (obj.getClass().isArray()) {
+            Object[] objArray = (Object[]) obj;
+            String[] strArray = new String[objArray.length];
+            for (int i = 0, len = objArray != null ? objArray.length : 0; i < len; i++) {
+                strArray[i] = String.valueOf(objArray[i]);
+            }
+            return strArray;
+        }
+        return new String[]{String.valueOf(obj)};
     }
 }

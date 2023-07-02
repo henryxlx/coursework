@@ -23,7 +23,7 @@ public interface TestPaperResultDao {
 
     List<Map<String, Object>> findTestpaperResultsByStatusAndTestIds(Set<Object> testpaperIds, String status, Integer start, Integer limit);
 
-    void updateTestpaperResultActive(Object testId, Object userId);
+    int updateTestpaperResultActive(Object testId, Object userId);
 
-    void updateTestpaperResult(Integer testpaperId, Map<String, Object> fields);
+    int updateTestpaperResult(Integer testpaperId, Map<String, Object> fields);
 }

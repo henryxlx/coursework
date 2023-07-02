@@ -42,4 +42,6 @@ public interface QuestionService {
     Integer findFavoriteQuestionsCountByUserId(Integer userId);
 
     List<Map<String, Object>> findFavoriteQuestionsByUserId(Integer userId, Integer start, Integer limit);
+
+    Map<String, Map<String, Object>> judgeQuestions(Map<String, Object[]> answers, boolean refreshStats);
 }

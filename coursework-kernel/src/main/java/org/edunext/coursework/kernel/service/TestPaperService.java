@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * @author xulixin
  */
-public interface TestPaperService {
+public interface TestPaperService extends FastEventService {
 
     Map<String, Object> getTestpaper(Object id);
 
@@ -67,4 +67,10 @@ public interface TestPaperService {
     List<Map<String, Object>> submitTestpaperAnswer(Integer testpaperId, Map<String, Object> answers, AppUser user);
 
     void updateTestpaperResult(Integer testpaperId, Object usedTime);
+
+    List<Map<String, Object>> makeTestpaperResultFinish(Integer id, AppUser currentUser);
+
+    Map<String, Object> finishTest(Integer id, Integer userId, Object usedTime);
+
+    boolean isExistsEssay(List<Map<String, Object>> itemResults);
 }

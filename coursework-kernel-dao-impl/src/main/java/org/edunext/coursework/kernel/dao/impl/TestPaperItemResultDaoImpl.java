@@ -107,4 +107,36 @@ public class TestPaperItemResultDaoImpl extends FastJdbcDaoSupport implements Te
             }
         });
     }
+
+    @Override
+    public void addItemResult(Map<String, Object> answer) {
+        this.serialize(answer);
+        insertMap(TABLE_NAME, answer);
+    }
+
+    @Override
+    public void updateItemResults(Map<String, Map<String, Object>> answers, Object testPaperResultId) {
+        if (MapUtil.isEmpty(answers)) {
+            return;
+        }
+
+        List<String> keys = new ArrayList<>(answers.keySet());
+
+        String sql = "UPDATE " + TABLE_NAME + " set `status` = ?, `score` = ? WHERE `questionId` = ? AND `testPaperResultId` = ?;";
+        getJdbcTemplate().batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                Map<String, Object> value = answers.get(keys.get(i));
+                ps.setObject(1, value.get("status"));
+                ps.setObject(2, value.get("score"));
+                ps.setObject(3, keys.get(i));
+                ps.setObject(4, testPaperResultId);
+            }
+
+            @Override
+            public int getBatchSize() {
+                return keys.size();
+            }
+        });
+    }
 }

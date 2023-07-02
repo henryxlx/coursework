@@ -3,10 +3,12 @@ package org.edunext.coursework.kernel.service;
 import com.jetwinner.security.UserAccessControlService;
 import com.jetwinner.toolbag.ArrayToolkit;
 import com.jetwinner.util.*;
+import com.jetwinner.webfast.event.ServiceEvent;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.ActionGraspException;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
+import com.jetwinner.webfast.kernel.service.AppUserService;
 import org.edunext.coursework.kernel.dao.TestPaperDao;
 import org.edunext.coursework.kernel.dao.TestPaperItemDao;
 import org.edunext.coursework.kernel.dao.TestPaperItemResultDao;
@@ -39,6 +41,7 @@ public class TestPaperServiceImpl implements TestPaperService {
     private final CourseService courseService;
     private final QuestionService questionService;
     private final UserAccessControlService userAccessControlService;
+    private final AppUserService userService;
     private final ApplicationContext applicationContext;
 
     public TestPaperServiceImpl(TestPaperDao testPaperDao,
@@ -48,7 +51,7 @@ public class TestPaperServiceImpl implements TestPaperService {
                                 CourseService courseService,
                                 QuestionService questionService,
                                 UserAccessControlService userAccessControlService,
-                                ApplicationContext applicationContext) {
+                                AppUserService userService, ApplicationContext applicationContext) {
 
         this.testPaperDao = testPaperDao;
         this.testPaperItemDao = testPaperItemDao;
@@ -57,6 +60,7 @@ public class TestPaperServiceImpl implements TestPaperService {
         this.courseService = courseService;
         this.questionService = questionService;
         this.userAccessControlService = userAccessControlService;
+        this.userService = userService;
         this.applicationContext = applicationContext;
     }
 
@@ -748,5 +752,170 @@ public class TestPaperServiceImpl implements TestPaperService {
                 testpaperResult.get("userId"));
 
         this.testPaperResultDao.updateTestpaperResult(testpaperId, fields);
+    }
+
+    @Override
+    public List<Map<String, Object>> makeTestpaperResultFinish(Integer id, AppUser currentUser) {
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(id);
+
+        if (ValueParser.parseInt(testpaperResult.get("userId")) != currentUser.getId()) {
+            throw new RuntimeGoingException("无权修改其他学员的试卷！");
+        }
+
+        if (ArrayUtil.inArray(testpaperResult.get("status"), "reviewing", "finished")) {
+            throw new RuntimeGoingException("已经交卷的试卷不能更改答案!");
+        }
+
+        List<Map<String, Object>> listForItems = this.getTestpaperItems(testpaperResult.get("testId"));
+        Map<String, Map<String, Object>> items = ArrayToolkit.index(listForItems, "questionId");
+
+        Map<String, Map<String, Object>> questions =
+                this.questionService.findQuestionsByIds(ArrayToolkit.column(listForItems, "questionId"));
+
+        //得到当前用户答案
+        List<Map<String, Object>> listForAnswers =
+                this.testPaperItemResultDao.findTestResultsByTestpaperResultId(ValueParser.toInteger(testpaperResult.get("id")));
+        Map<String, Map<String, Object>> answers = ArrayToolkit.index(listForAnswers, "questionId");
+
+        Map<String, Object[]> arrayForAnswers = this.formatAnswers(answers, items);
+
+        answers = this.questionService.judgeQuestions(arrayForAnswers, true);
+
+        answers = this.makeScores(answers, items);
+
+        questions = this.completeQuestion(items, questions);
+
+        for (Map.Entry<String, Map<String, Object>> entry : answers.entrySet()) {
+            String questionId = entry.getKey();
+            Map<String, Object> answer = entry.getValue();
+            if ("noAnswer".equals(answer.get("status"))) {
+                answer.put("answer", new String[ArrayUtil.count(questions.get(questionId).get("answer"))]);
+
+                answer.put("testId", testpaperResult.get("testId"));
+                answer.put("testPaperResultId", testpaperResult.get("id"));
+                answer.put("userId", currentUser.getId());
+                answer.put("questionId", questionId);
+                this.testPaperItemResultDao.addItemResult(answer);
+            }
+        }
+
+        //记分
+        this.testPaperItemResultDao.updateItemResults(answers, testpaperResult.get("id"));
+
+        return this.testPaperItemResultDao.findTestResultsByTestpaperResultId(ValueParser.toInteger(testpaperResult.get("id")));
+    }
+
+    private Map<String, Object[]> formatAnswers(Map<String, Map<String, Object>> answers,
+                                                Map<String, Map<String, Object>> items) {
+
+        Map<String, Object[]> results = new HashMap<>();
+        for (Map<String, Object> item : items.values()) {
+            String questionId = "" + item.get("questionId");
+            if (!answers.containsKey(questionId)) {
+                results.put(questionId, new Object[0]);
+            } else {
+                results.put(questionId, ArrayUtil.toArray(answers.get(item.get("questionId")).get("answer")));
+            }
+        }
+        return results;
+    }
+
+    public Map<String, Map<String, Object>> makeScores(Map<String, Map<String, Object>> answers,
+                                                       Map<String, Map<String, Object>> items) {
+
+        for (Map.Entry<String, Map<String, Object>> entry : answers.entrySet()) {
+            String questionId = entry.getKey();
+            Map<String, Object> answer = entry.getValue();
+            if ("right".equals(answer.get("status"))) {
+                answer.put("score", items.get(questionId).get("score"));
+            } else if ("partRight".equals(answer.get("status"))) {
+
+                if ("fill".equals(items.get(questionId).get("questionType"))) {
+                    double score = ValueParser.parseInt(items.get(questionId).get("score")) *
+                            ValueParser.parseInt(answer.get("percentage")) / 100.0;
+                    answer.put("score", score);
+                } else {
+                    answer.put("score", items.get(questionId).get("missScore"));
+                }
+
+            } else {
+                answer.put("score", 0);
+            }
+        }
+        return answers;
+    }
+
+    @Override
+    public Map<String, Object> finishTest(Integer id, Integer userId, Object usedTime) {
+        List<Map<String, Object>> itemResults = this.testPaperItemResultDao.findTestResultsByTestpaperResultId(id);
+
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(id);
+
+        Map<String, Object> testpaper = this.testPaperDao.getTestpaper(testpaperResult.get("testId"));
+
+        Map<String, Object> fields = new HashMap<>();
+        fields.put("status", this.isExistsEssay(itemResults) ? "reviewing" : "finished");
+
+        Map<String, Object> accuracy = this.sumScore(itemResults);
+        fields.put("objectiveScore", accuracy.get("sumScore"));
+
+        if (!this.isExistsEssay(itemResults)) {
+            fields.put("score", fields.get("objectiveScore"));
+        }
+
+        fields.put("rightItemCount", accuracy.get("rightItemCount"));
+
+        int passedScore = ValueParser.parseInt(testpaper.get("passedScore"));
+        if (passedScore > 0) {
+            fields.put("passedStatus",
+                    ValueParser.parseInt(fields.get("score")) >= passedScore ? "passed" : "unpassed");
+        } else {
+            fields.put("passedStatus", "none");
+        }
+
+        fields.put("usedTime", ValueParser.parseInt(usedTime) + ValueParser.parseInt(testpaperResult.get("usedTime")));
+        fields.put("endTime", System.currentTimeMillis());
+        fields.put("active", 1);
+        fields.put("checkedTime", System.currentTimeMillis());
+
+        this.testPaperResultDao.updateTestpaperResultActive(testpaperResult.get("testId"),
+                testpaperResult.get("userId"));
+
+        int nums = this.testPaperResultDao.updateTestpaperResult(id, fields);
+        if (nums > 0) {
+            testpaperResult = this.testPaperResultDao.getTestpaperResult(id);
+        }
+
+        this.dispatchEvent(
+                "testpaper.finish",
+                new ServiceEvent(userService.getUser(userId), testpaper,
+                        FastHashMap.build(1).add("testpaperResult", testpaperResult).toMap())
+        );
+
+        return testpaperResult;
+    }
+
+    private Map<String, Object> sumScore(List<Map<String, Object>> itemResults) {
+        int score = 0;
+        int rightItemCount = 0;
+        for (Map<String, Object> itemResult : itemResults) {
+            score += ValueParser.parseInt(itemResult.get("score"));
+            if ("right".equals(itemResult.get("status"))) {
+                rightItemCount++;
+            }
+        }
+        return FastHashMap.build(2).add("sumScore", score).add("rightItemCount", rightItemCount).toMap();
+    }
+
+    @Override
+    public boolean isExistsEssay(List<Map<String, Object>> itemResults) {
+        Map<String, Map<String, Object>> questions =
+                this.questionService.findQuestionsByIds(ArrayToolkit.column(itemResults, "questionId"));
+        for (Map<String, Object> value : questions.values()) {
+            if ("essay".equals(value.get("type"))) {
+                return true;
+            }
+        }
+        return false;
     }
 }

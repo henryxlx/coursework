@@ -70,13 +70,13 @@ public class TestPaperResultDaoImpl extends FastJdbcDaoSupport implements TestPa
     }
 
     @Override
-    public void updateTestpaperResultActive(Object testId, Object userId) {
+    public int updateTestpaperResultActive(Object testId, Object userId) {
         String sql = "UPDATE " + TABLE_NAME + " SET `active` = 0 WHERE `testId` = ? AND `userId` = ? AND `active` = 1";
-        getJdbcTemplate().update(sql, testId, userId);
+        return getJdbcTemplate().update(sql, testId, userId);
     }
 
     @Override
-    public void updateTestpaperResult(Integer id, Map<String, Object> fields) {
-        updateMap(TABLE_NAME, fields, "id", id);
+    public int updateTestpaperResult(Integer id, Map<String, Object> fields) {
+        return updateMap(TABLE_NAME, fields, "id", id);
     }
 }

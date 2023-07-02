@@ -73,4 +73,6 @@ public interface TestPaperService extends FastEventService {
     Map<String, Object> finishTest(Integer id, Integer userId, Object usedTime);
 
     boolean isExistsEssay(List<Map<String, Object>> itemResults);
+
+    List<Map<String, Object>> findAllTestpapersByTargets(Set<Object> courseIds);
 }

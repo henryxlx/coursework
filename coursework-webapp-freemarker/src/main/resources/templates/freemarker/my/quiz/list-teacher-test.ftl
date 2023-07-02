@@ -27,3 +27,9 @@
         <div class="empty">还没有已经批阅的试卷</div>
     </#if>
 </#if>
+
+<#function get_course_id target>
+    <#local arr = target?split('/') />
+    <#local arr = arr[0]?split('-') />
+    <#return arr[1] />
+</#function>

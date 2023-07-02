@@ -918,4 +918,16 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         return false;
     }
+
+    @Override
+    public List<Map<String, Object>> findAllTestpapersByTargets(Set<Object> courseIds) {
+        String[] targets = new String[courseIds == null ? 0 : courseIds.size()];
+        if (targets.length > 0) {
+            int i = 0;
+            for (Object id : courseIds) {
+                targets[i++] = "course-" + id;
+            }
+        }
+        return this.testPaperDao.findTestpaperByTargets(targets);
+    }
 }

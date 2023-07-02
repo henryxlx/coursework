@@ -356,7 +356,7 @@ public class TestPaperController {
         targets = targetHelperBean.getTargets(SetUtil.newHashSet(testpaperResult.get("target")));
 
         Map<String, Object> target = targets.get(testpaperResult.get("target"));
-        if ("lesson".equals(target.get("type")) &&
+        if (MapUtil.isNotEmpty(target) && "lesson".equals(target.get("type")) &&
                 ValueParser.parseInt(target.get("id")) > 0) {
 
             List<Map<String, Object>> lessons = this.courseService.findLessonsByIds(SetUtil.newHashSet(target.get("id")));
@@ -379,5 +379,61 @@ public class TestPaperController {
             return strArray;
         }
         return new String[]{String.valueOf(obj)};
+    }
+
+    @RequestMapping("/test/{testId}/redo")
+    public ModelAndView reDoTestpaperAction(@PathVariable Integer testId, HttpServletRequest request) {
+        String targetType = request.getParameter("targetType");
+        String targetId = request.getParameter("targetId");
+
+        AppUser user = AppUser.getCurrentUser(request);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testId);
+
+        Map<String, Map<String, Object>> targets =
+                this.targetHelperBean.getTargets(Stream.of(testpaper.get("target")).collect(Collectors.toSet()));
+
+        if (!"course".equals(targets.get(testpaper.get("target")).get("type"))) {
+            throw new RuntimeGoingException("试卷只能属于课程");
+        }
+
+        Map<String, Object> course = this.courseService.getCourse(ValueParser.toInteger(targets.get(testpaper.get("target")).get("id")));
+
+        if (MapUtil.isEmpty(course)) {
+            return BaseControllerHelper.createMessageResponse("info", "试卷所属课程不存在！");
+        }
+
+        if (!this.courseService.canTakeCourse(ValueParser.toInteger(course.get("id")), user.getId())) {
+            return BaseControllerHelper.createMessageResponse("info", "不是试卷所属课程老师或学生");
+        }
+
+        if (MapUtil.isEmpty(testpaper)) {
+            throw new RuntimeGoingException("试卷#" + testId + "不存在");
+        }
+
+        Map<String, Object> testpaperResult =
+                this.testPaperService.findTestpaperResultByTestpaperIdAndUserIdAndActive(testId, user.getId());
+
+
+        Map<String, Object> testResult =
+                this.testPaperService.findTestpaperResultsByTestIdAndStatusAndUserId(testId, user.getId(),
+                        new String[]{"doing", "paused"});
+
+        if (MapUtil.isNotEmpty(testResult)) {
+            return new ModelAndView("redirect:/test/" + testResult.get("id") + "/show");
+        }
+
+        if ("draft".equals(testpaper.get("status"))) {
+            return BaseControllerHelper.createMessageResponse("info", "该试卷未发布，如有疑问请联系老师！");
+        }
+        if ("closed".equals(testpaper.get("status"))) {
+            return BaseControllerHelper.createMessageResponse("info", "该试卷已关闭，如有疑问请联系老师！");
+        }
+
+        Map<String, Object> options = FastHashMap.build(2).add("type", targetType).add("id", targetId).toMap();
+        AppUser.putCurrentUser(options, user);
+        testResult = this.testPaperService.startTestpaper(testId, options);
+
+        return new ModelAndView("redirect:/test/" + testResult.get("id") + "/show");
     }
 }

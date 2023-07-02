@@ -79,4 +79,16 @@ public class TestPaperResultDaoImpl extends FastJdbcDaoSupport implements TestPa
     public int updateTestpaperResult(Integer id, Map<String, Object> fields) {
         return updateMap(TABLE_NAME, fields, "id", id);
     }
+
+    @Override
+    public Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId,
+                                                                              String[] status, Integer userId) {
+
+        if (status == null || status.length < 1) {
+            return null;
+        }
+        String marks = Arrays.stream(status).collect(Collectors.joining(", ", "'", "'"));
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE `status` IN (" + marks + ") AND `testId` = ? AND `userId` = ? LIMIT 1";
+        return getJdbcTemplate().queryForList(sql, testpaperId, userId).stream().findFirst().orElse(null);
+    }
 }

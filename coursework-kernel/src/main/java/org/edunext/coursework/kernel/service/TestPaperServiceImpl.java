@@ -930,4 +930,9 @@ public class TestPaperServiceImpl implements TestPaperService {
         }
         return this.testPaperDao.findTestpaperByTargets(targets);
     }
+
+    @Override
+    public Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, Integer userId, String[] status) {
+        return this.testPaperResultDao.findTestpaperResultsByTestIdAndStatusAndUserId(testpaperId, status, userId);
+    }
 }

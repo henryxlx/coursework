@@ -24,7 +24,7 @@
 			<#if ['doing', 'paused']?seq_contains(myTestpaperResult.status)>
 				<a href="${ctx}/test/${myTestpaperResult.id}/show" class="btn btn-default btn-sm">继续考试</a>
 			<#else>
-				<a href="${ctx}/test/${myTestpaperResult.id}/redo" class="btn btn-default btn-sm">再做一次</a>
+				<a href="${ctx}/test/${myTestpaper.id}/redo" class="btn btn-default btn-sm">再做一次</a>
 				<a href="${ctx}/test/${myTestpaperResult.id}/result" class="btn btn-link btn-sm">查看结果</a>
 			</#if>
 		</td>

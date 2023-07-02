@@ -26,4 +26,6 @@ public interface TestPaperResultDao {
     int updateTestpaperResultActive(Object testId, Object userId);
 
     int updateTestpaperResult(Integer testpaperId, Map<String, Object> fields);
+
+    Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, String[] status, Integer userId);
 }

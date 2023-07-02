@@ -45,7 +45,7 @@ public interface TestPaperService extends FastEventService {
 
     List<Map<String, Object>> findTestpapersByIds(Set<Object> ids);
 
-    Map<String, Object> startTestpaper(Integer testId, Map<String, Object> options);
+    Map<String, Object> startTestpaper(Integer testId, Map<String, Object> target);
 
     Map<String, Object> getTestpaperResult(Integer id);
 
@@ -75,4 +75,6 @@ public interface TestPaperService extends FastEventService {
     boolean isExistsEssay(List<Map<String, Object>> itemResults);
 
     List<Map<String, Object>> findAllTestpapersByTargets(Set<Object> courseIds);
+
+    Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, Integer userId, String[] status);
 }

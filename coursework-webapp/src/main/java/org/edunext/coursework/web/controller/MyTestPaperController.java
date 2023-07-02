@@ -10,7 +10,6 @@ import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -142,7 +141,7 @@ public class MyTestPaperController {
     }
 
     @RequestMapping("/my/teacher/finished/test/list")
-    public String listFinishedTestAction(@PathVariable String status, HttpServletRequest request, Model model) {
+    public String listFinishedTestAction(HttpServletRequest request, Model model) {
         model.addAttribute("status", "finished");
         return "/my/quiz/teacher-test-layout";
     }

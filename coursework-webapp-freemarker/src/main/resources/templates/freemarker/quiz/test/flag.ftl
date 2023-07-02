@@ -21,7 +21,7 @@
 </#if>
 
 <#if flags?seq_contains('analysis') && id?? >
-    <#if !(item.question.analysis == '') >
+    <#if (item.question.analysis)?? && !(item.question.analysis == '') >
         <a class="btn btn-sm btn-link analysis-btn"><span class="glyphicon glyphicon-chevron-down"></span> 展开解析</a>
         <a class="btn btn-sm btn-link unanalysis-btn" style="display:none"><span
                     class="glyphicon glyphicon-chevron-up"></span> 收起解析</a>

@@ -50,4 +50,10 @@ public class TestPaperItemDaoImpl extends FastJdbcDaoSupport implements TestPape
         String sql = "DELETE FROM " + TABLE_NAME + " WHERE id = ?";
         getJdbcTemplate().update(sql, id);
     }
+
+    @Override
+    public List<Map<String, Object>> findItemsByTestpaperId(Object testPaperId) {
+        String sql = "SELECT * FROM " + TABLE_NAME + " WHERE testId = ? order by `seq` asc ";
+        return getJdbcTemplate().queryForList(sql, testPaperId);
+    }
 }

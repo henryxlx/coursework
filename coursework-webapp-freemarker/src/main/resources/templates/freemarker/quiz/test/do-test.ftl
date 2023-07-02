@@ -1,4 +1,4 @@
-<#if paperResult?? &&  ['finished','reviewing']?seq_contains(paperResult.status) && userAcl.hasRole('ROLE_TEACHER') >
+<#if (paperResult?? && ['finished','reviewing']?seq_contains(paperResult.status) && !userAcl.hasRole('ROLE_TEACHER') && setting('questions.testpaper_answers_show_mode','submitted') == 'hide') || (paperResult?? && setting('questions.testpaper_answers_show_mode','submitted') == 'reviewed' && paperResult.status == 'reviewing' && !userAcl.hasRole('ROLE_TEACHER')) >
 
 <#else>
 

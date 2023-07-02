@@ -7,6 +7,7 @@ import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import com.jetwinner.webfast.kernel.service.AppNotificationService;
+import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
@@ -16,10 +17,7 @@ import org.edunext.coursework.kernel.service.question.finder.TargetHelperBean;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,13 +37,15 @@ public class TestPaperController {
     private final TargetHelperBean targetHelperBean;
     private final AppUserService userService;
     private final AppNotificationService notificationService;
+    private final AppSettingService settingService;
 
     public TestPaperController(CourseService courseService,
                                TestPaperService testPaperService,
                                QuestionService questionService,
                                TargetHelperBean targetHelperBean,
                                AppUserService userService,
-                               AppNotificationService notificationService) {
+                               AppNotificationService notificationService,
+                               AppSettingService settingService) {
 
         this.courseService = courseService;
         this.testPaperService = testPaperService;
@@ -53,13 +53,14 @@ public class TestPaperController {
         this.targetHelperBean = targetHelperBean;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.settingService = settingService;
     }
 
     @RequestMapping("/test/{testId}/preview")
     public String previewTestAction(@PathVariable Integer testId, HttpServletRequest request, Model model) {
         Map<String, Object> testpaper = this.testPaperService.getTestpaper(testId);
 
-        if (!this.testPaperService.canTeacherCheck(testpaper.get("id"), AppUser.getCurrentUser(request))) {
+        if (null == this.testPaperService.canTeacherCheck(testpaper.get("id"), AppUser.getCurrentUser(request))) {
             throw new RuntimeGoingException("无权预览试卷！");
         }
 
@@ -435,5 +436,146 @@ public class TestPaperController {
         testResult = this.testPaperService.startTestpaper(testId, options);
 
         return new ModelAndView("redirect:/test/" + testResult.get("id") + "/show");
+    }
+
+    @RequestMapping("/test/{id}/result")
+    public String testResultAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> testpaperResult = this.testPaperService.getTestpaperResult(id);
+        if (MapUtil.isEmpty(testpaperResult)) {
+            throw new RuntimeGoingException("试卷不存在!");
+        }
+
+        if (ArrayUtil.inArray(testpaperResult.get("status"), "doing", "paused")) {
+            return "redirect:/test/" + testpaperResult.get("id") + "/show";
+        }
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperResult.get("testId"));
+
+        Map<String, Map<String, Object>> targets =
+                this.targetHelperBean.getTargets(SetUtil.newHashSet(testpaper.get("target")));
+
+        Map<String, Object> course = null;
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        if (ValueParser.parseInt(testpaperResult.get("userId")) != currentUser.getId()) {
+            course = this.courseService.tryManageCourse(currentUser,
+                    ValueParser.toInteger(targets.get(testpaper.get("target")).get("id")));
+        }
+
+        if (MapUtil.isEmpty(course) &&
+                ValueParser.parseInt(testpaperResult.get("userId")) != currentUser.getId()) {
+
+            throw new RuntimeGoingException("不可以访问其他学生的试卷哦~");
+        }
+
+        TestPaperExamResult result = this.testPaperService.showTestpaper(id, true);
+        Map<String, Map<String, Object>> items = result.getFormatItems();
+        Map<String, Map<String, Integer>> accuracy = result.getAccuracy();
+
+        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
+
+        List<Map<String, Object>> favorites =
+                this.questionService.findAllFavoriteQuestionsByUserId(testpaperResult.get("userId"));
+        model.addAttribute("favorites", ArrayToolkit.column(favorites, "questionId"));
+
+        model.addAttribute("student", this.userService.getUser(testpaperResult.get("userId")));
+
+        model.addAttribute("id", id);
+        model.addAttribute("paperResult", testpaperResult);
+        model.addAttribute("paper", testpaper);
+        model.addAttribute("accuracy", accuracy);
+        model.addAttribute("items", items);
+
+        return "/quiz/test/testpaper-result";
+    }
+
+    @GetMapping("/test/{id}/teacher/check")
+    public String teacherCheckPage(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        //身份校验?
+
+        Map<String, Object> testpaperResult = this.testPaperService.getTestpaperResult(id);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperResult.get("testId"));
+
+
+        if (null == this.testPaperService.canTeacherCheck(testpaper.get("id"), AppUser.getCurrentUser(request))) {
+            throw new RuntimeGoingException("无权批阅试卷！");
+        }
+
+        if (!"reviewing".equals(testpaperResult.get("status"))) {
+            return "redirect:/test/" + testpaperResult.get("id") + "/result";
+        }
+
+        TestPaperExamResult result = this.testPaperService.showTestpaper(id, true);
+        Map<String, Map<String, Object>> items = result.getFormatItems();
+        Map<String, Map<String, Integer>> accuracy = result.getAccuracy();
+
+        model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
+
+        List<String> types = new ArrayList<>();
+        Map<String, Object> metasMap = ArrayToolkit.toMap(testpaper.get("metas"));
+        List<Object> questionTypeSequence = (List<Object>) (metasMap.get("question_type_seq"));
+        String[] arrayQuestionTypes = questionTypeSequence.stream().toArray(String[]::new);
+        if (ArrayUtil.inArray("essay", arrayQuestionTypes)) {
+            types.add("essay");
+        }
+        if (ArrayUtil.inArray("material", arrayQuestionTypes)) {
+
+            for (Map.Entry<String, Object> entry : items.get("material").entrySet()) {
+                String key = entry.getKey();
+                Map<String, Object> item = ArrayToolkit.toMap(entry.getValue());
+
+                List<Map<String, Object>> listItems = (List<Map<String, Object>>) (item.get("items"));
+                Map<String, Map<String, Object>> questionTypes = ArrayToolkit.index(listItems == null ? new ArrayList<>(0) :
+                        listItems, "questionType");
+
+                if (questionTypes.containsKey("essay")) {
+                    if (!types.contains("material")) {
+                        types.add("material");
+                    }
+                }
+            }
+        }
+        model.addAttribute("types", types);
+
+        model.addAttribute("student", this.userService.getUser(testpaperResult.get("userId")));
+
+        model.addAttribute("questionsSetting", this.settingService.get("questions"));
+        model.addAttribute("items", items);
+        model.addAttribute("accuracy", accuracy);
+        model.addAttribute("paper", testpaper);
+        model.addAttribute("paperResult", testpaperResult);
+        model.addAttribute("id", id);
+
+        return "/quiz/test/testpaper-review";
+    }
+
+    @PostMapping("/test/{id}/teacher/check")
+    @ResponseBody
+    public Boolean teacherCheckAction(@PathVariable Integer id, HttpServletRequest request) {
+        Map<String, Object> testpaperResult = this.testPaperService.getTestpaperResult(id);
+
+        Map<String, Object> testpaper = this.testPaperService.getTestpaper(testpaperResult.get("testId"));
+
+        Map<String, Object> form = EasyWebFormEditor.toFormDataMap(request);
+        Integer teacherId = this.testPaperService.canTeacherCheck(testpaper.get("id"), AppUser.getCurrentUser(request));
+        if (null == teacherId) {
+            throw new RuntimeGoingException("无权批阅试卷！");
+        }
+
+        testpaperResult = this.testPaperService.makeTeacherFinishTest(id, testpaper.get("id"), teacherId, form);
+
+        AppUser user = AppUser.getCurrentUser(request);
+
+        String userUrl = request.getContextPath() + "/user/" + user.getId();
+        String testpaperResultUrl = request.getContextPath() + "/test/" + testpaperResult.get("id") + "/result";
+
+
+        this.notificationService.notify(ValueParser.toInteger(testpaperResult.get("userId")), "default",
+                "【试卷已批阅】 <a href='" + userUrl + "' target='_blank'>" + user.getUsername() +
+                        "</a> 刚刚批阅了 " + testpaperResult.get("paperName") +
+                        " ，<a href='" + testpaperResultUrl +
+                        "' target='_blank'>请点击查看结果</a>");
+
+        return Boolean.TRUE;
     }
 }

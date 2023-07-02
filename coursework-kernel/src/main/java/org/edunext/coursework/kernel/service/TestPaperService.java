@@ -62,7 +62,7 @@ public interface TestPaperService extends FastEventService {
     List<Map<String, Object>> findTestpaperResultsByStatusAndTestIds(Set<Object> testpaperIds, String status,
                                                                      Integer start, Integer limit);
 
-    boolean canTeacherCheck(Object testpaperId, AppUser currentUser);
+    Integer canTeacherCheck(Object testpaperId, AppUser currentUser);
 
     List<Map<String, Object>> submitTestpaperAnswer(Integer testpaperId, Map<String, Object> answers, AppUser user);
 
@@ -77,4 +77,6 @@ public interface TestPaperService extends FastEventService {
     List<Map<String, Object>> findAllTestpapersByTargets(Set<Object> courseIds);
 
     Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, Integer userId, String[] status);
+
+    Map<String, Object> makeTeacherFinishTest(Integer id, Object paperId, Integer teacherId, Map<String, Object> field);
 }

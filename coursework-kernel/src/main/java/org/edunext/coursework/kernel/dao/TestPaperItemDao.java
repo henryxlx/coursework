@@ -17,4 +17,6 @@ public interface TestPaperItemDao {
     Map<String, Object> updateItem(Object id, Map<String, Object> item);
 
     void deleteItem(Object id);
+
+    List<Map<String, Object>> findItemsByTestpaperId(Object testPaperId);
 }

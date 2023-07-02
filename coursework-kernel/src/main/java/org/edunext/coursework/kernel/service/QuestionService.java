@@ -44,4 +44,6 @@ public interface QuestionService {
     List<Map<String, Object>> findFavoriteQuestionsByUserId(Integer userId, Integer start, Integer limit);
 
     Map<String, Map<String, Object>> judgeQuestions(Map<String, Object[]> answers, boolean refreshStats);
+
+    void statQuestionTimes(Map<String, Map<String, Object>> answers);
 }

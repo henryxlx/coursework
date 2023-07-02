@@ -32,4 +32,6 @@ public interface QuestionDao {
     List<Map<String, Object>> getQuestionCountGroupByTypes(Map<String, Object> conditions);
 
     List<Map<String, Object>> findQuestionsByIds(Set<Object> ids);
+
+    void updateQuestionCountByIds(Set<String> ids, String status);
 }

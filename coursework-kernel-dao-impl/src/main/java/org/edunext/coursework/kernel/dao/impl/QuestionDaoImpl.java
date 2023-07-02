@@ -1,19 +1,14 @@
 package org.edunext.coursework.kernel.dao.impl;
 
-import com.jetwinner.util.EasyStringUtil;
-import com.jetwinner.util.JsonUtil;
-import com.jetwinner.util.MapUtil;
-import com.jetwinner.util.ValueParser;
+import com.jetwinner.util.*;
 import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
+import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.QuestionDao;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -139,6 +134,24 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
         List<Map<String, Object>> questions = getJdbcTemplate().queryForList(sql, ids.toArray());
         questions.forEach(this::unserialize);
         return questions;
+    }
+
+    @Override
+    public void updateQuestionCountByIds(Set<String> ids, String status) {
+        if (ids == null || ids.size() < 1) {
+            return;
+        }
+
+        String[] fields = {"finishedTimes", "passedTimes"};
+        if (!ArrayUtil.inArray(status, fields)) {
+            throw new RuntimeGoingException(String.format("%s字段不允许增减，只有 %s 才被允许增减",
+                    status, Arrays.toString(fields)));
+        }
+
+        String marks = repeatQuestionMark(ids.size());
+        String sql = String.format("UPDATE %s SET %s = %s+1 WHERE id IN (%s)",
+                TABLE_NAME, status, status, marks);
+        getJdbcTemplate().update(sql, ids.toArray());
     }
 
     private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {

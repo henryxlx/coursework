@@ -12,14 +12,14 @@
                 <div class="testpaper-question-result">
                     <#if item.question.testResult.status == 'right'>
                         正确答案是 <strong
-                            class="text-success"><#if item.question.answer[0] == 1> 正确 <#else> 错误 </#if></strong class="text-success">，你答对了
+                            class="text-success"><#if item.question.answer[0] == '1'> 正确 <#else> 错误 </#if></strong class="text-success">，你答对了
                     <#elseif item.question.testResult.status == 'wrong'>
                         正确答案是 <strong
-                            class="text-success"><#if item.question.answer[0] == 1> 正确 <#else> 错误 </#if></strong>， 你
+                            class="text-success"><#if item.question.answer[0] == '1'> 正确 <#else> 错误 </#if></strong>， 你
                         <strong class="text-danger">答错</strong>了
                     <#elseif item.question.testResult.status == 'noAnswer'>
                         正确答案： <strong
-                            class="text-success"><#if item.question.answer[0] == 1> 正确 <#else> 错误 </#if></strong>，你未答题
+                            class="text-success"><#if item.question.answer[0] == '1'> 正确 <#else> 错误 </#if></strong>，你未答题
                     </#if>
                 </div>
 

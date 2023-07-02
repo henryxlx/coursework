@@ -12,7 +12,7 @@
                 <div class="testpaper-question-result">
                     <ul>
                         <#list item.question.answer![] as answer>
-                            <#assign userAnswer = item.question.testResult.answer[answer?index]! />
+                            <#assign userAnswer = (item.question.testResult.answer[answer?index])! />
                             <li>
                                 填空(${answer?counter})： 正确答案 <strong class="text-success">{{ answer | join
                                     (' 或 ') }}</strong>

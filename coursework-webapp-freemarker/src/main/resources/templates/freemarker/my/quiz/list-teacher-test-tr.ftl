@@ -21,7 +21,7 @@
                 <div class="text-warning">总分 <strong>${paperResult.score}</strong> 分</div>
                 <div class="text-muted"><small>客观题${paperResult.objectiveScore}分 / 主观题${paperResult.subjectiveScore}
                         分</small></div>
-                <div class="text-success"><small>${teacher.nickname||default('系统')}
+                <div class="text-success"><small>${teacher.username!'系统'}
                         批于${paperResult.checkedTime?number_to_datetime?string('yyyy年MM月dd日 HH:mm')}</small></div>
             </div>
         </#if>

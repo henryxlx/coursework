@@ -13,10 +13,7 @@ import org.edunext.coursework.kernel.dao.QuestionFavoriteDao;
 import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -201,5 +198,18 @@ public class QuestionServiceImpl implements QuestionService {
         }
 
         return results;
+    }
+
+    @Override
+    public void statQuestionTimes(Map<String, Map<String, Object>> answers) {
+        Set<String> ids = answers.keySet();
+        Set<String> rightIds = new HashSet<>();
+        answers.forEach((questionId, answer) -> {
+            if ("right".equals(answer.get("status"))) {
+                rightIds.add(questionId);
+            }
+        });
+        this.questionDao.updateQuestionCountByIds(ids, "finishedTimes");
+        this.questionDao.updateQuestionCountByIds(rightIds, "passedTimes");
     }
 }

@@ -20,4 +20,6 @@ public interface TestPaperItemResultDao {
     void addItemResult(Map<String, Object> answer);
 
     void updateItemResults(Map<String, Map<String, Object>> answers, Object testPaperResultId);
+
+    void updateItemEssays(Map<String, Map<String, Object>> testResults, Integer id);
 }

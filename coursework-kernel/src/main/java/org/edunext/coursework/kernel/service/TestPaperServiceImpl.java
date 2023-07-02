@@ -18,6 +18,7 @@ import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuildResult;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuilder;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
+import org.edunext.coursework.kernel.util.QuickArrayHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -651,14 +652,14 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     @Override
-    public boolean canTeacherCheck(Object testpaperId, AppUser currentUser) {
+    public Integer canTeacherCheck(Object testpaperId, AppUser currentUser) {
         Map<String, Object> paper = this.testPaperDao.getTestpaper(testpaperId);
         if (MapUtil.isEmpty(paper)) {
             throw new RuntimeGoingException("试卷不存在");
         }
 
         if (userAccessControlService.isAdmin()) {
-            return true;
+            return currentUser.getId();
         }
 
         String[] target = EasyStringUtil.explode("-", paper.get("target"));
@@ -672,10 +673,10 @@ public class TestPaperServiceImpl implements TestPaperService {
 
             // @todo: 这个是有问题的。
             if ("teacher".equals(member.get("role"))) {
-                return true;
+                return currentUser.getId();
             }
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -934,5 +935,65 @@ public class TestPaperServiceImpl implements TestPaperService {
     @Override
     public Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, Integer userId, String[] status) {
         return this.testPaperResultDao.findTestpaperResultsByTestIdAndStatusAndUserId(testpaperId, status, userId);
+    }
+
+    @Override
+    public Map<String, Object> makeTeacherFinishTest(Integer id, Object paperId, Integer teacherId, Map<String, Object> field) {
+        Map<String, Map<String, Object>> testResults = new HashMap<>();
+
+        Object teacherSay = field.get("teacherSay");
+        field.remove("teacherSay");
+
+
+        List<Map<String, Object>> itemsList = this.testPaperItemDao.findItemsByTestpaperId(paperId);
+        Map<String, Map<String, Object>> items = ArrayToolkit.index(itemsList, "questionId");
+
+        List<Map<String, Object>> userAnswersList = this.testPaperItemResultDao.findTestResultsByTestpaperResultId(id);
+        Map<String, Map<String, Object>> userAnswers = ArrayToolkit.index(userAnswersList, "questionId");
+
+        for (Map.Entry<String, Object> entry : field.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String[] keys = key.split("_");
+            if (keys == null || keys.length < 2) {
+                continue;
+            }
+
+            if (!EasyStringUtil.isNumeric(keys[1])) {
+                throw new RuntimeGoingException("得分必须为数字！");
+            }
+
+            testResults.put(keys[1], new HashMap<>(2));
+            testResults.get(keys[1]).put(keys[0], value);
+            Object[] userAnswer = (Object[]) userAnswers.get(keys[1]).get("answer");
+            if ("score".equals(keys[0])) {
+                if (ValueParser.parseInt(value) == ValueParser.parseInt(items.get(keys[1]).get("score"))) {
+                    testResults.get(keys[1]).put("status", "right");
+                } else if ("".equals(userAnswer[0])) {
+                    testResults.get(keys[1]).put("status", "noAnswer");
+                } else {
+                    testResults.get(keys[1]).put("status", "wrong");
+                }
+            }
+        }
+        //是否要加入教师阅卷的锁
+        this.testPaperItemResultDao.updateItemEssays(testResults, id);
+
+        this.questionService.statQuestionTimes(testResults);
+
+        Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(id);
+
+        int subjectiveScore = QuickArrayHelper.arraySum(ArrayToolkit.column(testResults.values(), "score"));
+
+        int totalScore = subjectiveScore + ValueParser.parseInt(testpaperResult.get("objectiveScore"));
+
+        this.testPaperResultDao.updateTestpaperResult(id, FastHashMap.build(6)
+                .add("score", totalScore)
+                .add("subjectiveScore", subjectiveScore)
+                .add("status", "finished")
+                .add("checkTeacherId", teacherId)
+                .add("checkedTime", System.currentTimeMillis())
+                .add("teacherSay", teacherSay).toMap());
+        return this.testPaperResultDao.getTestpaperResult(id);
     }
 }

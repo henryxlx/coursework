@@ -354,4 +354,45 @@ public class CourseLessonManageController {
         model.addAttribute("file", file);
         return "/course/manage/lesson/list-item";
     }
+
+    @RequestMapping("/course/{courseId}/manage/lesson/{lessonId}/edit/testpaper")
+    public String editTestpaperAction(@PathVariable Integer courseId, @PathVariable Integer lessonId,
+                                      HttpServletRequest request, Model model) {
+
+        AppUser currentUser = AppUser.getCurrentUser(request);
+        Map<String, Object> course = this.courseService.tryManageCourse(currentUser, courseId);
+
+        Map<String, Object> lesson = this.courseService.getCourseLesson(courseId, lessonId);
+        if (MapUtil.isEmpty(lesson)) {
+            throw new RuntimeGoingException("课时(#" + courseId + ")不存在！");
+        }
+
+        Map<String, Object> conditions = new HashMap<>(2);
+        conditions.put("target", "course-" + courseId);
+        conditions.put("status", "open");
+
+        List<Map<String, Object>> testpapers = this.testPaperService.searchTestpapers(conditions,
+                OrderBy.build(1).addDesc("createdTime"),
+                0,
+                1000);
+
+        Map<String, Object> paperOptions = new HashMap<>(testpapers.size());
+        testpapers.forEach(paper -> paperOptions.put(String.valueOf(paper.get("id")), paper.get("name")));
+
+        if ("POST".equals(request.getMethod())) {
+            Map<String, Object> fields = EasyWebFormEditor.toFormDataMap(request);
+            lesson = this.courseService.updateLesson(courseId, courseId, fields, currentUser);
+            model.addAttribute("course", course);
+            model.addAttribute("lesson", lesson);
+            return "/course/manage/lesson/list-item";
+        }
+
+        model.addAttribute("features",
+                this.settingService.getContainerParameter("enabled_features"));
+
+        model.addAttribute("course", course);
+        model.addAttribute("lesson", lesson);
+        model.addAttribute("paperOptions", paperOptions);
+        return "/course/manage/lesson/testpaper-modal";
+    }
 }

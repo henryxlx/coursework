@@ -7,6 +7,7 @@ import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.exception.RuntimeGoingException;
 import org.edunext.coursework.kernel.dao.QuestionDao;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
@@ -30,7 +31,17 @@ public class QuestionDaoImpl extends FastJdbcDaoSupport implements QuestionDao {
         return question;
     }
 
+    private void toArray(String key, Map<String, Object> map) {
+        Object obj = map.get(key);
+        if (obj != null) {
+            if (!(ObjectUtils.isArray(obj) || obj instanceof Collection)) {
+                map.put(key, new String[]{String.valueOf(obj)});
+            }
+        }
+    }
+
     private Map<String, Object> serialize(Map<String, Object> fields) {
+        toArray("answer", fields);
         String[] fieldNames = {"answer", "metas"};
         for (String fieldName : fieldNames) {
             if (fields.get(fieldName) != null) {

@@ -67,7 +67,7 @@ public class FillQuestionType extends AbstractQuestionType {
                 expectAnswer.add(value);
             }
 
-            String actualAnswer = String.valueOf(answer[index]);
+            String actualAnswer = String.valueOf(answer[index++]);
             actualAnswer = actualAnswer.trim();
             // 消除空格，制表符、回车和换行(\\s*|\t|\r|\n),还有中文空格 preg_replace("/([\x20\s\t]){2,}/", " ", $actualAnswer);
             actualAnswer = actualAnswer.replaceAll("\\s*|\t|\r|\n|　*", "");

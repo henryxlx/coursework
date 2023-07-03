@@ -7,13 +7,11 @@ import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import org.edunext.coursework.kernel.dao.TestPaperItemResultDao;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -26,12 +24,22 @@ public class TestPaperItemResultDaoImpl extends FastJdbcDaoSupport implements Te
 
     private void unserialize(Map<String, Object> fields) {
         if (EasyStringUtil.isNotBlank(fields.get("answer"))) {
-            fields.put("answer", JsonUtil.jsonDecodeMap(fields.get("answer")));
+            fields.put("answer", JsonUtil.jsonDecode(fields.get("answer"), String[].class));
+        }
+    }
+
+    private void toArray(String key, Map<String, Object> map) {
+        Object obj = map.get(key);
+        if (obj != null) {
+            if (!(ObjectUtils.isArray(obj) || obj instanceof Collection)) {
+                map.put(key, new String[]{String.valueOf(obj)});
+            }
         }
     }
 
     private void serialize(Map<String, Object> fields) {
         if (EasyStringUtil.isNotBlank(fields.get("answer"))) {
+            this.toArray("answer", fields);
             fields.put("answer", JsonUtil.objectToString(fields.get("answer")));
         }
     }
@@ -61,6 +69,7 @@ public class TestPaperItemResultDaoImpl extends FastJdbcDaoSupport implements Te
         }
 
         List<String> keys = new ArrayList<>(answers.keySet());
+        keys.forEach(k -> toArray(k, answers));
         keys.forEach(k -> answers.put(k, JsonUtil.objectToString(answers.get(k))));
 
         String sql = "INSERT INTO " + TABLE_NAME + " (`testId`, `testPaperResultId`, `userId`, `questionId`, `answer`) VALUES (?, ?, ?, ?, ?);";
@@ -89,6 +98,7 @@ public class TestPaperItemResultDaoImpl extends FastJdbcDaoSupport implements Te
         }
 
         List<String> keys = new ArrayList<>(answers.keySet());
+        keys.forEach(k -> toArray(k, answers));
         keys.forEach(k -> answers.put(k, JsonUtil.objectToString(answers.get(k))));
 
         String sql = "UPDATE " + TABLE_NAME + " set `answer` = ? WHERE `questionId` = ? AND `testPaperResultId` = ?;";

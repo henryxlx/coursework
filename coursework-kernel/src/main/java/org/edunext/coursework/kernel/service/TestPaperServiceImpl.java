@@ -968,7 +968,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             testResults.computeIfAbsent(keys[1], v -> new HashMap<>(3)).put(keys[0], value);
             Object[] userAnswer = (Object[]) userAnswers.get(keys[1]).get("answer");
             if ("score".equals(keys[0])) {
-                if (ValueParser.parseInt(value) == ValueParser.parseInt(items.get(keys[1]).get("score"))) {
+                if (ValueParser.parseInt(value) == ValueParser.parseFloat(items.get(keys[1]).get("score"))) {
                     testResults.get(keys[1]).put("status", "right");
                 } else if (userAnswer == null || "".equals(userAnswer[0])) {
                     testResults.get(keys[1]).put("status", "noAnswer");

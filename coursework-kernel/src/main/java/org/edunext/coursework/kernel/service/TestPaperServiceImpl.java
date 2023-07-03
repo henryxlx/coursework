@@ -404,7 +404,8 @@ public class TestPaperServiceImpl implements TestPaperService {
                     if ("essay".equals(mapForValue.get("questionType"))) {
                         accuracy.get("material").put("hasEssay", 1); // hasEssay = true;
                     }
-                    Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapForValue.get("questionTestResult"));
+                    Map<String, Object> mapQuestion = ArrayToolkit.toMap(item.get("question"));
+                    Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapQuestion.get("testResult"));
                     if (MapUtil.isEmpty(mapForTestResult)) {
                         continue;
                     }
@@ -435,7 +436,8 @@ public class TestPaperServiceImpl implements TestPaperService {
                 }
             } else {
 
-                Map<String, Object> mapForTestResult = ArrayToolkit.toMap(item.get("questionTestResult"));
+                Map<String, Object> mapQuestion = ArrayToolkit.toMap(item.get("question"));
+                Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapQuestion.get("testResult"));
                 if (MapUtil.isEmpty(mapForTestResult)) {
                     continue;
                 }

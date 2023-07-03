@@ -63,20 +63,12 @@ public abstract class AbstractQuestionType {
         return mass == null ? 0 : 1;
     }
 
-    protected Object[] arrayDiff(Object[] targets, Object mass) {
-        return arrayDiff(mass, targets);
-    }
-
-    protected Object[] arrayDiff(Object mass, Object[] targets) {
-        Object[] arrayForMass = null;
-        if (mass instanceof Array) {
-            arrayForMass = (Object[]) mass;
-        }
+    protected Set<Object> arrayDiff(Object[] source, Object[] target) {
         Set<Object> diff = new HashSet<>();
-        if (arrayForMass != null) {
-            for (Object objMass : arrayForMass) {
+        if (source != null) {
+            for (Object objMass : source) {
                 boolean notFound = true;
-                for (Object objTarget : targets) {
+                for (Object objTarget : target) {
                     if (equals(objMass, objTarget)) {
                         notFound = false;
                         break;
@@ -87,7 +79,7 @@ public abstract class AbstractQuestionType {
                 }
             }
         }
-        return diff.toArray();
+        return diff;
     }
 
     protected boolean equals(Object source, Object dest) {

@@ -25,8 +25,8 @@
                     <#if (item.question.answer)?? && item.question.answer?seq_contains(key?c) >
                         <#assign keys = keys + [chr(choiceIndex)] />
                     </#if>
-                    <#if (item.question.testResult.answer)?? && item.question.testResult.answer?seq_contains(key) >
-                        <#assign keys_answer = keys_answer + [choiceIndex] />
+                    <#if (item.question.testResult.answer)?? && item.question.testResult.answer?seq_contains(''+key) >
+                        <#assign keys_answer = keys_answer + [chr(choiceIndex)] />
                     </#if>
                 </#list>
             </ul>

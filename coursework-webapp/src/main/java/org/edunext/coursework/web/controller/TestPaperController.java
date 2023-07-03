@@ -295,7 +295,7 @@ public class TestPaperController {
                 if (!key.startsWith(fieldName)) {
                     continue;
                 }
-                String name = key.substring(fieldName.length(), key.length() - 2);
+                String name = key.substring(fieldName.length(), key.length() - 1);
                 map.put(name, fields.get(key));
             }
         }

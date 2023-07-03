@@ -158,8 +158,8 @@ public class TestPaperItemResultDaoImpl extends FastJdbcDaoSupport implements Te
                 ps.setObject(1, value.get("score"));
                 ps.setObject(2, value.get("teacherSay"));
                 ps.setObject(3, value.get("status"));
-                ps.setObject(3, keys.get(i));
-                ps.setObject(4, testPaperResultId);
+                ps.setObject(4, keys.get(i));
+                ps.setObject(5, testPaperResultId);
             }
 
             @Override

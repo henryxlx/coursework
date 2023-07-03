@@ -14,8 +14,7 @@
                         <#list item.question.answer![] as answer>
                             <#assign userAnswer = (item.question.testResult.answer[answer?index])! />
                             <li>
-                                填空(${answer?counter})： 正确答案 <strong class="text-success">{{ answer | join
-                                    (' 或 ') }}</strong>
+                                填空(${answer?counter})： 正确答案 <strong class="text-success">${answer?join(' 或 ')}</strong>
                                 <#if userAnswer == ''>
                                     。你未回答
                                 <#elseif item.question.testResult.status == "right">

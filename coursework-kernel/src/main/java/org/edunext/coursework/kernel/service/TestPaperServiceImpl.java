@@ -817,7 +817,7 @@ public class TestPaperServiceImpl implements TestPaperService {
             if (!answers.containsKey(questionId)) {
                 results.put(questionId, new Object[0]);
             } else {
-                results.put(questionId, ArrayUtil.toArray(answers.get(item.get("questionId")).get("answer")));
+                results.put(questionId, ArrayUtil.toArray(answers.get("" + item.get("questionId")).get("answer")));
             }
         }
         return results;

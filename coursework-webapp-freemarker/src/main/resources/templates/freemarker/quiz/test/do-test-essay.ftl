@@ -6,7 +6,7 @@
     <#if ['reviewing', 'finished']?seq_contains(paperResultStatus) >
 
         <#assign role = role!'' />
-        <#if !(role == 'teacher')>
+        <#if (role == 'teacher')>
 
             <div class="testpaper-question-footer clearfix">
                 <div class="testpaper-question-result">
@@ -77,12 +77,12 @@
                             <div class="testpaper-question-result-title">得分：<strong>${(item.question.testResult.score)}
                                     分</strong></div>
                         </div>
-                        {% if item.question.testResult.teacherSay != '' %}
-                        <div class="testpaper-question-teacherSay mtl">
-                            <div class="testpaper-question-result-title">评语：</div>
-                            <div>${bbCode2Html((item.question.testResult.teacherSay)!)}</div>
-                        </div>
-                        {% endif %}
+                        <#if item.question.testResult.teacherSay != ''>
+                            <div class="testpaper-question-teacherSay mtl">
+                                <div class="testpaper-question-result-title">评语：</div>
+                                <div>${bbCode2Html((item.question.testResult.teacherSay)!)}</div>
+                            </div>
+                        </#if>
                     <#else>
                         <div class="testpaper-question-score mtl">
                             <div class="testpaper-question-result-title">老师正在批阅！</div>

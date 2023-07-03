@@ -965,13 +965,12 @@ public class TestPaperServiceImpl implements TestPaperService {
                 throw new RuntimeGoingException("得分必须为数字！");
             }
 
-            testResults.put(keys[1], new HashMap<>(2));
-            testResults.get(keys[1]).put(keys[0], value);
+            testResults.computeIfAbsent(keys[1], v -> new HashMap<>(3)).put(keys[0], value);
             Object[] userAnswer = (Object[]) userAnswers.get(keys[1]).get("answer");
             if ("score".equals(keys[0])) {
                 if (ValueParser.parseInt(value) == ValueParser.parseInt(items.get(keys[1]).get("score"))) {
                     testResults.get(keys[1]).put("status", "right");
-                } else if ("".equals(userAnswer[0])) {
+                } else if (userAnswer == null || "".equals(userAnswer[0])) {
                     testResults.get(keys[1]).put("status", "noAnswer");
                 } else {
                     testResults.get(keys[1]).put("status", "wrong");

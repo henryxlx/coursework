@@ -237,7 +237,7 @@ public class TestPaperController {
 
         model.addAttribute("status", status);
         model.addAttribute("testpapers", ArrayToolkit.index(testpapers, "id"));
-        model.addAttribute("paperResults", ArrayToolkit.index(testpaperResults, "id"));
+        model.addAttribute("paperResults", testpaperResults);
         model.addAttribute("course", course);
         model.addAttribute("paginator", paginator);
         return "/my/quiz/list-course-test-paper";

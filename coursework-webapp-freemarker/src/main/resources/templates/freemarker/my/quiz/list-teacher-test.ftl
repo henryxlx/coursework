@@ -3,7 +3,7 @@
 
     <table class="table table-striped table-hover">
         <tbody>
-        <#list paperResults! as tid, paperResult>
+        <#list paperResults! as paperResult>
 
             <#assign testpaper = testpapers[''+paperResult.testId]/>
             <#assign student = users[''+paperResult.userId]/>

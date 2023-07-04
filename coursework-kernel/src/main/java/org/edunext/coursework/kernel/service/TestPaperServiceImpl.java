@@ -18,7 +18,6 @@ import org.edunext.coursework.kernel.service.question.type.QuestionTypeFactory;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuildResult;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperBuilder;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
-import org.edunext.coursework.kernel.util.QuickArrayHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -984,9 +983,9 @@ public class TestPaperServiceImpl implements TestPaperService {
 
         Map<String, Object> testpaperResult = this.testPaperResultDao.getTestpaperResult(id);
 
-        int subjectiveScore = QuickArrayHelper.arraySum(ArrayToolkit.column(testResults.values(), "score"));
+        float subjectiveScore = sumTestPaperTotal(testResults.values());
 
-        int totalScore = subjectiveScore + ValueParser.parseInt(testpaperResult.get("objectiveScore"));
+        float totalScore = subjectiveScore + ValueParser.parseFloat(testpaperResult.get("objectiveScore"));
 
         this.testPaperResultDao.updateTestpaperResult(id, FastHashMap.build(6)
                 .add("score", totalScore)

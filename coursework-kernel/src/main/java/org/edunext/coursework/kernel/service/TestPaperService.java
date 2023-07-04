@@ -1,9 +1,11 @@
 package org.edunext.coursework.kernel.service;
 
+import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import org.edunext.coursework.kernel.service.testpaper.TestPaperExamResult;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,4 +81,13 @@ public interface TestPaperService extends FastEventService {
     Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, Integer userId, String[] status);
 
     Map<String, Object> makeTeacherFinishTest(Integer id, Object paperId, Integer teacherId, Map<String, Object> field);
+
+    default float sumTestPaperTotal(Collection questionListByType) {
+        Collection<Map<String, Object>> questionList = (Collection<Map<String, Object>>) questionListByType;
+        float sum = 0.0F;
+        for (Map<String, Object> question : questionList) {
+            sum += ValueParser.parseFloat(question.get("score"));
+        }
+        return sum;
+    }
 }

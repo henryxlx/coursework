@@ -833,8 +833,8 @@ public class TestPaperServiceImpl implements TestPaperService {
             } else if ("partRight".equals(answer.get("status"))) {
 
                 if ("fill".equals(items.get(questionId).get("questionType"))) {
-                    double score = ValueParser.parseInt(items.get(questionId).get("score")) *
-                            ValueParser.parseInt(answer.get("percentage")) / 100.0;
+                    float score = ValueParser.parseFloat(items.get(questionId).get("score")) *
+                            ValueParser.parseInt(answer.get("percentage")) / 100.0F;
                     answer.put("score", score);
                 } else {
                     answer.put("score", items.get(questionId).get("missScore"));
@@ -898,10 +898,10 @@ public class TestPaperServiceImpl implements TestPaperService {
     }
 
     private Map<String, Object> sumScore(List<Map<String, Object>> itemResults) {
-        int score = 0;
+        float score = 0.0F;
         int rightItemCount = 0;
         for (Map<String, Object> itemResult : itemResults) {
-            score += ValueParser.parseInt(itemResult.get("score"));
+            score += ValueParser.parseFloat(itemResult.get("score"));
             if ("right".equals(itemResult.get("status"))) {
                 rightItemCount++;
             }

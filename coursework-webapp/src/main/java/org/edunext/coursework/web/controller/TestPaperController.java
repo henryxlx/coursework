@@ -76,6 +76,15 @@ public class TestPaperController {
         return "/quiz/test/testpaper-show";
     }
 
+    private float sumTestPaperTotal(Collection questionListByType) {
+        Collection<Map<String, Object>> questionList = (Collection<Map<String, Object>>) questionListByType;
+        float sum = 0.0F;
+        for (Map<String, Object> question : questionList) {
+            sum += ValueParser.parseFloat(question.get("score"));
+        }
+        return sum;
+    }
+
     private Map<String, Object> makeTestpaperTotal(Map<String, Object> testpaper,
                                                    Map<String, Map<String, Object>> items) {
 
@@ -88,7 +97,7 @@ public class TestPaperController {
                 total.put(type, FastHashMap.build(3).add("score", 0).add("number", 0).add("missScore", 0).toMap());
             } else {
                 Map<String, Object> map = new HashMap<>(3);
-//                map.put("score", array_sum(ArrayToolkit.column(items.get(type), "score"));
+                map.put("score", sumTestPaperTotal(items.get(type).values()));
                 map.put("number", items.get(type).values().size());
                 map.put("missScore", 0);
                 if (testPaperMetas.containsKey("missScore")) {

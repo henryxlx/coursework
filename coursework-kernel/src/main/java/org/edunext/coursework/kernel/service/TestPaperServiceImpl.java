@@ -367,8 +367,8 @@ public class TestPaperServiceImpl implements TestPaperService {
         return examResult;
     }
 
-    private Map<String, Map<String, Integer>> makeAccuracy(Map<String, Map<String, Object>> items) {
-        Map<String, Integer> accuracyResult = new HashMap<>(7);
+    private Map<String, Object> newAccuracyResult() {
+        Map<String, Object> accuracyResult = new HashMap<>(7);
         accuracyResult.put("right", 0);
         accuracyResult.put("partRight", 0);
         accuracyResult.put("wrong", 0);
@@ -376,15 +376,18 @@ public class TestPaperServiceImpl implements TestPaperService {
         accuracyResult.put("all", 0);
         accuracyResult.put("score", 0);
         accuracyResult.put("totalScore", 0);
+        return accuracyResult;
+    }
 
-        Map<String, Map<String, Integer>> accuracy = new HashMap<>(7);
-        accuracy.put("single_choice", accuracyResult);
-        accuracy.put("choice", accuracyResult);
-        accuracy.put("uncertain_choice", accuracyResult);
-        accuracy.put("determine", accuracyResult);
-        accuracy.put("fill", accuracyResult);
-        accuracy.put("essay", accuracyResult);
-        accuracy.put("material", accuracyResult);
+    private Map<String, Map<String, Object>> makeAccuracy(Map<String, Map<String, Object>> items) {
+        Map<String, Map<String, Object>> accuracy = new HashMap<>(7);
+        accuracy.put("single_choice", newAccuracyResult());
+        accuracy.put("choice", newAccuracyResult());
+        accuracy.put("uncertain_choice", newAccuracyResult());
+        accuracy.put("determine", newAccuracyResult());
+        accuracy.put("fill", newAccuracyResult());
+        accuracy.put("essay", newAccuracyResult());
+        accuracy.put("material", newAccuracyResult());
 
         for (Map<String, Object> item : items.values()) {
             if ("material".equals(item.get("questionType"))) {
@@ -401,7 +404,7 @@ public class TestPaperServiceImpl implements TestPaperService {
                         continue;
                     }
                     if ("essay".equals(mapForValue.get("questionType"))) {
-                        accuracy.get("material").put("hasEssay", 1); // hasEssay = true;
+                        accuracy.get("material").put("hasEssay", Boolean.TRUE); // hasEssay = true;
                     }
                     Map<String, Object> mapQuestion = ArrayToolkit.toMap(item.get("question"));
                     Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapQuestion.get("testResult"));
@@ -409,28 +412,28 @@ public class TestPaperServiceImpl implements TestPaperService {
                         continue;
                     }
 
-                    int value = ValueParser.parseInt(accuracy.get("material").get("score"));
-                    accuracy.get("material").put("score", value + ValueParser.parseInt(mapForTestResult.get("score")));
-                    value = ValueParser.parseInt(accuracy.get("material").get("totalScore"));
-                    accuracy.get("material").put("totalScore", value + ValueParser.parseInt(mapForValue.get("score")));
+                    float score = ValueParser.parseFloat(accuracy.get("material").get("score"));
+                    accuracy.get("material").put("score", score + ValueParser.parseFloat(mapForTestResult.get("score")));
+                    score = ValueParser.parseFloat(accuracy.get("material").get("totalScore"));
+                    accuracy.get("material").put("totalScore", score + ValueParser.parseFloat(mapForValue.get("score")));
 
-                    value = ValueParser.parseInt(accuracy.get("material").get("all"));
-                    accuracy.get("material").put("all", ++value);
+                    int qnums = ValueParser.parseInt(accuracy.get("material").get("all"));
+                    accuracy.get("material").put("all", ++qnums);
                     if ("right".equals(mapForTestResult.get("status"))) {
-                        value = ValueParser.parseInt(accuracy.get("material").get("right"));
-                        accuracy.get("material").put("right", ++value);
+                        qnums = ValueParser.parseInt(accuracy.get("material").get("right"));
+                        accuracy.get("material").put("right", ++qnums);
                     }
                     if ("partRight".equals(mapForTestResult.get("status"))) {
-                        value = ValueParser.parseInt(accuracy.get("material").get("partRight"));
-                        accuracy.get("material").put("partRight", ++value);
+                        qnums = ValueParser.parseInt(accuracy.get("material").get("partRight"));
+                        accuracy.get("material").put("partRight", ++qnums);
                     }
                     if ("wrong".equals(mapForTestResult.get("status"))) {
-                        value = ValueParser.parseInt(accuracy.get("material").get("wrong"));
-                        accuracy.get("material").put("wrong", ++value);
+                        qnums = ValueParser.parseInt(accuracy.get("material").get("wrong"));
+                        accuracy.get("material").put("wrong", ++qnums);
                     }
                     if ("noAnswer".equals(mapForTestResult.get("status"))) {
-                        value = ValueParser.parseInt(accuracy.get("material").get("noAnswer"));
-                        accuracy.get("material").put("noAnswer", ++value);
+                        qnums = ValueParser.parseInt(accuracy.get("material").get("noAnswer"));
+                        accuracy.get("material").put("noAnswer", ++qnums);
                     }
                 }
             } else {
@@ -441,28 +444,28 @@ public class TestPaperServiceImpl implements TestPaperService {
                     continue;
                 }
 
-                int value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("score"));
-                accuracy.get(item.get("questionType")).put("score", value + ValueParser.parseInt(mapForTestResult.get("score")));
-                value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("totalScore"));
-                accuracy.get(item.get("questionType")).put("totalScore", value + ValueParser.parseInt(item.get("score")));
+                float score = ValueParser.parseFloat(accuracy.get(item.get("questionType")).get("score"));
+                accuracy.get(item.get("questionType")).put("score", score + ValueParser.parseFloat(mapForTestResult.get("score")));
+                score = ValueParser.parseFloat(accuracy.get(item.get("questionType")).get("totalScore"));
+                accuracy.get(item.get("questionType")).put("totalScore", score + ValueParser.parseFloat(item.get("score")));
 
-                value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("all"));
-                accuracy.get(item.get("questionType")).put("all", ++value);
+                int qnums = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("all"));
+                accuracy.get(item.get("questionType")).put("all", ++qnums);
                 if ("right".equals(mapForTestResult.get("status"))) {
-                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("right"));
-                    accuracy.get(item.get("questionType")).put("right", ++value);
+                    qnums = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("right"));
+                    accuracy.get(item.get("questionType")).put("right", ++qnums);
                 }
                 if ("partRight".equals(mapForTestResult.get("status"))) {
-                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("partRight"));
-                    accuracy.get(item.get("questionType")).put("partRight", ++value);
+                    qnums = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("partRight"));
+                    accuracy.get(item.get("questionType")).put("partRight", ++qnums);
                 }
                 if ("wrong".equals(mapForTestResult.get("status"))) {
-                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("wrong"));
-                    accuracy.get(item.get("questionType")).put("wrong", ++value);
+                    qnums = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("wrong"));
+                    accuracy.get(item.get("questionType")).put("wrong", ++qnums);
                 }
                 if ("noAnswer".equals(mapForTestResult.get("status"))) {
-                    value = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("noAnswer"));
-                    accuracy.get(item.get("questionType")).put("noAnswer", ++value);
+                    qnums = ValueParser.parseInt(accuracy.get(item.get("questionType")).get("noAnswer"));
+                    accuracy.get(item.get("questionType")).put("noAnswer", ++qnums);
                 }
 
             }

@@ -469,7 +469,7 @@ public class TestPaperController {
 
         TestPaperExamResult result = this.testPaperService.showTestpaper(id, true);
         Map<String, Map<String, Object>> items = result.getFormatItems();
-        Map<String, Map<String, Integer>> accuracy = result.getAccuracy();
+        Map<String, Map<String, Object>> accuracy = result.getAccuracy();
 
         model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
 
@@ -507,7 +507,7 @@ public class TestPaperController {
 
         TestPaperExamResult result = this.testPaperService.showTestpaper(id, true);
         Map<String, Map<String, Object>> items = result.getFormatItems();
-        Map<String, Map<String, Integer>> accuracy = result.getAccuracy();
+        Map<String, Map<String, Object>> accuracy = result.getAccuracy();
 
         model.addAttribute("total", this.makeTestpaperTotal(testpaper, items));
 

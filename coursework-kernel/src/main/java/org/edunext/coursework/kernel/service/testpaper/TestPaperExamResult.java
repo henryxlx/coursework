@@ -10,7 +10,7 @@ public class TestPaperExamResult {
 
     Map<String, Map<String, Object>> formatItems = new HashMap<>(0);
 
-    Map<String, Map<String, Integer>> accuracy = new HashMap<>(0);
+    Map<String, Map<String, Object>> accuracy = new HashMap<>(0);
 
     public Map<String, Map<String, Object>> getFormatItems() {
         return formatItems;
@@ -20,11 +20,11 @@ public class TestPaperExamResult {
         this.formatItems = formatItems;
     }
 
-    public Map<String, Map<String, Integer>> getAccuracy() {
+    public Map<String, Map<String, Object>> getAccuracy() {
         return accuracy;
     }
 
-    public void setAccuracy(Map<String, Map<String, Integer>> accuracy) {
+    public void setAccuracy(Map<String, Map<String, Object>> accuracy) {
         this.accuracy = accuracy;
     }
 }

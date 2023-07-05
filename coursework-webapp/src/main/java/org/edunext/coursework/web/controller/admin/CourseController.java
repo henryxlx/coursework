@@ -1,9 +1,11 @@
 package org.edunext.coursework.web.controller.admin;
 
 import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.util.FastHashMap;
 import com.jetwinner.util.ValueParser;
 import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
+import com.jetwinner.webfast.kernel.dao.support.OrderBy;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
 import com.jetwinner.webfast.kernel.typedef.ParamMap;
@@ -12,6 +14,7 @@ import com.jetwinner.webfast.module.bigapp.service.AppCategoryService;
 import org.edunext.coursework.kernel.CategoryBuilder;
 import org.edunext.coursework.kernel.service.CourseCopyService;
 import org.edunext.coursework.kernel.service.CourseService;
+import org.edunext.coursework.kernel.service.TestPaperService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,7 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseCopyService courseCopyService;
+    private final TestPaperService testPaperService;
     private final CategoryBuilder categoryBuilder;
     private final AppCategoryService categoryService;
     private final AppUserService userService;
@@ -39,13 +43,16 @@ public class CourseController {
 
     public CourseController(CourseService courseService,
                             CourseCopyService courseCopyService,
-                            CategoryBuilder categoryBuilder, AppCategoryService categoryService,
+                            TestPaperService testPaperService,
+                            CategoryBuilder categoryBuilder,
+                            AppCategoryService categoryService,
                             AppUserService userService,
                             AppSettingService settingService,
                             ViewRenderService viewRenderService) {
 
         this.courseService = courseService;
         this.courseCopyService = courseCopyService;
+        this.testPaperService = testPaperService;
         this.categoryBuilder = categoryBuilder;
         this.categoryService = categoryService;
         this.userService = userService;
@@ -228,5 +235,48 @@ public class CourseController {
         model.addAttribute("courses", courses);
         model.addAttribute("paginator", paginator);
         return "/admin/course/data";
+    }
+
+    @RequestMapping("/admin/course/{id}/lesson/data")
+    public String lessonDataAction(@PathVariable Integer id, HttpServletRequest request, Model model) {
+        Map<String, Object> course = this.courseService.tryManageCourse(AppUser.getCurrentUser(request), id);
+
+        List<Map<String, Object>> lessons =
+                this.courseService.searchLessons(FastHashMap.build(1).add("courseId", id).toMap(),
+                        OrderBy.build(1).addAsc("createdTime"), 0, 1000);
+
+        for (Map<String, Object> value : lessons) {
+            int lessonLearnedNum = this.courseService.findLearnsCountByLessonId(ValueParser.toInteger(value.get("id")));
+            Integer finishedNum =
+                    this.courseService.searchLearnCount(FastHashMap.build(2).add("status", "finished").add("lessonId", value.get("id")).toMap());
+
+            int lessonLearnTime = this.courseService.searchLearnTime(FastHashMap.build(1).add("lessonId", value.get("id")).toMap());
+            lessonLearnTime = lessonLearnedNum == 0 ? 0 : (int) (1.0 * lessonLearnTime / lessonLearnedNum);
+
+            int lessonWatchTime = this.courseService.searchWatchTime(FastHashMap.build(1).add("lessonId", value.get("id")).toMap());
+            lessonWatchTime = lessonWatchTime == 0 ? 0 : (int) (1.0 * lessonWatchTime / lessonLearnedNum);
+
+            value.put("LearnedNum", lessonLearnedNum);
+            value.put("length", (int) (ValueParser.parseInt(value.get("length")) / 60.0));
+            value.put("finishedNum", finishedNum);
+            value.put("learnTime", lessonLearnTime);
+            value.put("watchTime", lessonWatchTime);
+
+            if ("testpaper".equals(value.get("type"))) {
+                Integer paperId = ValueParser.toInteger(value.get("mediaId"));
+                int score = this.testPaperService.searchTestpapersScore(
+                        FastHashMap.build(1).add("testId", paperId).toMap());
+
+                int paperNum = this.testPaperService.searchTestpaperResultsCount(
+                        FastHashMap.build(1).add("testId", paperId).toMap());
+
+                value.put("score", finishedNum == 0 ? 0 : (int) (1.0 * score / paperNum));
+            }
+        }
+
+        model.addAttribute("course", course);
+        model.addAttribute("lessons", lessons);
+
+        return "admin/course/lesson-data";
     }
 }

@@ -42,14 +42,14 @@
                 <#list courses as course>
                     <tr>
                         <td><a data-toggle="modal" data-target="#modal"
-                               data-url="${ctx}/course/detail/data/${course.id}" href="javascript:">${course.title}</a>
+                               data-url="${ctx}/course/${course.id}/detail/data" href="javascript:">${course.title}</a>
                         </td>
                         <td>${course.lessonCount!}</td>
                         <td>${course.studentNum!}</td>
                         <td>${course.isLearnedNum!}</td>
                         <td>${(course.learnTime!0/60)?string["0.#"]}</td>
                         <td>${course.income!}</td>
-                        <td><a href="${ctx}/admin/course/lesson/data/${course.id}">查看课时数据</a></td>
+                        <td><a href="${ctx}/admin/course/${course.id}/lesson/data">查看课时数据</a></td>
                     </tr>
                 </#list>
             </#if>

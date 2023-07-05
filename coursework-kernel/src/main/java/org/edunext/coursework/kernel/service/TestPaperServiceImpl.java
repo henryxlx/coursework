@@ -205,7 +205,7 @@ public class TestPaperServiceImpl implements TestPaperService {
                 if (formatItems.containsKey(item.get("questionType"))) {
                     mapForItem = formatItems.get("" + item.get("questionType"));
                 } else {
-                    mapForItem = new HashMap<>();
+                    mapForItem = new LinkedHashMap<>(); // 使用LinkedHashMap完成对试卷条目的排序 ksort($formatItems)
                     formatItems.put("" + item.get("questionType"), mapForItem);
                 }
                 mapForItem.put("" + item.get("questionId"), item);
@@ -349,7 +349,7 @@ public class TestPaperServiceImpl implements TestPaperService {
                 if (formatItems.containsKey(item.get("questionType"))) {
                     mapForItem = formatItems.get("" + item.get("questionType"));
                 } else {
-                    mapForItem = new HashMap<>();
+                    mapForItem = new LinkedHashMap<>(); // 使用LinkedHashMap完成对试卷条目的排序 ksort($formatItems)
                     formatItems.put("" + item.get("questionType"), mapForItem);
                 }
                 mapForItem.put("" + item.get("questionId"), item);
@@ -404,7 +404,7 @@ public class TestPaperServiceImpl implements TestPaperService {
                         continue;
                     }
                     if ("essay".equals(mapForValue.get("questionType"))) {
-                        accuracy.get("material").put("hasEssay", Boolean.TRUE); // hasEssay = true;
+                        accuracy.get("material").put("hasEssay", Boolean.TRUE);
                     }
                     Map<String, Object> mapQuestion = ArrayToolkit.toMap(item.get("question"));
                     Map<String, Object> mapForTestResult = ArrayToolkit.toMap(mapQuestion.get("testResult"));

@@ -999,4 +999,14 @@ public class TestPaperServiceImpl implements TestPaperService {
                 .add("teacherSay", teacherSay).toMap());
         return this.testPaperResultDao.getTestpaperResult(id);
     }
+
+    @Override
+    public Integer searchTestpapersScore(Map<String, Object> conditions) {
+        return this.testPaperResultDao.searchTestpapersScore(conditions);
+    }
+
+    @Override
+    public Integer searchTestpaperResultsCount(Map<String, Object> conditions) {
+        return this.testPaperResultDao.searchTestpaperResultsCount(conditions);
+    }
 }

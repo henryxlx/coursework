@@ -90,4 +90,8 @@ public interface TestPaperService extends FastEventService {
         }
         return sum;
     }
+
+    Integer searchTestpapersScore(Map<String, Object> conditions);
+
+    Integer searchTestpaperResultsCount(Map<String, Object> conditions);
 }

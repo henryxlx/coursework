@@ -307,10 +307,9 @@ public class CourseManageController {
 
             if ("testpaper".equals(value.get("type"))) {
                 Object paperId = value.get("mediaId");
-                // :TODO testPaper not finished.
-//                int score = this.testPaperService.searchTestpapersScore(FastHashMap.build(1).add("testId", paperId).toMap());
-//                int paperNum = this.testPaperService.searchTestpaperResultsCount(FastHashMap.build(1).add("testId", paperId).toMap());
-//                value.put("score", finishedNum == 0 ? 0 : (int) (1.0 * score / paperNum));
+                int score = this.testPaperService.searchTestpapersScore(FastHashMap.build(1).add("testId", paperId).toMap());
+                int paperNum = this.testPaperService.searchTestpaperResultsCount(FastHashMap.build(1).add("testId", paperId).toMap());
+                value.put("score", finishedNum == 0 ? 0 : (int) (1.0 * score / paperNum));
             }
         }
 

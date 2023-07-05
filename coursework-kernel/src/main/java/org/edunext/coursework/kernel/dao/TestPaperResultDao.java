@@ -28,4 +28,8 @@ public interface TestPaperResultDao {
     int updateTestpaperResult(Integer testpaperId, Map<String, Object> fields);
 
     Map<String, Object> findTestpaperResultsByTestIdAndStatusAndUserId(Integer testpaperId, String[] status, Integer userId);
+
+    Integer searchTestpapersScore(Map<String, Object> conditions);
+
+    Integer searchTestpaperResultsCount(Map<String, Object> conditions);
 }

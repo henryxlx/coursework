@@ -1,5 +1,7 @@
 package org.edunext.coursework.kernel.dao.impl;
 
+import com.jetwinner.toolbag.ArrayToolkit;
+import com.jetwinner.webfast.dao.support.DynamicQueryBuilder;
 import com.jetwinner.webfast.dao.support.FastJdbcDaoSupport;
 import org.edunext.coursework.kernel.dao.TestPaperResultDao;
 import org.springframework.stereotype.Repository;
@@ -90,5 +92,25 @@ public class TestPaperResultDaoImpl extends FastJdbcDaoSupport implements TestPa
         String marks = Arrays.stream(status).collect(Collectors.joining(", ", "'", "'"));
         String sql = "SELECT * FROM " + TABLE_NAME + " WHERE `status` IN (" + marks + ") AND `testId` = ? AND `userId` = ? LIMIT 1";
         return getJdbcTemplate().queryForList(sql, testpaperId, userId).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public Integer searchTestpapersScore(Map<String, Object> conditions) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions).select("sum(score)");
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
+    }
+
+    @Override
+    public Integer searchTestpaperResultsCount(Map<String, Object> conditions) {
+        DynamicQueryBuilder builder = this.createSearchQueryBuilder(conditions).select("COUNT(id)");
+        return getNamedParameterJdbcTemplate().queryForObject(builder.getSQL(), conditions, Integer.class);
+    }
+
+    private DynamicQueryBuilder createSearchQueryBuilder(Map<String, Object> conditions) {
+        ArrayToolkit.filterNullEntry(conditions);
+
+        return new DynamicQueryBuilder(conditions)
+                .from(TABLE_NAME)
+                .andWhere("testId = :testId");
     }
 }

@@ -7,7 +7,6 @@ import com.jetwinner.webfast.kernel.AppUser;
 import com.jetwinner.webfast.kernel.Paginator;
 import com.jetwinner.webfast.kernel.service.AppSettingService;
 import com.jetwinner.webfast.kernel.service.AppUserService;
-import com.jetwinner.webfast.kernel.typedef.ParamMap;
 import com.jetwinner.webfast.mvc.BaseControllerHelper;
 import org.edunext.coursework.kernel.service.CourseService;
 import org.edunext.coursework.kernel.service.CourseThreadService;
@@ -17,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author xulixin
@@ -89,10 +86,14 @@ public class MyTeachingController {
         }
 
         List<Map<String, Object>> myTeachingCourses = this.courseService.findUserTeachCourses(user.getId(),
-                0, myTeachingCourseCount, true);
+                0, myTeachingCourseCount < 1 ? 10 : myTeachingCourseCount, true);
 
-        Map<String, Object> conditions = new ParamMap()
-                .add("courseIds", ArrayToolkit.column(myTeachingCourses, "id")).add("type", type).toMap();
+        Map<String, Object> conditions = new HashMap<>(2);
+        Set<Object> courseIds = ArrayToolkit.column(myTeachingCourses, "id");
+        if (courseIds.size() > 0) {
+            conditions.put("courseIds", courseIds);
+        }
+        conditions.put("type", type);
 
         Paginator paginator = new Paginator(request,
                 this.courseThreadService.searchThreadCountInCourseIds(conditions), 20);
